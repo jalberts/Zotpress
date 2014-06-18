@@ -1,4 +1,4 @@
-This is a development fork of Katie Seaborn's Zotpress. Please find the working release at http://wordpress.org/plugins/zotpress/.
+This is a development fork/clone of Katie Seaborn's Zotpress. Please find the working release at http://wordpress.org/plugins/zotpress/.
 
 === Plugin Name ===
 Contributors: kseaborn
