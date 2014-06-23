@@ -5,13 +5,15 @@
     function Zotpress_install()
     {
         global $wpdb;
-        global $Zotpress_main_db_version;
-        global $Zotpress_oauth_db_version;
-        global $Zotpress_zoteroItems_db_version;
-        global $Zotpress_zoteroCollections_db_version;
-        global $Zotpress_zoteroTags_db_version;
-        global $Zotpress_zoteroRelItemColl_db_version;
-        global $Zotpress_zoteroRelItemTags_db_version;
+        $Zotpress_main_db_version = "5.2";
+        $Zotpress_oauth_db_version = "5.0.5";
+        $Zotpress_zoteroItems_db_version = "5.2.1";
+        $Zotpress_zoteroCollections_db_version = "5.0.5";
+        $Zotpress_zoteroTags_db_version = "5.0.5";
+        $Zotpress_zoteroRelItemColl_db_version = "5.2.1";
+        $Zotpress_zoteroRelItemTags_db_version = "5.2.1";
+        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         
         // ZOTERO ACCOUNTS TABLE
         
@@ -30,12 +32,10 @@
                 UNIQUE KEY id (id)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_main_db_version", $Zotpress_main_db_version);
         }
-        
         
         
         // OAUTH CACHE TABLE
@@ -51,7 +51,6 @@
                 UNIQUE KEY id (id)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_oauth_db_version", $Zotpress_oauth_db_version);
@@ -64,15 +63,34 @@
         
         // ZOTERO ITEMS TABLE
         
-        if (!get_option("Zotpress_zoteroItems_db_version")
+        if (
+                !get_option("Zotpress_zoteroItems_db_version")
                 || get_option("Zotpress_zoteroItems_db_version") != $Zotpress_zoteroItems_db_version
                 //|| is_null($wpdb->get_var("SELECT COUNT(*) FROM '".$wpdb->prefix."zotpress_zoteroItems'"))
-                )
+           )
         {
-            $structure = "CREATE TABLE ".$wpdb->prefix."zotpress_zoteroItems (
+			$table_name = $wpdb->prefix . "zotpress_zoteroItems";
+            
+            $wpdb->query(
+                "
+                ALTER TABLE $table_name DROP PRIMARY KEY;
+                "
+            );
+            
+            // Remove any duplicates before updating structure
+            // Thanks to http://www.semicolon.co.za/mysql_tutorials/finding-and-removing-duplicates-in-mysql-database-ii.html
+            $wpdb->query(
+                "
+                DELETE u1 FROM $table_name u1, $table_name u2 
+                WHERE u1.id < u2.id 
+                AND (u1.item_key = u2.item_key AND u1.api_user_id = u2.api_user_id);
+                "
+            );
+			
+            $structure = "CREATE TABLE $table_name (
                 id INT(9) AUTO_INCREMENT,
                 api_user_id VARCHAR(50),
-                item_key TEXT,
+                item_key VARCHAR(50),
                 retrieved TEXT,
                 json LONGTEXT NOT NULL,
                 citation LONGTEXT,
@@ -84,16 +102,16 @@
                 linkMode VARCHAR(100),
                 parent VARCHAR(100),
                 image TEXT,
-                numchildren INT,
+                numchildren INT(10),
                 year VARCHAR(10) DEFAULT '1977',
                 updated INT(1) DEFAULT 1,
-                UNIQUE KEY id (id)
+                UNIQUE KEY id (id),
+                PRIMARY KEY (api_user_id,item_key)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($structure);
+            dbDelta( $structure );
             
-            update_option("Zotpress_zoteroItems_db_version", $Zotpress_zoteroItems_db_version);
+            update_option( "Zotpress_zoteroItems_db_version", $Zotpress_zoteroItems_db_version );
         }
         
         
@@ -104,7 +122,9 @@
                 //|| is_null($wpdb->get_var("SELECT COUNT(*) FROM '".$wpdb->prefix."zotpress_zoteroCollections'"))
                 )
         {
-            $structure = "CREATE TABLE ".$wpdb->prefix."zotpress_zoteroCollections (
+            $table_name = $wpdb->prefix . "zotpress_zoteroCollections";
+            
+            $structure = "CREATE TABLE $table_name (
                 id INT(9) NOT NULL AUTO_INCREMENT,
                 api_user_id VARCHAR(50),
                 title TEXT,
@@ -118,7 +138,6 @@
                 UNIQUE KEY id (id)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_zoteroCollections_db_version", $Zotpress_zoteroCollections_db_version);
@@ -132,7 +151,9 @@
                 //|| is_null($wpdb->get_var("SELECT COUNT(*) FROM '".$wpdb->prefix."zotpress_zoteroTags'"))
                 )
         {
-            $structure = "CREATE TABLE ".$wpdb->prefix."zotpress_zoteroTags (
+            $table_name = $wpdb->prefix . "zotpress_zoteroTags";
+            
+            $structure = "CREATE TABLE $table_name (
                 id INT(9) NOT NULL UNIQUE AUTO_INCREMENT,
                 api_user_id VARCHAR(50),
                 title VARCHAR(128) BINARY NOT NULL UNIQUE,
@@ -143,7 +164,6 @@
                 PRIMARY KEY (api_user_id, title)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_zoteroTags_db_version", $Zotpress_zoteroTags_db_version);
@@ -157,15 +177,31 @@
                 //|| is_null($wpdb->get_var("SELECT COUNT(*) FROM '".$wpdb->prefix."zotpress_zoteroRelItemColl'"))
                 )
         {
-            $structure = "CREATE TABLE ".$wpdb->prefix."zotpress_zoteroRelItemColl (
-                id INT(9) NOT NULL UNIQUE AUTO_INCREMENT,
+            $table_name = $wpdb->prefix . "zotpress_zoteroRelItemColl";
+            
+            $wpdb->query(
+                "
+                ALTER TABLE $table_name DROP PRIMARY KEY;
+                "
+            );
+            
+            $wpdb->query(
+                "
+                DELETE u1 FROM $table_name u1, $table_name u2 
+                WHERE u1.id < u2.id 
+                AND (u1.item_key = u2.item_key AND u1.collection_key = u2.collection_key AND u1.api_user_id = u2.api_user_id);
+                "
+            );
+            
+            $structure = "CREATE TABLE $table_name (
+                id INT(9) AUTO_INCREMENT,
                 api_user_id VARCHAR(50),
                 item_key VARCHAR(50),
                 collection_key VARCHAR(50),
-                PRIMARY KEY (id)
+                UNIQUE KEY id (id),
+                PRIMARY KEY (api_user_id,item_key,collection_key)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_zoteroRelItemColl_db_version", $Zotpress_zoteroRelItemColl_db_version);
@@ -180,15 +216,31 @@
                 //|| is_null($wpdb->get_var("SELECT COUNT(*) FROM '".$wpdb->prefix."zotpress_zoteroRelItemTags'"))
                 )
         {
-            $structure = "CREATE TABLE ".$wpdb->prefix."zotpress_zoteroRelItemTags (
-                id INT(9) NOT NULL UNIQUE AUTO_INCREMENT,
+            $table_name = $wpdb->prefix . "zotpress_zoteroRelItemTags";
+            
+            $wpdb->query(
+                "
+                ALTER TABLE $table_name DROP PRIMARY KEY;
+                "
+            );
+            
+            $wpdb->query(
+                "
+                DELETE u1 FROM $table_name u1, $table_name u2 
+                WHERE u1.id < u2.id 
+                AND (u1.item_key = u2.item_key AND u1.tag_title = u2.tag_title AND u1.api_user_id = u2.api_user_id);
+                "
+            );
+            
+            $structure = "CREATE TABLE $table_name (
+                id INT(9) AUTO_INCREMENT,
                 api_user_id VARCHAR(50),
                 item_key VARCHAR(50),
                 tag_title VARCHAR(128),
-                PRIMARY KEY (id)
+                UNIQUE KEY id (id),
+                PRIMARY KEY (api_user_id,item_key,tag_title)
             );";
             
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($structure);
             
             update_option("Zotpress_zoteroRelItemTags_db_version", $Zotpress_zoteroRelItemTags_db_version);
@@ -259,6 +311,7 @@
     function Zotpress_deactivate()
     {
         global $wpdb;
+        global $current_user;
         
         // Drop all tables -- originally not including accounts/main, but not sure why
         $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress;");
@@ -284,6 +337,9 @@
         delete_option( 'Zotpress_zoteroTags_db_version' );
         delete_option( 'Zotpress_zoteroRelItemColl_db_version' );
         delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
+        
+        // Delete user meta
+        delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );
     }
     
     register_uninstall_hook( ZOTPRESS_PLUGIN_FILE, 'Zotpress_deactivate' );
@@ -293,17 +349,18 @@
 
 // UPDATE ------------------------------------------------------------------------------------------
 
-    if ( !get_option("Zotpress_update_version")
-            || get_option("Zotpress_update_version") != $Zotpress_update_version )
+
+    if ( !get_option( "Zotpress_update_version" )
+            || get_option("Zotpress_update_version") != $GLOBALS['Zotpress_update_version'] )
     {
         Zotpress_install();
         
         // Add or update version number
-        if ( !get_option("Zotpress_update_version") ) {
-            add_option( "Zotpress_update_version", $Zotpress_update_version, "", "no" );
+        if ( !get_option( "Zotpress_update_version" ) ) {
+            add_option( "Zotpress_update_version", $GLOBALS['Zotpress_update_version'], "", "no" );
         }
         else {
-            update_option( "Zotpress_update_version", $Zotpress_update_version );
+            update_option( "Zotpress_update_version", $GLOBALS['Zotpress_update_version'] );
         }
     }
     

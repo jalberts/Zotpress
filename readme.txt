@@ -1,5 +1,3 @@
-This is a development fork/clone of Katie Seaborn's Zotpress plugin for WordPress. Please find the working release at http://wordpress.org/plugins/zotpress/.
-
 === Plugin Name ===
 Contributors: kseaborn
 Plugin Name: Zotpress
@@ -10,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 3.9.1
-Stable tag: 5.2
+Stable tag: 5.2.1
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -66,12 +64,15 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Changelog ==
 
+= 5.2.1 =
+* Fixed selective import bug related to duplicatesame item.
+
 = 5.2 =
 
 * IMPORTANT! You must re-import your Zotero library/libraries in Zotpress when you install this version or your shortcodes will not display correctly.
 * Fixed selective import bug for libraries with more than 50 top-level collections.
 * Optimized import script and enforced Zotero API Version 2.
-* Increased timeout length for import scripts.
+* Increased time length before timeout for import scripts.
 * Fixed database updating bug and sort/order bug.
 
 = 5.1 =

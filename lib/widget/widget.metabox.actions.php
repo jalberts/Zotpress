@@ -220,6 +220,7 @@
             if ($errorCheck == false)
             {
                 global $wpdb;
+                global $current_user;
                 
                 // Drop all tables except accounts/main
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress;");
@@ -272,6 +273,8 @@
                 delete_option( 'Zotpress_zoteroTags_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemColl_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
+                
+                delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );
                 
                 $xml .= "<result success='true' reset='complete' />\n";
             }
