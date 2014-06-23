@@ -36,7 +36,7 @@ if (isset( $_GET['oauth'] )) { include("admin.accounts.oauth.php"); } else {
 					<?php
 						
 						global $wpdb;
-				        global $Zotpress_update_version;
+				        //global $Zotpress_update_version;
 						
 						$accounts = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress");
 						$zebra = " alternate";
@@ -73,7 +73,7 @@ if (isset( $_GET['oauth'] )) { include("admin.accounts.oauth.php"); } else {
 							
 							// STATUS
 							$code .= "                          <td class='status'>";
-							if ( $account->version != $Zotpress_update_version )
+							if ( $account->version != $GLOBALS['Zotpress_update_version'] )
 								$code .= "<span class='status_bad'>&#10007;</span>";
 							else
 								$code .= "<span class='status_good'>&#10004;</span>";

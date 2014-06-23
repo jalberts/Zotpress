@@ -6,7 +6,7 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bring Zotero and scholarly blogging to your WordPress site.
     Author: Katie Seaborn
-    Version: 5.2
+    Version: 5.2.1
     Author URI: http://katieseaborn.com
     
 */
@@ -43,14 +43,7 @@
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
     
-    $Zotpress_update_version = "5.2";
-    $Zotpress_main_db_version = "5.2";
-    $Zotpress_oauth_db_version = "5.0.5";
-    $Zotpress_zoteroItems_db_version = "5.0.5";
-    $Zotpress_zoteroCollections_db_version = "5.0.5";
-    $Zotpress_zoteroTags_db_version = "5.0.5";
-    $Zotpress_zoteroRelItemColl_db_version = "5.2";
-    $Zotpress_zoteroRelItemTags_db_version = "5.2";
+    $GLOBALS['Zotpress_update_version'] = "5.2.1";
 
 // GLOBAL VARS ----------------------------------------------------------------------------------
     
@@ -288,18 +281,19 @@
     
     function zotpress_5_2_admin_notice()
     {
-        global $current_user;
-        global $Zotpress_update_version;
         global $wpdb;
+        global $current_user;
         
         // See if any accounts are the old version
         $temp_version_count =
                 $wpdb->get_var( "SELECT COUNT(version) FROM ".$wpdb->prefix."zotpress
-                                            WHERE version != '".$Zotpress_update_version."';" );
+                                            WHERE version != '".$GLOBALS['Zotpress_update_version']."';" );
         
         if ( $temp_version_count > 0
                 && !get_user_meta($current_user->ID, 'zotpress_5_2_ignore_notice')
-                && ( current_user_can('edit_posts') || current_user_can('edit_pages') ) )
+                && ( current_user_can('edit_posts') || current_user_can('edit_pages') )
+                && ( !isset($_GET['setup']) && !isset($_GET['selective']) && !isset($_GET['import']) )
+            )
         {
             echo '<div class="error"><p>';
             printf(__('<strong>URGENT:</strong> Due to major changes in Zotpress, your Zotero account(s) need to be <a href="admin.php?page=Zotpress&accounts=true">re-imported</a>. | <a href="%1$s">Hide Notice</a>'), 'admin.php?page=Zotpress&zotpress_5_2_ignore=0');
