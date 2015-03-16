@@ -11,15 +11,15 @@
     ignore_user_abort(true);
     set_time_limit(60*10); // ten minutes
     
-    // Access Wordpress db
+    // Access WordPress db
     global $wpdb;
     
     // Include Request Functionality
     require("../request/rss.request.php");
     
     // Include Import and Sync Functions
-    require("admin.import.functions.php");
-    require("admin.sync.functions.php");
+    require("import.functions.php");
+    require("sync.functions.php");
     
     
     

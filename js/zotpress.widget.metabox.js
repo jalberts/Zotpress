@@ -62,6 +62,13 @@ jQuery(document).ready(function()
                 // prevent value inserted on focus
                 return false;
             },
+			create: function () {
+				jQuery(this).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+					return jQuery( "<li>" )
+						.append( "<a><strong>" + item.author + "</strong> " + item.label + "</a>" )
+						.appendTo( ul );
+				}
+			},
             open: function () {
 				var widget = jQuery(this).data('ui-autocomplete'),
 						menu = widget.menu,
@@ -87,18 +94,19 @@ jQuery(document).ready(function()
 				
 				// Check for duplicates in popup
 				if ( jQuery(".zp-Zotpress-TinyMCE-Popup").length > 0 )
-				{
 					if ( jQuery(".item[rel="+ui.item.value+"]").length > 0 )
 						check = true;
-				}
 				
                 if (check === false)
 				{
                     // Add to list, if not already there
                     zpBiblio.items.push(ui.item.value);
+					
                     // Add visual indicator
-                    var uilabel = (ui.item.label).split(")",1) + ")";
-                    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List-Inner").append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+uilabel+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><div class='id'>Key: "+ui.item.value+"</div></div></div>\n");
+                    //var uilabel = (ui.item.label).split(")",1) + ")";
+                    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List-Inner")
+							.append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+ ui.item.author + ui.item.label +"</span><div class='item_key'>&rsaquo; " + ui.item.value + "</div><div class='delete'>&times;</div></div>\n");
+					
                     // Remove text from input
                     jQuery("input#zp-ZotpressMetaBox-Biblio-Citations-Search").val("").focus();
                 }
@@ -117,15 +125,15 @@ jQuery(document).ready(function()
 
     
     // ITEM TOGGLE BUTTON
-    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List div.item .toggle")
-        .livequery('click', function(event)
-        {
-            var $parent = jQuery(this).parent();
-            
-            // Toggle action
-            jQuery(this).toggleClass("active");
-            jQuery(".options", $parent).slideToggle('fast');
-        });
+    //jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List div.item .toggle")
+    //    .livequery('click', function(event)
+    //    {
+    //        var $parent = jQuery(this).parent();
+    //        
+    //        // Toggle action
+    //        jQuery(this).toggleClass("active");
+    //        jQuery(".options", $parent).slideToggle('fast');
+    //    });
     
     
     // ITEM CLOSE BUTTON
@@ -177,17 +185,6 @@ jQuery(document).ready(function()
     jQuery("#zp-ZotpressMetaBox-Biblio-Generate-Button")
         .click(function(event)
         {
-            // Update page parameters for all citations - N/A because regular bibs don't have page numbers?
-            //jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List .item").each(function(vindex, vitem) {
-            //    if (jQuery.trim(jQuery("input", vitem).val()).length > 0)
-            //    {
-            //        jQuery.each(zpBiblio.items, function(index, item) {
-            //            if (item.itemkey == jQuery(vitem).attr("rel"))
-            //                item.pages = jQuery.trim(jQuery("input", vitem).val());
-            //        });
-            //    }
-            //});
-            
             // Grab the author, year, style, sortby options
             zpBiblio.author = jQuery.trim(jQuery("#zp-ZotpressMetaBox-Biblio-Options-Author").val());
             zpBiblio.year = jQuery.trim(jQuery("#zp-ZotpressMetaBox-Biblio-Options-Year").val());
@@ -198,7 +195,7 @@ jQuery(document).ready(function()
             // Grab the sort order option
             if (jQuery("input#zp-ZotpressMetaBox-Biblio-Options-Sort-ASC").is(':checked') === true)
                 zpBiblio.sort = "ASC";
-            else
+            if (jQuery("input#zp-ZotpressMetaBox-Biblio-Options-Sort-DESC").is(':checked') === true)
                 zpBiblio.sort = "DESC";
             
             // Grab the image option
@@ -377,6 +374,13 @@ jQuery(document).ready(function()
                 // prevent value inserted on focus
                 return false;
             },
+			create: function () {
+				jQuery(this).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+					return jQuery( "<li>" )
+						.append( "<a><strong>" + item.author + "</strong> " + item.label + "</a>" )
+						.appendTo( ul );
+				}
+			},
             open: function () {
 				var widget = jQuery(this).data('ui-autocomplete'),
 						menu   = widget.menu,
@@ -405,12 +409,16 @@ jQuery(document).ready(function()
 					if ( jQuery(".item[rel="+ui.item.value+"]").length > 0 ) check = true;
 				}
                 
-                if (check === false) {
+                if (check === false)
+				{
                     // Add to list, if not already there
                     zpInText.items.push({ "itemkey": ui.item.value, "pages": false});
+					
                     // Add visual indicator
                     var uilabel = (ui.item.label).split(")",1) + ")";
-                    jQuery("#zp-ZotpressMetaBox-Citations-List-Inner").append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+uilabel+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><label for='zp-Item-"+ui.item.value+"'>Page(s):</label><input id='zp-Item-"+ui.item.value+"' type='text' /><div class='id'>Key: "+ui.item.value+"</div></div></div>\n");
+                    jQuery("#zp-ZotpressMetaBox-Citations-List-Inner")
+						.append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+ ui.item.author + ui.item.label +"</span><div class='options'><label for='zp-Item-"+ui.item.value+"'>Page(s):</label><input id='zp-Item-"+ui.item.value+"' type='text' /></div><div class='item_key'>&rsaquo; " + ui.item.value + "</div><div class='delete'>&times;</div></div>\n");
+					
                     // Remove text from input
                     jQuery("input#zp-ZotpressMetaBox-Citations-Search").val("").focus();
                 }
@@ -438,15 +446,15 @@ jQuery(document).ready(function()
 
     
     // ITEM TOGGLE BUTTON
-    jQuery("#zp-ZotpressMetaBox-Citations-List div.item .toggle")
-        .livequery('click', function(event)
-        {
-            var $parent = jQuery(this).parent();
-            
-            // Toggle action
-            jQuery(this).toggleClass("active");
-            jQuery(".options", $parent).slideToggle('fast');
-        });
+    //jQuery("#zp-ZotpressMetaBox-Citations-List div.item .toggle")
+    //    .livequery('click', function(event)
+    //    {
+    //        var $parent = jQuery(this).parent();
+    //        
+    //        // Toggle action
+    //        jQuery(this).toggleClass("active");
+    //        jQuery(".options", $parent).slideToggle('fast');
+    //    });
     
     
     // ITEM CLOSE BUTTON
@@ -530,7 +538,7 @@ jQuery(document).ready(function()
             // Grab the sort order option
             if (jQuery("input#zp-ZotpressMetaBox-InTextCreator-Options-Sort-ASC").is(':checked') === true)
                 zpInText.sort = "ASC";
-            else
+            if (jQuery("input#zp-ZotpressMetaBox-InTextCreator-Options-Sort-DESC").is(':checked') === true)
                 zpInText.sort = "DESC";
             
             // Grab the image option

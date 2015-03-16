@@ -9,7 +9,7 @@
     if ( !current_user_can('edit_others_posts') && !is_admin() ) wp_die( __('Only editors can access this page through the admin panel.'), __('Zotpress: Access Denied') );
 
     // Include import functions
-    require_once("../admin/admin.import.functions.php");
+    require_once("../import/import.functions.php");
     
     // Set up XML document
     $xml = "";
@@ -273,8 +273,10 @@
                 delete_option( 'Zotpress_zoteroTags_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemColl_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
+				delete_option( 'Zotpress_zoteroItemImages_db_version' );
                 
                 delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );
+                delete_user_meta( $current_user->ID, 'zotpress_survey_notice_ignore' );
                 
                 $xml .= "<result success='true' reset='complete' />\n";
             }

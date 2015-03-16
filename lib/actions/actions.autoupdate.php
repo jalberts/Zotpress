@@ -11,15 +11,15 @@
     ignore_user_abort(true);
     set_time_limit(60*10); // ten minutes
     
-    // Access Wordpress db
+    // Access WordPress db
     global $wpdb;
     
     // Include Request Functionality
     require("../request/rss.request.php");
     
     // Include Import and Sync Functions
-    require("../admin/admin.import.functions.php");
-    require("../admin/admin.sync.functions.php");
+    require("../import/import.functions.php");
+    require("../import/sync.functions.php");
     
     // Get session ready
     if (!session_id()) { session_start(); }
