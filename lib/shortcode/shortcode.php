@@ -762,8 +762,21 @@
                         }
 						
 						// HYPERLINK DOIs
-						if ( isset($zp_this_meta->DOI) )
+						if ( isset($zp_this_meta->DOI) ) {
+							if ( $target === true ) {
+								$target_doi = ' target="_blank" ';
+							} else $target_doi = '';
+							
+							if ( $zp_citation['style'] == "apa") {
+								$zp_citation['citation'] =	str_replace( 
+																"http://doi.org/" . $zp_this_meta->DOI, 
+																"<a href='http://doi.org/" . $zp_this_meta->DOI . "'" .  $target_doi . ">http://doi.org/" . $zp_this_meta->DOI . "</a>", 
+																$zp_citation['citation'] 
+															);
+							} else {
 							$zp_citation['citation'] = str_replace( "doi:".$zp_this_meta->DOI, "<a href='http://dx.doi.org/".$zp_this_meta->DOI."'>doi:".$zp_this_meta->DOI."</a>", $zp_citation['citation'] );
+							}
+						}
                         
                         // SHOW CURRENT STYLE AS REL
                         $zp_citation['citation'] = str_replace( "class=\"csl-bib-body\"", "rel=\"".$zp_citation['style']."\" class=\"csl-bib-body\"", $zp_citation['citation'] );
