@@ -5,14 +5,14 @@
     require('../../../../../wp-load.php');
     define('WP_USE_THEMES', false);
 
-    // Access Wordpress db
+    // Access WordPress db
     global $wpdb;
     
     // Include Request Functionality
     require("../request/rss.request.php");
     
     // Include Import and Sync Functions
-    require("../admin/admin.import.functions.php");
+    require("../import/import.functions.php");
     
 
     // Set up XML document

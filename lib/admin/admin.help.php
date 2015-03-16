@@ -1,36 +1,48 @@
 
         <div id="zp-Zotpress" class="wrap">
             
-            <?php include('admin.display.tabs.php'); ?>
+            <?php include( dirname(__FILE__) . '/admin.menu.php' ); ?>
             
             <h3>What is Zotpress?</h3>
             
             <div class="zp-Message">
-                <p>
-                    If you like Zotpress, let the world know with a <a class="zp-FiveStar" title="Rate Zotpress" href="http://wordpress.org/extend/plugins/zotpress/">rating</a> on Wordpress.com!
+                <h3>About Zotpress</h3>
+                <p class="version">
+                    <strong>Version:</strong> You're using Zotpress <?php echo ZOTPRESS_VERSION; ?><br />
+                    <strong>Website:</strong> <a title="Zotpress on WordPress" rel="external" href="http://wordpress.org/plugins/zotpress/">Zotpress on WordPress.org</a><br />
+                    <strong>Support:</strong> <a title="Donations always appreciated! Accepted through PayPal" rel="external" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5HQ8FXAXS9MUQ">Donate through PayPal</a>
+                </p>
+                <p class="rate">
+                    If you like Zotpress, let the world know with a
+                    <a class="zp-FiveStar" title="Rate Zotpress" rel="external" href="http://wordpress.org/plugins/zotpress/">rating</a>
+                    on WordPress.org!
                 </p>
             </div>
             
             <p>
                 <a title="More of my plugins" href="http://katieseaborn.com/plugins/">Zotpress</a> bridges <a title="Zotero" href="https://www.zotero.org/settings/keys">Zotero</a>
-                and Wordpress by allowing you to display items from your Zotero library through shortcodes and widgets.
-                It also extends the basic meta functionality offered by Zotero by allowing you to add thumbnail images to and upload public files of your citations.
+                and WordPress by allowing you to display items from your Zotero library through shortcodes and widgets.
+                It also extends the basic meta functionality offered by Zotero by allowing you to add images to and provide downloadable files associated with your citations.
             </p>
             
             <p>There's a few ways to use Zotpress:</p>
             
             <ol class="zp-WaysToUseZotpress">
                 <li>
-                    <strong>The Zotpress Shortcode</strong><br />
-                    Generate a bibliography wherever you can call shortcodes. <a title="Learn more" href="#zotpress">Learn more &raquo;</a>
+                    <p><strong><span class="number">1</span> The Zotpress Shortcode</strong></p>
+                    <p class="indent">Generate a bibliography wherever you can call shortcodes. <a title="Learn more" href="#zotpress">Learn more &raquo;</a></p>
                 </li>
                 <li>
-                    <strong>The Zotpress In-Text Shortcodes</strong><br />
-                    Create in-text citations and an auto-generated bibliography. <a title="Learn more" href="#intext">Learn more &raquo;</a>
+                    <p><strong><span class="number">2</span>The Zotpress In-Text Shortcodes</strong></p>
+                    <p class="indent">Create in-text citations and an auto-generated bibliography. <a title="Learn more" href="#intext">Learn more &raquo;</a></p>
                 </li>
                 <li>
-                    <strong>The Zotpress Sidebar Widget</strong><br />
-                    Use this widget in a sidebar to generate a bibliography. <a title="Learn more" href="#widget">Learn more &raquo;</a>
+                    <p><strong><span class="number">3</span>The Zotpress Sidebar Widget</strong></p>
+                    <p class="indent">Use this widget in a sidebar to generate a bibliography. <a title="Learn more" href="#widget">Learn more &raquo;</a></p>
+                </li>
+                <li>
+                    <p><strong><span class="number">4</span>The Zotpress Library Shortcode</strong></p>
+                    <p class="indent">Use this shortcode to display your Zotero library on the front-end of your website so that visitors can browse it. <a title="Learn more" href="#lib">Learn more &raquo;</a></p>
                 </li>
             </ol>
             
@@ -164,9 +176,9 @@
                 </tr>
                 
                 <tr>
-                    <td rowspan="9" class="category last">Display</td>
+                    <td rowspan="10" class="category last">Display</td>
                     
-                    <td rowspan="9" class="type last">Settings</td>
+                    <td rowspan="10" class="type last">Settings</td>
                     
                     <td class="code">style</td>
                     <td><p>Citation style. <strong>Options: apsa, apa [default], asa, chicago-author-date, chicago-fullnote-bibliography, harvard1, modern-language-association, nlm, nature, vancouver.</strong> Note: Support for more styles is coming; see <a title="Zotero Style Repository" href="http://www.zotero.org/styles">Zotero Style Repository</a> for details.</p></td>
@@ -206,6 +218,11 @@
                     <td class="code">linkedlist</td>
                     <td><p><strong>Requires:</strong> <code>datatype="collections"</code> or <code>datatype="tags"</code> Alternative: <code>link</code> List all tags or all collections and link each to a page that displays their associated citation items. <strong>Options: yes, no [default].</strong></p></td>
                     <td class="example"><p><code>[zotpress datatype="tags" linkedlist="yes"]</code></p></td>
+                </tr>
+                <tr>
+                    <td class="code">forcenumber</td>
+                    <td><p>Numbers bibliography items, even when the citation style, e.g. APA, doesn't normally.<strong>Options: true, false [default].</strong></p></td>
+                    <td class="example"><p><code>[zotpress collection="GMGCJU34" forcenumber="true"]</code></p></td>
                 </tr>
                 <tr class="last">
                     <td class="code last">target</td>
@@ -292,19 +309,24 @@
                 </tr>
                 
                 <tr class="last">
-                    <td rowspan="4" class="category last">Display</td>
+                    <td rowspan="5" class="category last">Display</td>
                     
-                    <td rowspan="4" class="type last">Settings</td>
+                    <td rowspan="5" class="type last">Settings</td>
                     
                     <td class="code">format</td>
                     <td>
                         <p>How the in-text citation should be presented. Use these placeholders: %a% for author, %d% for date, %p% for page, %num% for list number.</p>
-                        <p class="break"><strong>Hint:</strong> In WordPress shortcodes, the bracket characters <strong>[</strong> and <strong>]</strong> are special characters. To use in-text brackets, see the example on the right.</p>
+                        <p class="break"><strong>Hint:</strong> In WordPress shortcodes, the bracket characters <strong>[</strong> and <strong>]</strong> are special characters. To use in-text brackets, see the <code>brackets</code> attribute below or the example on the right.</p>
                     </td>
                     <td class="example">
                         <p><code>[zotpressInText item="NCXAA92F" format="%a% (%d%, %p%)"]</code>, which will display as: <span style="padding-left: 0.5em; font-family: monospace;">author (date, pages)</span></p>
-                        <p class="break"><code>[zotpressInText item="NCXAA92F" format="&amp;#91;%num%&amp;#93;"]</code>, which will display as: <span style="padding-left: 0.5em; font-family: monospace;">[1]</span></p>
+                        <p class="break"><code>[zotpressInText item="{NCXAA92F,DTA2KZXU}" format="&amp;#91;%num%&amp;#93;"]</code>, which will display as: <span style="padding-left: 0.5em; font-family: monospace;">[1];[2]</span></p>
                     </td>
+                </tr>
+                <tr>
+                    <td class="code">brackets</td>
+                    <td><p>A special format option for in-text citations. <strong>Options:</strong> true, false [default]</p></td>
+                    <td class="example"><p><code>[zotpressInText item="{NCXAA92F,DTA2KZXU}" format="%num%" brackets="yes"], which will display as: <span style="padding-left: 0.5em; font-family: monospace;">[1, 2]</span></code></p></td>
                 </tr>
                 <tr>
                     <td class="code">etal</td>
@@ -333,6 +355,23 @@
             <h3>Displaying Citations Using the Zotpress Sidebar Widget</h3>
             
             <p>You can drag-n-drop a Zotpress sidebar widget on your <a title="Widgets" href="widgets.php">Widgets</a> page. Fill out the form, save, and you're done.</p>
+            
+            
+            
+            <hr />
+            
+            <a name="lib"></a>
+            <h3>Displaying Your Library Using the Zotpress Library Shortcode</h3>
+            
+            <p>
+                To display your library on the front-end of your website so that visitors can browse it, use this shortcode:
+            </p>
+            
+            <code>
+                [zotpressLib userid="00000"]
+            </code>
+            
+            <p>Alternatively, you can use the "nickname" attribute instead of the "userid" attribute.
             
             
             
@@ -400,10 +439,6 @@
             <h4>How do I find an item key (citation ID)?</h4>
             
             <p>It's displayed beneath the citation on the <a title="Browse" href="admin.php?page=Zotpress">Browse</a> page. It's also listed on the dropdown associated with each item you search via the Reference widget (found on post add/edit screens).</p>
-            
-            <h4>I don't want collection names to display above my citations. How do I get rid of them?</h4>
-            
-            <p>In your stylesheet, add the following line: <code>h3.zp-Collection-Header { display: none; }</code> By the way, almost every Zotpress element has either an ID or class (or both) that can be selectively styled with CSS.</p>
             
             <h4>Zotpress won't import my library, or only imports some of my library.</h4>
             

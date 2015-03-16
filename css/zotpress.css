@@ -172,10 +172,21 @@
         clear: both;
         border-top: 1px solid #eee;
     }
+	a#zp-Setup-Cancel,
+    div#zp-Zotpress-Setup-Buttons a,
     div#zp-Zotpress-Setup-Buttons input {
-        margin: 1em 2em 0.5em;
+        margin: 20px 30px 12px;
         float: right;
     }
+	a#zp-Setup-Cancel {
+		float: none;
+	}
+	div#zp-Zotpress-Setup-Buttons a#zp-Import-Accounts-Button {
+		margin-right: 0;
+	}
+	div#zp-Zotpress-Setup-Buttons a#zp-Import-Browse-Button {
+		margin-left: 10px;
+	}
 
     div#zp-Setup div.zp-Zotpress-Options div.zp-Success,
     div#zp-Setup div.zp-Zotpress-Options div.zp-Loading,
@@ -508,10 +519,12 @@
         border-bottom: none;
     }
     
+    div#zp-Zotpress-Navigation :focus.nav-item,
     div#zp-Zotpress-Navigation :active.nav-item,
     div#zp-Zotpress-Navigation .active.nav-item {
-        border-bottom: 0.25em solid #000;
         background-color: #eaeaea;
+        border-bottom: 0.25em solid #000;
+		box-shadow: none;
     }
     
     div#zp-Zotpress-Navigation .nav-item.nav-tab-active,
@@ -544,6 +557,7 @@
     
     div#zp-Options-Wrapper,
     div#zp-Browse-Wrapper {
+		position: relative;
         background-color: #fff;
         border-bottom: 1px solid #ccc;
         margin-top: -20px;
@@ -607,22 +621,79 @@
     /* Accounts */
     
     div#zp-Browse-Accounts {
-        float: right;
-        margin-top: -4.4em;
-        margin-right: 30px;
-        text-align: right;
-        width: 50%;
+		display: inline;
     }
     div#zp-Browse-Accounts label {
         color: #ccc;
-        display: inline;
+        display: none;
         font: normal 400 1em/1.75em "Droid Serif", serif;
         margin-right: 5px;
         padding: 0;
     }
-    select#zp-FilterByAccount {
-        font-size: 0.9em;
+    div#zp-Zotpress select#zp-FilterByAccount {
+        font-size: inherit;
+		line-height: inherit;
+		border: none;
+		box-shadow: none;
+		margin: 0;
+		padding: 0;
+		display: inline;
+		height: auto;
+		vertical-align: baseline;
     }
+	div#zp-Zotpress select#zp-FilterByAccount.loading {
+		color: #ddd;
+	}
+	
+	div#zp-Browse-Account-Options {
+		position: absolute;
+		top: 35px;
+		right: 30px;
+	}
+	.zp-Browse-Account-Import {
+		padding-left: 3px !important;
+		margin-right: 5px !important;
+		transition: none !important;
+	}
+	.zp-Browse-Account-Import:before {
+		background-image: url("../images/sprite.png") !important;
+		background-repeat: no-repeat !important;
+		background-position: -252px -420px !important;
+		content: "";
+		display: block;
+		float: left;
+		width: 25px;
+		height: 25px;
+	}
+	.zp-Browse-Account-Import.loading:before {
+		background-image: url("../images/loading_default.gif") !important;
+		background-position: 2px center !important;
+	}
+	.zp-Browse-Account-Default {
+		padding-left: 3px !important;
+		transition: none !important;
+	}
+	.zp-Browse-Account-Default:before {
+		background-image: url("../images/sprite.png") !important;
+		background-repeat: no-repeat !important;
+		background-position: -312px -420px !important;
+		content: "";
+		display: block;
+		float: left;
+		width: 25px;
+		height: 25px;
+	}
+	.zp-Browse-Account-Default.selected:before {
+		background-position: -282px -420px !important;
+	}
+	.zp-Browse-Account-Default.loading:before {
+		background-image: url("../images/loading_default.gif") !important;
+		background-position: 2px center !important;
+	}
+	.zp-Browse-Account-Default.success:before {
+		background-image: url("../images/checkmark-green.png") !important;
+		background-position: 3px center !important;
+	}
     
     
     /* Collection Folders */
@@ -651,9 +722,11 @@
     }
     div#zp-Browse-Collections a.zp-List-Subcollection.selected,
     div#zp-Browse-Collections a.zp-List-Subcollection.down,
-    div#zp-Browse-Collections a.zp-List-Subcollection:active
+    div#zp-Browse-Collections a.zp-List-Subcollection:active,
+    div#zp-Browse-Collections a.zp-List-Subcollection:focus
     {
         background-color: #6d798b;
+		box-shadow: none;
         color: #9aa3af;
     }
     div#zp-Browse-Collections a.zp-List-Subcollection span.name {
@@ -1143,8 +1216,6 @@
     }
     
     #zp-Accounts th {
-        /*font: 300 1.35em/1.35em "Oswald", sans-serif;*/
-        /*text-transform: uppercase;*/
         font: 300 1.1em/1.1em "Droid Serif", sans-serif;
     }
     
@@ -1155,7 +1226,6 @@
         width: 4em;
     }
     #zp-Accounts .public_key {
-        /*width: 11.5em;*/
         width: 13.5em;
     }
     #zp-Accounts .status {
@@ -1174,6 +1244,7 @@
         width: 22.5em;
     }
 
+    #zp-AccountsList .default a,
     #zp-AccountsList .actions a {
         display: block;
         float: left;
@@ -1181,17 +1252,27 @@
         margin: 0 1.25em 0 0;
         height: 25px;
     }
-    @media only screen and (max-width: 1080px) {
+    #zp-AccountsList .default a:focus,
+    #zp-AccountsList .actions a:focus {
+		box-shadow: none;
+	}
+    @media only screen and (max-width: 1200px)
+	{
+        #zp-AccountsList .default a,
         #zp-AccountsList .actions a {
             margin-right: 0.25em;
             width: 25px;
             height: 25px;
             overflow: hidden;
         }
+        #zp-Accounts th.default {
+            width: 50px;
+        }
         #zp-Accounts .actions {
-            width: 100px;
+            width: 94px;
         }
     }
+    #zp-AccountsList .default a:before,
     #zp-AccountsList .actions a:before {
         background-image: url('../images/sprite.png');
         background-repeat: no-repeat;
@@ -1202,6 +1283,7 @@
         width: 25px;
         height: 25px;
     }
+    #zp-AccountsList .default a:hover:before,
     #zp-AccountsList .actions a:hover:before {
         -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
         filter: alpha(opacity=50);
@@ -1227,12 +1309,33 @@
     #zp-AccountsList .actions a.import:before {
         background-position: 0 -423px;
     }
-    #zp-AccountsList .actions a.delete {
-        margin-right: 0;
-    }
     #zp-AccountsList .actions a.delete:before {
         background-position: -105px 0;
     }
+    #zp-AccountsList .actions a.delete {
+        margin-right: 0;
+    }
+	
+	#zp-AccountsList .default a.default {
+		float: none;
+		margin: 0 auto;
+	}
+	#zp-AccountsList .default.selected a.default:before {
+        background-position: -282px -423px !important;
+	}
+	#zp-AccountsList .default a.default:before {
+        background-position: -312px -423px !important;
+	}
+	#zp-AccountsList .default a.default.loading:before {
+        background-position: 2px center !important;
+		background-image: url('../images/loading_default.gif');
+		background-repeat: no-repeat;
+	}
+	#zp-AccountsList .default a.default.success:before {
+        background-position: 2px center !important;
+		background-image: url('../images/checkmark-green.png');
+		background-repeat: no-repeat;
+	}
     
     /* END ACCOUNTS */
     
@@ -1333,7 +1436,8 @@
     
     .zp-Documentation .category,
     .zp-Documentation .type {
-        font: 400 1.25em/1.25em "Source Sans Pro", sans-serif;
+        /*font: 400 1.25em/1.25em "Source Sans Pro", sans-serif;*/
+        font: 600 1em/1.25em "Source Sans Pro", sans-serif;
         text-transform: uppercase;
     }
     
@@ -1385,21 +1489,46 @@
     /* START OF MESSAGE CSS */
     
     div.zp-Message {
-        background: transparent url('../images/message.gif') no-repeat top left;
+        background-color: #ffcb15;
         display: block;
         float: right;
+        margin-left: 20px;
         margin-top: -30px;
         overflow: hidden;
-        width: 320px;
-        height: 85px;
+        width: 275px;
+    }
+    div#zp-Zotpress div.zp-Message h3 {
+        font-size: 21px;
+        line-height: 1.4em;
+        padding: 1.2em;
+        padding-bottom: 0;
     }
     div.zp-Message p {
-        color: #fff;
-        /*font-size: 12pt;*/
         font: italic 400 14px/21px "Droid Serif", "Georgia", serif;
-        /*line-height: 16pt;*/
-        margin: 8px 30px 0 60px;
+        margin: 0;
+        padding: 2em;
+    }
+    div.zp-Message p.rate {
+        background-color: #333;
+        color: #fff;
         text-shadow: 0 1px 0 #000;
+    }
+    div.zp-Message p.version {
+        color: #333;
+        font-size: 0.9em;
+        padding-top: 1em;
+    }
+    div.zp-Message p.version a,
+    div.zp-Message p.version a:visited,
+    div.zp-Message p.version a:active {
+        color: #666;
+    }
+    div.zp-Message p.version a:hover {
+        color: #999;
+    }
+    div.zp-Message p.version strong {
+        font: 600 11px/1em "Source Sans Pro","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        text-transform: uppercase;
     }
     a.zp-FiveStar {
         background: transparent url('../images/sprite.png') no-repeat -160px -1px;
@@ -1407,11 +1536,31 @@
         padding-left: 95px;
     }
     
+    ol.zp-WaysToUseZotpress {
+        list-style: none;
+        margin: 2em;
+    }
     ol.zp-WaysToUseZotpress li {
-        background: transparent url('../images/sprite.png') no-repeat -300px 0px;
+        background: transparent url('../images/sprite.png') no-repeat -300px 2px;
         list-style-position: inside;
         padding-left: 5px;
         margin-bottom: 12px;
+    }
+    ol.zp-WaysToUseZotpress li span.number {
+        float: left;
+        font-size: 10px;
+        margin-left: 1px;
+        margin-top: 3px;
+        margin-right: 14px;
+    }
+    ol.zp-WaysToUseZotpress li strong {
+        font: 600 1em/1em "Source Sans Pro","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        text-transform: uppercase;
+    }
+    ol.zp-WaysToUseZotpress li p.indent {
+        margin-top: -12px;
+        margin-bottom: 14px;
+        text-indent: 21px;
     }
     
     /* END OF MESSAGE CSS */

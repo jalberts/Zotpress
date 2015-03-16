@@ -53,7 +53,16 @@ jQuery(document).ready(function() {
 	jQuery('div#zp-Browse-Accounts').delegate("select#zp-FilterByAccount", "change", function()
 	{
 		var id = jQuery(this).val();
-		window.location = "admin.php?page=Zotpress&account_id="+id;
+		
+		jQuery(this).addClass("loading");
+		jQuery("#zp-Browse-Account-Options a").addClass("disabled").unbind("click",
+			function (e) {
+				e.preventDefault();
+				return false;
+			}
+		);
+		
+		window.location = "admin.php?page=Zotpress&api_user_id="+id;
 	});
 	
 	
@@ -61,7 +70,7 @@ jQuery(document).ready(function() {
 	
 	jQuery('div#zp-Browse-Bar').delegate("select#zp-List-Tags", "change", function()
 	{
-		if ( jQuery(this).val() != "No tag selected" ) window.location = "admin.php?page=Zotpress&account_id="+jQuery('select#zp-FilterByAccount option:selected').val()+"&tag_id="+jQuery("option:selected", this).attr("rel");
+		if ( jQuery(this).val() != "No tag selected" ) window.location = "admin.php?page=Zotpress&api_user_id="+jQuery('select#zp-FilterByAccount option:selected').val()+"&tag_id="+jQuery("option:selected", this).attr("rel");
 	});
 	
 	
@@ -80,7 +89,7 @@ jQuery(document).ready(function() {
 	
 	/*
 		
-		SET FEATURED IMAGE FOR ENTRIES
+		SET IMAGE FOR ENTRIES
 		Thanks to http://www.webmaster-source.com/2013/02/06/using-the-wordpress-3-5-media-uploader-in-your-plugin-or-theme/
 		
 	*/
@@ -110,7 +119,8 @@ jQuery(document).ready(function() {
         zp_uploader.on( 'select', function()
 		{
             attachment = zp_uploader.state().get('selection').first().toJSON();
-			var zp_xml_url = jQuery('#ZOTPRESS_PLUGIN_URL').text() + 'lib/actions/actions.php?image=true&entry_id='+$this.attr('rel')+'&image_id='+attachment.id;
+			var zp_xml_url = jQuery('#ZOTPRESS_PLUGIN_URL').text()
+					+ 'lib/actions/actions.php?image=true&api_user_id='+jQuery(".zp-Browse-Account-Default").attr("rel")+'&entry_id='+$this.attr('rel')+'&image_id='+attachment.id;
 			
 			// Save as featured image
 			jQuery.get( zp_xml_url, {}, function(xml)
@@ -146,7 +156,7 @@ jQuery(document).ready(function() {
         e.preventDefault();
 		$this = jQuery(this);
 		
-		var zp_xml_url = jQuery('#ZOTPRESS_PLUGIN_URL').text() + 'lib/actions/actions.php?remove=image&entry_id='+$this.attr('rel');
+		var zp_xml_url = jQuery('#ZOTPRESS_PLUGIN_URL').text() + 'lib/actions/actions.php?remove=image&image_id='+$this.parent().attr('rel');
 		
 		// Save as featured image
 		jQuery.get( zp_xml_url, {}, function(xml)
@@ -163,6 +173,51 @@ jQuery(document).ready(function() {
 				alert ("Sorry, featured image couldn't be set.");
 			}
 		});
+	});
+	
+	
+	
+	// BROWSE PAGE: SET DEFAULT ACCOUNT
+	
+	jQuery(".zp-Browse-Account-Import.button").click(function() { jQuery(this).addClass("loading"); });
+	
+	jQuery(".zp-Browse-Account-Default.button").click(function()
+	{
+		var $this = jQuery(this);
+		
+		// Plunk it together
+		var data = 'submit=true&account=' + $this.attr("rel");
+		
+		// Prep for data validation
+		$this.addClass("loading");
+		
+		// Set up uri
+		var xmlUri = jQuery('#ZOTPRESS_PLUGIN_URL').text() + 'lib/widget/widget.metabox.actions.php?'+data;
+		
+		// AJAX
+		jQuery.get(xmlUri, {}, function(xml)
+		{
+			var $result = jQuery('result', xml).attr('success');
+			
+			$this.removeClass("success loading");
+			
+			if ($result == "true")
+			{
+				$this.addClass("success");
+				
+				jQuery.doTimeout(1000,function() {
+					$this.removeClass("success").addClass("selected disabled");
+				});
+			}
+			else // Show errors
+			{
+				alert("Sorry, but there were errors: " + jQuery('errors', xml).text());
+			}
+		});
+		
+		// Cancel default behaviours
+		return false;
+		
 	});
     
     

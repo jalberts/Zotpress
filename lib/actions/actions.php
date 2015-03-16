@@ -8,7 +8,7 @@
     // Prevent access to users who are not editors
     if ( !current_user_can('edit_others_posts') && !is_admin() ) wp_die( __('Only editors can access this page through the admin panel.'), __('Zotpress: Access Denied') );
     
-    require("../admin/admin.import.functions.php");
+    require("../import/import.functions.php");
     
     // Set up XML document
     $xml = "";
@@ -177,12 +177,20 @@
     {
         // Set up error array
         $errors = array("entry_id_blank"=>array(0,"<strong>Entry ID</strong> was left blank or formatted incorrectly."),
-                                "image_id_blank"=>array(0,"<strong>Image ID</strong> was left blank or formatted incorrectly."));
+                                "image_id_blank"=>array(0,"<strong>Image ID</strong> was left blank or formatted incorrectly."),
+                                "api_user_id_blank"=>array(0,"<strong>API User ID</strong> was left blank or formatted incorrectly.")
+                                );
         
         
         // BASIC VARS
+        $api_user_id = false;
+        if (preg_match("/^[0-9]+$/", $_GET['api_user_id']))
+            $api_user_id = htmlentities(trim($_GET['api_user_id']));
+        else
+            $errors['api_user_id_blank'][0] = 1;
+        
         $entry_id = false;
-        if (preg_match("/^[0-9]+$/", $_GET['entry_id']))
+        if (preg_match("/^[a-zA-Z0-9]+$/", $_GET['entry_id']))
             $entry_id = htmlentities(trim($_GET['entry_id']));
         else
             $errors['entry_id_blank'][0] = 1;
@@ -211,19 +219,29 @@
             //$zp_set_entry_image = update_post_meta( $entry_id, '_thumbnail_id', $image_id );
             //$query = "UPDATE ".$wpdb->prefix."zotpress_zoteroItems ";
             //$query .= "SET image='$image' WHERE api_user_id='".$api_user_id."' AND id='".$entry_id."';";
+            //$wpdb->query($query);
             
             // Insert new list item into the list:
-            //$wpdb->query($query);
             $wpdb->query( 
                 $wpdb->prepare( 
                     "
-                    UPDATE ".$wpdb->prefix."zotpress_zoteroItems
-                    SET image=%s
-                    WHERE id=%s
+                    INSERT INTO ".$wpdb->prefix."zotpress_zoteroItemImages (api_user_id, item_key, image) 
+                    VALUES (%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE image=%s
                     ",
-                    $image_id, $entry_id
+                    $api_user_id, $entry_id, $image_id, $image_id
                 )
             );
+            //$wpdb->query( 
+            //    $wpdb->prepare( 
+            //        "
+            //        UPDATE ".$wpdb->prefix."zotpress_zoteroItems
+            //        SET image=%s
+            //        WHERE id=%s
+            //        ",
+            //        $image_id, $entry_id
+            //    )
+            //);
             
             //if ( $zp_set_entry_image !== false )
                 $xml .= "<result success='true' citation_id='".$entry_id."' />\n";
@@ -258,15 +276,15 @@
     else if ( isset($_GET['remove']) && $_GET['remove'] == "image" )
     {
         // Set up error array
-        $errors = array("entry_id_blank"=>array(0,"<strong>Entry ID</strong> was left blank or formatted incorrectly."));
+        $errors = array("image_id_blank"=>array(0,"<strong>Image ID</strong> was left blank or formatted incorrectly."));
         
         
         // BASIC VARS
-        $entry_id = false;
-        if (preg_match("/^[0-9]+$/", $_GET['entry_id']))
-            $entry_id = htmlentities(trim($_GET['entry_id']));
+        $image_id = false;
+        if (preg_match("/^[A-Z0-9]+$/", $_GET['image_id']))
+            $image_id = htmlentities(trim($_GET['image_id']));
         else
-            $errors['entry_id_blank'][0] = 1;
+            $errors['image_id_blank'][0] = 1;
         
         
         // CHECK ERRORS
@@ -288,16 +306,15 @@
             $wpdb->query( 
                 $wpdb->prepare( 
                     "
-                    UPDATE ".$wpdb->prefix."zotpress_zoteroItems
-                    SET image=NULL
-                    WHERE id=%s
+                    DELETE FROM ".$wpdb->prefix."zotpress_zoteroItemImages
+                    WHERE item_key=%s
                     ",
-                    $entry_id
+                    $image_id
                 )
             );
             
             //if ( $zp_set_entry_image !== false )
-                $xml .= "<result success='true' citation_id='".$entry_id."' />\n";
+                $xml .= "<result success='true' image_id='".$image_id."' />\n";
             //else
                 //$xml .= "<result success='false' />\n";
         }

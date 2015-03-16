@@ -4,159 +4,297 @@
     
     // GET YEAR
     // Used by: In-Text Shortcode, In-Text Bibliography Shortcode
-    function zp_get_year($date)
+    function zp_get_year($date, $yesnd = false)
     {
+		$date_return = false;
+		
 		preg_match_all( '/(\d{4})/', $date, $matches );
 		
 		if (is_null($matches[0][0]))
-			return "";
+			if ( $yesnd === true )
+				$date_return = "n.d.";
+			else
+				$date_return = "";
 		else
-			return $matches[0][0];
+			$date_return = $matches[0][0];
+		
+		return $date_return;
     }
+	
+	
+	// GET DATE
+	// Used by: n/a
+	function zp_get_date($date)
+	{
+		$year = zp_get_year($date); // 4 digits
+		
+		preg_match_all( '/(\w)/', $date, $matches );
+		//var_dump($matches);
+		
+		$month = date_parse( $matches[0][0] );
+		
+		//var_dump($date['month']);
+		
+		//var_dump($month);
+	}
     
     
     
     // SUBVAL SORT
-    // Thanks to http://www.firsttube.com/read/sorting-a-multi-dimensional-array-with-php/
     // Used by: Bibliography Shortcode, In-Text Bibliography Shortcode
-    function subval_sort($a, $subkey, $sort)
+    function subval_sort($item_arr, $sortby, $order)
     {
-		foreach($a as $k=>$v) {
-			if ($subkey == "date")
-				$b[$k] = zp_get_year(strtolower($v[$subkey]));
-			else
-				$b[$k] = strtolower($v[$subkey]);
-		}
+		// Format sort order
+		if ( strtolower($order) == "desc" ) $order = SORT_DESC; else $order = SORT_ASC;
 		
-		strtolower($sort) == "asc" ? asort($b) : arsort ($b);
-		
-		foreach($b as $key=>$val) {
-			$c[$key] = $a[$key];
-		}
-		return $c;
-    }
-    
-    
-    
-    // Thanks to user "Alex" at http://www.phpfreaks.com/forums/index.php?topic=310949.0
-    function replace_skip($str, $find, $replace, $skip = 1) {
-		$cpos = 0;
-		for($i = 0, $len = strlen($find);$i < $skip;++$i) {
-			if(($pos = strpos(substr($str, $cpos), $find)) !== false) {
-				$cpos += $pos + $len;
+		// Author or date
+		if ( $sortby == "author" || $sortby == "date" )
+		{
+			foreach ($item_arr as $key => $val)
+			{
+				$author[$key] = $val["author"];
+				
+				if ( isset( $val["zpdate"] ) )
+					$date[$key] = zp_date_format($val["zpdate"]);
+				else
+					$date[$key] = zp_date_format($val["date"]);
 			}
 		}
-		return substr($str, 0, $cpos) . str_replace($find, $replace, substr($str, $cpos));
+		
+		// Title
+		else if ( $sortby == "title" )
+		{
+			foreach ($item_arr as $key => $val)
+			{
+				$title[$key] = $val["title"];
+				$author[$key] = $val["author"];
+			}
+		}
+		
+		if ( $sortby == "author" && isset($author) && is_array($author) ) array_multisort( $author, $order, $date, $order, $item_arr );
+		else if ( $sortby == "date" && isset($date) && is_array($date) ) array_multisort( $date, $order, $author, $order, $item_arr );
+		else if ( $sortby == "title" && isset($title) && is_array($title) ) array_multisort( $title, $order, $author, $order, $item_arr );
+		
+		return $item_arr;
     }
+	
+	
+	/**
+	 * Returns the date in a standard format: yyyy-mm-dd.
+	 * 
+	 * Can read the following:
+	 *  - yyyy/mm/dd, mm/dd/yyyy
+	 *  - the dash equivalents of the above
+	 *  - mmmm dd, yyyy
+	 *  - yyyy mmmm, yyyy mmm (and the reverse)
+	 *
+	 * Used by:    subval_sort
+	 *
+	 * @param     string     $date          the date to format
+	 * 
+	 * @return     string     the formatted date, or the original if formatting fails
+	 */
+	function zp_date_format ($date)
+	{
+		// Set up search lists
+		$list_month_long = array ( "01" => "January", "02" => "February", "03" => "March", "04" => "April", "05" => "May", "06" => "June", "07" => "July", "08" => "August", "09" => "September", "10" => "October", "11" => "November", "12" => "December" );
+		$list_month_short = array ( "01" => "Jan", "02" => "Feb", "03" => "Mar", "04" => "Apr", "05" => "May", "06" => "Jun", "07" => "Jul", "08" => "Aug", "09" => "Sept", "10" => "Oct", "11" => "Nov", "12" => "Dec" );
+		
+		
+		// If it's already formatted with a dash or forward slash
+		if ( strpos( $date, "-" ) !== false || strpos( $date, "/" ) !== false )
+		{
+			$temp = preg_split( "/-|\//", $date );
+			
+			// If year is last, switch it with first
+			if ( strlen( $temp[0] ) != 4 )
+			{
+				// Just month and year
+				if ( count( $temp ) == 2 ) 
+					$date_formatted = array(
+						"year" => $temp[1],
+						"month" => $temp[0],
+						"day" => false
+					);
+				// Assuming mm dd yyyy
+				else 
+					$date_formatted = array(
+						"year" => $temp[2],
+						"month" => $temp[0],
+						"day" => $temp[1]
+					);
+			}
+			else // Year is first
+			{
+				$date_formatted = array(
+					"year" => $temp[0],
+					"month" => $temp[1],
+					"day" => $temp[2]
+				);
+			}
+		}
+		
+		// If it's already formatted in mmmm dd, yyyy form
+		else if ( strpos( $date, "," ) )
+		{
+			$date = trim( str_replace( ", ", ",", $date ) );
+			$temp = preg_split( "/,| /", $date );
+			
+			// Convert month
+			$month = array_search( $temp[0], $list_month_long );
+			if ( !$month ) $month = array_search( $temp[0], $list_month_short );
+			
+			$date_formatted = array(
+				"year" => $temp[2],
+				"month" => $month,
+				"day" => $temp[1]
+			);
+		}
+		// Check for full names
+		else
+		{
+			$date = trim( str_replace( "  ", "-", $date ) );
+			$temp = explode ( " ", $date );
+			
+			// If there's at least two parts to the date
+			if ( count( $temp) > 0 )
+			{
+				// Check if name is first
+				if ( !is_numeric( $temp[0] ) )
+				{
+					if ( in_array( $temp[0], $list_month_long ) )
+						$date_formatted = array(
+							"year" => $temp[1],
+							"month" => array_search( $temp[0], $list_month_long ),
+							"day" => false
+						);
+					else if ( in_array( $temp[0], $list_month_short ) )
+						$date_formatted = array(
+							"year" => $temp[1],
+							"month" => array_search( $temp[0], $list_month_short ),
+							"day" => false
+						);
+					else // Not a recognizable month word
+						$date_formatted = array(
+							"year" => $temp[0], // $temp[1]
+							"month" => false,
+							"day" => false
+						);
+				}
+				// Otherwise, check if name is last
+				else
+				{
+					if ( count($temp) > 1 )
+					{
+						if ( in_array( $temp[1], $list_month_long ) )
+							$date_formatted = array(
+								"year" => $temp[0],
+								"month" => array_search( $temp[1], $list_month_long ),
+								"day" => false
+							);
+						else if ( in_array( $temp[1], $list_month_short ) )
+							$date_formatted = array(
+								"year" => $temp[0],
+								"month" => array_search( $temp[1], $list_month_short ),
+								"day" => false
+							);
+						else // Not a recognizable month word
+							$date_formatted = array(
+								"year" => $temp[0],
+								"month" => false,
+								"day" => false
+							);
+					}
+					else // Only one part in the array
+					{
+						$date_formatted = array(
+							"year" => $temp[0],
+							"month" => false,
+							"day" => false
+						);
+					}
+				}
+			}
+			
+			// Otherwise, assume year
+			else
+			{
+				$date_formatted = array(
+					"year" => $temp[0],
+					"month" => false,
+					"day" => false
+				);
+			}
+		}
+		
+		// Format date in standard form: yyyy-mm-dd
+		$date_formatted = implode( "-", array_filter( $date_formatted ) );
+		
+		//var_dump($date, $date_formatted, "<br /><br />");
+		
+		if ( !isset($date_formatted) ) $date_formatted = $date;
+		
+		return $date_formatted;
+	}
     
     
     
-//    function zp_get_fullname_author_items ($wpdb, $author) // No longer used 
-//    {
-//		$zp_authors_items = "";
-//		$zp_authors_query = "SELECT item_key, json FROM ".$wpdb->prefix."zotpress_zoteroItems WHERE author LIKE '%".$author[1]."%'";
-//		$zp_authors = $wpdb->get_results($zp_authors_query, ARRAY_A);
-//		
-//		// Create item_key list
-//		foreach ($zp_authors as $zp_author)
-//		{
-//			$zp_author_json = json_decode($zp_author["json"]);
-//			
-//			foreach ($zp_author_json->creators as $zp_creators) {
-//				if (strtolower($zp_creators->firstName) == strtolower(trim($author[0])) && strtolower($zp_creators->lastName) == strtolower(trim($author[1]))) {
-//					if (strlen($zp_authors_items) == 0)
-//					$zp_authors_items .= $zp_author["item_key"];
-//					else
-//					$zp_authors_items .= "," . $zp_author["item_key"];
-//				}
-//			}
-//		}
-//		
-//		return $zp_authors_items;
-//		
-//		// Clean up
-//		$wpdb->flush();
-//		unset($zp_authors);
-//		unset($zp_authors_query);
-//		unset($zp_authors_items);
-//    }
-    
-    
-    
-//    function zp_get_exclusive_items ($wpdb, $type, $ids) // No longer used
-//    {
-//		$zp_exclusive_items = "";
-//		
-//		$zp_exclusive_items_query = "SELECT GROUP_CONCAT(listitems SEPARATOR ',') AS listitems FROM ".$wpdb->prefix."zotpress_zotero".$type." WHERE ";
-//		
-//		if ($type == "collections")
-//			$zp_exclusive_items_query .= "item_key";
-//		else if ($type == "tags")
-//			$zp_exclusive_items_query .= "title";
-//		
-//		$zp_exclusive_items_query .= " IN ('".implode("','", $ids)."') GROUP BY 'all';";
-//		
-//		$zp_listitems = $wpdb->get_results($zp_exclusive_items_query, ARRAY_A);
-//		
-//		// Get exclusive items
-//		$zp_listitems_counted = array_count_values(explode(",", $zp_listitems[0]["listitems"]));
-//		
-//		foreach ($zp_listitems_counted as $item => $count)
-//			if ($count > 1)
-//				$zp_exclusive_items .= $item . ",";
-//		
-//		return substr_replace($zp_exclusive_items, "", -1);
-//		
-//		// Clean up
-//		$wpdb->flush();
-//		unset($zp_listitems);
-//		unset($zp_exclusive_items);
-//		unset($zp_listitems_counted);
-//		unset($zp_exclusive_items_query);
-//    }
-    
-    
-    
+	/**
+	 * Returns HTML-formatted subcollections for parent collection.
+	 *
+	 * Used by:    shortcode.php
+	 *
+	 * @param     resource	$wpdb				the WP db resource link
+	 * @param     string		$api_user_id		the Zotero API user ID
+	 * @param     string		$parent				the parent collection
+	 * @param     string		$sortby				what to sort by
+	 * @param     string		$order				the order of the sort, e.g. asc, desc
+	 * @param     string		$link					whether to add the URL
+	 * 
+	 * @return     string          the HTML-formatted subcollections
+	 */
     function zp_get_subcollections ($wpdb, $api_user_id, $parent, $sortby, $order, $link=false)
     {
-	$zp_query = "SELECT ".$wpdb->prefix."zotpress_zoteroCollections.* FROM ".$wpdb->prefix."zotpress_zoteroCollections";
-	$zp_query .= " WHERE api_user_id='".$api_user_id."' AND parent = '".$parent."' ";
-	
-	// Sort by and sort direction
-	if ($sortby)
-	{
-	    if ($sortby == "default")
-		$sortby = "retrieved";
-	    else if ($sortby == "date" || $sortby == "author")
-		continue;
-	    
-	    $zp_query .= " ORDER BY ".$sortby." " . $order;
-	}
-	
-	$zp_results = $wpdb->get_results($zp_query, OBJECT);
-	
-	$zp_output = "<ul>\n";
-	
-	foreach ($zp_results as $zp_collection)
-	{
-	    $zp_output .= "<li rel=\"" . $zp_collection->item_key . "\">";
-	    if ($link == "yes")
-	    {
-		$zp_output .= "<a class='zp-CollectionLink' title='" . $zp_collection->title . "' rel='" . $zp_collection->item_key . "' href='" . $_SERVER["REQUEST_URI"];
-		if ( strpos($_SERVER["REQUEST_URI"], "?") === false ) { $zp_output .= "?"; } else { $zp_output .= "&"; }
-		$zp_output .= "zpcollection=" . $zp_collection->item_key . "'>";
-	    }
-	    $zp_output .= $zp_collection->title;
-	    if ($link == "yes") { $zp_output .= "</a>"; }
-	    $zp_output .= "</li>\n";
-	    
-	    if ($zp_collection->numCollections > 0)
-		$zp_output .= zp_get_subcollections($wpdb, $api_user_id, $zp_collection->item_key, $sortby, $order, $link);
-	}
-	
-	$zp_output .= "</ul>\n";
-	
-	return $zp_output;
+		$zp_query = "SELECT ".$wpdb->prefix."zotpress_zoteroCollections.* FROM ".$wpdb->prefix."zotpress_zoteroCollections";
+		$zp_query .= " WHERE api_user_id='".$api_user_id."' AND parent = '".$parent."' ";
+		
+		// Sort by and sort direction
+		if ($sortby)
+		{
+			if ($sortby == "default") $sortby = "retrieved";
+			else if ($sortby == "date" || $sortby == "author") continue;
+			
+			$zp_query .= " ORDER BY ".$sortby." " . $order;
+		}
+		
+		$zp_results = $wpdb->get_results($zp_query, OBJECT);
+		
+		$zp_output = "";
+		
+		//$zp_output = "<li class='zp-NestedCollection'><ul>\n";
+		$zp_output .= "<ul class='zp-NestedCollection'>\n";
+		
+		foreach ($zp_results as $zp_collection)
+		{
+			$zp_output .= "<li>";
+			if ($link == "yes")
+			{
+				$zp_output .= "<a class='zp-CollectionLink' title='" . $zp_collection->title . "' href='" . $_SERVER["REQUEST_URI"];
+				if ( strpos($_SERVER["REQUEST_URI"], "?") === false ) { $zp_output .= "?"; } else { $zp_output .= "&"; }
+				$zp_output .= "zpcollection=" . $zp_collection->item_key . "'>";
+			}
+			$zp_output .= $zp_collection->title;
+			if ($link == "yes") { $zp_output .= "</a>"; }
+			$zp_output .= "</li>\n";
+			
+			if ($zp_collection->numCollections > 0)
+			$zp_output .= zp_get_subcollections($wpdb, $api_user_id, $zp_collection->item_key, $sortby, $order, $link);
+		}
+		
+		//$zp_output .= "</ul></li>\n";
+		$zp_output .= "</ul>\n";
+		
+		return $zp_output;
     }
     
     

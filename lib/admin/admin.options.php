@@ -1,6 +1,14 @@
-        <div id="zp-Zotpress" class="wrap">
+<?php
+
+// Restrict to Editors
+if ( current_user_can('edit_others_posts') )
+{
+	
+?>
+
+		<div id="zp-Zotpress" class="wrap">
             
-            <?php include('admin.display.tabs.php'); ?>
+            <?php include( dirname(__FILE__) . '/admin.menu.php' ); ?>
 			
 			<div id="zp-Options-Wrapper">
 				
@@ -263,3 +271,14 @@
 			</div><!-- zp-Browse-Wrapper -->
 		
 		</div>
+	
+<?php
+
+} // !current_user_can('edit_others_posts')
+
+else
+{
+	echo "<p>Sorry, you don't have permission to access this page.</p>";
+}
+
+?>
