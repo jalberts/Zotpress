@@ -92,10 +92,10 @@
             
             $instance['api_user_id'] = strip_tags( $new_instance['api_user_id'] );
             $instance['nickname'] = strip_tags($new_instance['nickname']);
-	    
+			
             $instance['author'] = str_replace(" ", "+", strip_tags($new_instance['author']));
             $instance['year'] = str_replace(" ", "+", strip_tags($new_instance['year']));
-            
+			
             $instance['data_type'] = strip_tags( $new_instance['data_type'] );
             $instance['collection_id'] = strip_tags($new_instance['collection_id']);
             $instance['item_key'] = strip_tags($new_instance['item_key']);
@@ -105,9 +105,9 @@
             $instance['inclusive'] = strip_tags($new_instance['inclusive']);
             $instance['sort'] = strip_tags($new_instance['sort']);
             $instance['sortby'] = strip_tags($new_instance['sortby']);
-	    
+			
             $instance['limit'] = strip_tags($new_instance['limit']);
-            
+			
             $instance['image'] = strip_tags($new_instance['image']);
             $instance['download'] = strip_tags($new_instance['download']);
             $instance['zptitle'] = strip_tags($new_instance['zptitle']);
@@ -121,7 +121,24 @@
 		
         function form( $instance )
         {
-            $widget_title = esc_attr( $instance['widget_title'] );
+			// Set form defaults
+			if ( ! isset($instance) || count($instance) == 0)
+			{
+				$instance['widget_title'] = "";
+				$instance['api_user_id'] = "";
+				$instance['nickname'] = "";
+				
+				$instance['author'] = "";
+				$instance['year'] = "";
+				
+				$instance['collection_id'] = "";
+				$instance['item_key'] = "";
+				$instance['tag_name'] = "";
+				
+	            $instance['style'] = "";
+	            $instance['limit'] = "";
+			}
+			
             ?>
             
                 <style type="text/css">

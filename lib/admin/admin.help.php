@@ -312,7 +312,7 @@
 					</div>
 					<div class="zp-Zotero-API-Attribute">
 						<h4>Data > <strong>maxresults</strong></h4>
-						<div class="description"><p><strong>Search bar only.</strong> Maximum number of results to request from database per query. <strong>Options:</strong> 50 [default] or any number between 1 and 100 (although lower is better)</p></div>
+						<div class="description"><p><strong>Search bar only.</strong> Maximum number of results to request per query. <strong>Options:</strong> 50 [default] or any number between 1 and 100 (although lower is better)</p></div>
 						<div class="example"><p><code>[zotpressLib userid="00000" type="searchbar" maxresults="20"]</code></p></div>
 					</div>
 					<div class="zp-Zotero-API-Attribute">

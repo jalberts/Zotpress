@@ -55,11 +55,11 @@
 		$zp_account = zp_get_account ($wpdb, $zp_api_user_id);
 		
 		// Format Zotero request URL
-		// e.g., https://api.zotero.org/users/#####/items?key=???&format=json&q=TERM&limit=25
+		// e.g., https://api.zotero.org/users/#####/items?key=###&format=json&q=###&limit=25
 		$zp_import_url = "https://api.zotero.org/".$zp_account[0]->account_type."/".$zp_account[0]->api_user_id."/items?";
 		if (is_null($zp_account[0]->public_key) === false && trim($zp_account[0]->public_key) != "")
 			$zp_import_url .= "key=".$zp_account[0]->public_key."&";
-		$zp_import_url .= "format=json&q=".$wpdb->esc_like($_GET['term'])."&limit=10&itemType=-attachment+||+note";
+		$zp_import_url .= "format=json&q=".urlencode($_GET['term'])."&limit=10&itemType=-attachment+||+note";
 		
 		// Read the external data
 		$zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, false );

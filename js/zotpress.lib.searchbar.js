@@ -11,15 +11,21 @@ jQuery(document).ready(function()
 	
 	if ( jQuery("#zp-Zotpress-SearchBox").length > 0 )
 	{
+		var zpItemsFlag = true;
+		var zpLastTerm = "";
 		var zpSearchBarParams = "";
 		var zpSearchBarSource = zpShortcodeAJAX.ajaxurl + "?action=zpRetrieveViaShortcode&zpShortcode_nonce="+zpShortcodeAJAX.zpShortcode_nonce;
 		var zpShowImages = false; if ( jQuery("#ZOTPRESS_AC_IMAGES").length > 0 ) zpShowImages = true;
 		
-		function zp_set_lib_searchbar_params( filter )
+		function zp_set_lib_searchbar_params( filter, start, last )
 		{
 			// Set parameter defaults
 			if ( typeof(filter) === "undefined" || filter == "false" || filter == "" )
 				filter = false;
+			if ( typeof(start) === "undefined" || start == "false" || start == "" )
+				start = false;
+			if ( typeof(last) === "undefined" || last == "false" || last == "" )
+				last = false;
 			
 			zpSearchBarParams = "";
 			
@@ -38,13 +44,17 @@ jQuery(document).ready(function()
 			// Deal with possible showimage
 			if ( zpShowImages ) zpSearchBarParams += "&showimage=true";
 			
+			// Deal with next and last
+			if ( start ) zpSearchBarParams += "&request_start="+start;
+			if ( last ) zpSearchBarParams += "&request_last="+last;
+			
 			// Deal with possible filters
 			if ( filter )
 				zpSearchBarParams += "&filter="+filter;
 			else if ( jQuery("input[name=zpSearchFilters]").length > 0 )
 				zpSearchBarParams += "&filter="+jQuery("input[name=zpSearchFilters]:checked").val();
 		}
-		zp_set_lib_searchbar_params( false );
+		zp_set_lib_searchbar_params( false, false, false );
 		
 		
 		// Deal with change in filters
@@ -52,7 +62,7 @@ jQuery(document).ready(function()
 		{
 			// Update filter param
 			if ( jQuery("input[name=zpSearchFilters]").length > 0 )
-				zp_set_lib_searchbar_params ( jQuery(this).val() );
+				zp_set_lib_searchbar_params ( jQuery(this).val(), false, false );
 			
 			// Update autocomplete URL
 			jQuery("input#zp-Zotpress-SearchBox-Input").autocomplete( "option", "source", zpSearchBarSource+zpSearchBarParams );
@@ -103,14 +113,38 @@ jQuery(document).ready(function()
 				},
 				search: function( event, ui )
 				{
-					// Show loading icon
-					jQuery(".zp-List .zpSearchLoading").addClass("show");
+					var tempCurrentTerm = false; if ( event.hasOwnProperty('currentTarget') ) tempCurrentTerm = event.currentTarget.value;
 					
+<<<<<<< HEAD
+					if ( zpItemsFlag == true
+						|| ( tempCurrentTerm && tempCurrentTerm != zpLastTerm ) )
+					{
+						// Show loading icon
+						jQuery(".zp-List .zpSearchLoading").addClass("show");
+						
+						// Empty pagination
+						if ( jQuery("#zpSearchResultsPaging").length > 0 ) jQuery("#zpSearchResultsPaging").empty();
+						
+						// Remove old results
+						jQuery("#zpSearchResultsContainer").empty();
+						
+						// Reset the query
+						zp_set_lib_searchbar_params( false, 0, 0 );
+						jQuery("input#zp-Zotpress-SearchBox-Input").autocomplete( "option", "source", zpSearchBarSource+zpSearchBarParams );
+						
+						// Reset the current pagination
+						window.zpPage = 1;
+						
+						if ( zpItemsFlag == true && tempCurrentTerm )
+							zpLastTerm = tempCurrentTerm;
+					}
+=======
 					// Empty pagination
 					if ( jQuery("#zpSearchResultsPaging").length > 0 ) jQuery("#zpSearchResultsPaging").empty();
 					
 					// Remove old results
 					jQuery("#zpSearchResultsContainer").empty();
+>>>>>>> master
 				},
 				response: function( event, ui )
 				{
@@ -146,8 +180,29 @@ jQuery(document).ready(function()
 							jQuery("#zpSearchResultsContainer").append(temp+"</div><!-- .zp-Entry -->\n");
 						});
 						
-						// Update pagination
-						window.zpACPagination(true);
+						
+						// Then, continue with other requests, if they exist
+						if ( ui.content[1].request_next != false && ui.content[1].request_next != "false" )
+						{
+							if ( zpItemsFlag == true ) window.zpACPagination(zpItemsFlag, false); 
+							else window.zpACPagination(zpItemsFlag, true); 
+							zpItemsFlag = false;
+							
+							zp_set_lib_searchbar_params( false, ui.content[1].request_next, ui.content[1].request_last );
+							
+							jQuery("input#zp-Zotpress-SearchBox-Input").autocomplete( "option", "source", zpSearchBarSource+zpSearchBarParams );
+							jQuery("input#zp-Zotpress-SearchBox-Input").autocomplete("search");
+							
+							//zp_get_items ( ui.content[1].request_next, ui.content[1].request_last );
+						}
+						else
+						{
+							window.zpACPagination(zpItemsFlag, true); 
+							zpItemsFlag = false;
+						}
+						
+						//// Update pagination
+						//window.zpACPagination(true);
 					}
 					else
 					{

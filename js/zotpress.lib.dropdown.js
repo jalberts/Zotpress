@@ -108,6 +108,7 @@ jQuery(document).ready(function()
 					'action': 'zpRetrieveViaShortcode',
 					'api_user_id': jQuery("#ZP_API_USER_ID").text(),
 					'item_type': 'tags',
+					'is_dropdown': true,
 					'maxtags': jQuery("#ZP_MAXTAGS").text(),
 					'request_start': request_start,
 					'request_last': request_last,
@@ -219,6 +220,7 @@ jQuery(document).ready(function()
 						});
 						
 						jQuery("#zpSearchResultsContainer").append( tempItems );
+						
 						
 						// Then, continue with other requests, if they exist
 						if ( zp_items.meta.request_next != false && zp_items.meta.request_next != "false" )

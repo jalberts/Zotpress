@@ -9,6 +9,9 @@ jQuery(document).ready(function()
 	
 	if ( jQuery(".zp-Zotpress-InTextBib").length > 0 )
 	{
+		// Create global array for citations per post
+		window.zpIntextCitations = {};
+		
 		// Get list items
 		function zp_get_items ( request_start, request_last, $instance, params )
 		{
@@ -64,6 +67,7 @@ jQuery(document).ready(function()
 						zp_format_intext_citations( $instance, params.zpItemkey, zp_items.data, params );
 						
 						
+						// Format in-text bibliography
 						jQuery.each(zp_items.data, function( index, item )
 						{
 							// Skip duplicates
@@ -190,6 +194,7 @@ jQuery(document).ready(function()
 		{
 			var $instance = jQuery(instance);
 			var zp_params = new Object();
+			window.zpIntextCitations["post-"+jQuery(".ZP_POSTID", $instance).text()] = {};
 			
 			zp_params.zpItemkey = false; if ( jQuery(".ZP_ITEM_KEY", $instance).text().trim().length > 0 ) zp_params.zpItemkey = jQuery(".ZP_ITEM_KEY", $instance).text();
 			
@@ -212,82 +217,88 @@ jQuery(document).ready(function()
 		
 		function zp_format_intext_citations ( $instance, item_keys, item_data, params )
 		{
-			// Possible format: NUM,{NUM,3-9};{NUM,8}
-			var citation_groups = new Array();
-			var post_items_count = {};
+			// Possible format: NUM,{NUM,3-9};{NUM,8}, including repeats
+			var intext_citations = new Array();
 			
-			// Create array for citations of item keys, if any -- semicolon
-			if ( item_keys.indexOf(";") != -1 )  citation_groups = item_keys.split( ";" );
-			else citation_groups.push( item_keys );
+			// Create array for multiple in-text citations -- semicolon
+			if ( item_keys.indexOf(";") != -1 )  intext_citations = item_keys.split( ";" );
+			else intext_citations.push( item_keys );
 			
-			jQuery.each( citation_groups, function (index, citation_group)
+			jQuery.each( intext_citations, function (index, intext_citation)
 			{
-				var tempId = citation_group.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" );
-				var citation_group_id = "zp-InText-zp-ID-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+tempId+"-"+jQuery(".ZP_POSTID", $instance).text();
-				var citation_group_params = JSON.parse( jQuery("#"+citation_group_id, "#post-"+jQuery(".ZP_POSTID", $instance).text() ).attr("rel").replace( /'/g, '"') );
-				var citation_group_output = "";
+				var postRef = "";
+				if ( jQuery("#post-"+jQuery(".ZP_POSTID", $instance).text()).length > 0 )
+					postRef = "#post-"+jQuery(".ZP_POSTID", $instance).text();
+				else // assume class
+					postRef = ".post-"+jQuery(".ZP_POSTID", $instance).text();
+				
+				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" );
+				var intext_citation_id = "zp-InText-zp-ID-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+tempId+"-"+jQuery(".ZP_POSTID", $instance).text()+"-"+(index+1);
+				var intext_citation_params = JSON.parse( jQuery("#"+intext_citation_id, postRef ).attr("rel").replace( /'/g, '"') );
+				var intext_citation_output = "";
 				
 				// Create array from item keys
-				if ( citation_group.indexOf("{") != -1 ) // bracket
+				if ( intext_citation.indexOf("{") != -1 ) // bracket
 				{
-					if ( citation_group.indexOf("},") != -1 ) // multiple items
+					if ( intext_citation.indexOf("},") != -1 ) // multiple items
 					{
-						citation_group = citation_group.split( "}," );
+						intext_citation = intext_citation.split( "}," );
 						
 						// Get rid of brackets, format pages
-						jQuery.each ( citation_group, function ( id, item )
+						jQuery.each ( intext_citation, function ( id, item )
 						{
 							// Check for pages
 							if ( item.indexOf( "," ) != -1 )
 							{
 								item = item.split( "," );
-								citation_group[id] = { "key": item[0].replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": item[1].replace( "}", "" ), "citation": "" };
+								intext_citation[id] = { "key": item[0].replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": item[1].replace( "}", "" ), "bib": "", "citation_ids": "" };
 							}
 							else // No pages
 							{
-								citation_group[id] = { "key": item.replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "citation": "" };
+								intext_citation[id] = { "key": item.replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "bib": "", "citation_ids": "" };
 							}
 						});
 					}
 					else // single bracket
 					{
-						if ( citation_group.indexOf( "," ) != -1 ) // Pages
+						if ( intext_citation.indexOf( "," ) != -1 ) // Pages
 						{
-							var item = citation_group.split( "," );
-							citation_group = [{ "key": item[0].replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": item[1].replace( "}", "" ), "citation": "" }];
+							var item = intext_citation.split( "," );
+							intext_citation = [{ "key": item[0].replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": item[1].replace( "}", "" ), "bib": "", "citation_ids": "" }];
 						}
 						else // no pages
 						{
-							citation_group = [{ "key": citation_group.replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "citation": "" }];
+							intext_citation = [{ "key": intext_citation.replace( "}", "" ).replace( "{", "" ), "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "bib": "", "citation_ids": "" }];
 						}
 					}
 				}
 				else // no bracket, no pages
 				{
-					citation_group = [{ "key": citation_group, "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "citation": "" }];
+					intext_citation = [{ "key": intext_citation, "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "bib": "", "citation_ids": "" }];
 				}
 				// Now we have an array
 				// e.g.  [{ key="3NNACKP2",  pages=false,  citation=""}, { key="S74KCIJR",  pages=false,  citation=""}]
 				
 				
-				// Go through each item in the citation group; can be one or more items
+				// Go through each item in the citation; can be one or more items
 				var group_authors = new Array();
 				
-				jQuery.each( citation_group, function( cindex, item )
+				jQuery.each( intext_citation, function( cindex, item )
 				{
 					var item_citation = "";
 					var item_authors = "";
 					var item_year ="";
 					
-					if ( ! post_items_count.hasOwnProperty(item.key) )
-						post_items_count[item.key] = 1;
+					// Add to global array, if not already there
+					if ( ! window.zpIntextCitations["post-"+item.post_id].hasOwnProperty(item.key) )
+						window.zpIntextCitations["post-"+item.post_id][item.key] = item;
 					else
-						post_items_count[item.key]++;
+						window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"] += intext_citation_id + " ";
 					
 					// Display with numbers
-					if ( citation_group_params.format.indexOf("%num%") != -1 )
+					if ( intext_citation_params.format.indexOf("%num%") != -1 )
 					{
-						item_citation = Object.keys(post_items_count).indexOf( item.key) + 1;
+						item_citation = Object.keys(window.zpIntextCitations["post-"+item.post_id]).indexOf( item.key) + 1;
 					}
 					
 					// Display regularly, e.g. author and year and pages
@@ -314,35 +325,42 @@ jQuery(document).ready(function()
 								else
 									item_authors = "";
 								
-								// Deal with et al
-								if ( citation_group_params.etal == ""
-										|| citation_group_params.etal == "default" )
+								// Create authors array (easier to deal with)
+								item_authors = item_authors.split(", ");
+								
+								// Deal with et al for more than two authors
+								if ( item_authors.length > 2 )
 								{
-									if ( post_items_count[item.key] > 1 )
+									if ( intext_citation_params.etal == ""
+											|| intext_citation_params.etal == "default" )
 									{
-										var temp = item_authors.split(", ");
-										item_authors = temp[0] + " <em>et al.</em>";
+										if ( window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"].length > 1 ) 
+											item_authors = item_authors[0] + " <em>et al.</em>";
 									}
-								}
-								else if ( citation_group_params.etal == "yes" )
-								{
-									var temp = item_authors.split(", ");
-									item_authors = temp[0] + " <em>et al.</em>";
+									else if ( intext_citation_params.etal == "yes" )
+									{
+										item_authors = item_authors[0] + " <em>et al.</em>";
+									}
 								}
 								
-								// Deal with and for multiples without etal
-								if ( item_authors.indexOf(",") != -1 )
+								// Deal with "and" for multiples that are not using "etal"
+								if ( jQuery.isArray(item_authors) && item_authors.length > 1 )
 								{
-									if ( citation_group_params.and == ""
-											|| citation_group_params.and == "and" )
+									if ( item_authors.indexOf("et al") == -1 )
 									{
-										var temp = item_authors.split(", ");
-										item_authors = item_authors.substring( 0, item_authors.lastIndexOf(", ") ) + ' and ' +  temp[temp.length-1];
-									}
-									else if ( citation_group_params.and == "comma-and" )
-									{
-										var temp = item_authors.split(", ");
-										item_authors = item_authors.substring( 0, item_authors.lastIndexOf(", ") ) + ', and ' +  temp[temp.length-1];
+										var temp_and = ", ";
+										
+										if ( intext_citation_params.and == ""
+												|| intext_citation_params.and == "and"
+												|| intext_citation_params.and == "comma-and" )
+										{
+											if ( intext_citation_params.and == "" ) temp_and = " and ";
+											else if ( intext_citation_params.and == "and" ) temp_and = " and ";
+											else if ( intext_citation_params.and == "comma-and" ) temp_and = ", and ";
+											
+											var temp = item_authors.join().replace( /,/g, ", " );
+											item_authors = temp.substring( 0, temp.lastIndexOf(", ") ) + temp_and +  item_authors[item_authors.length-1];
+										}
 									}
 								}
 							}
@@ -359,10 +377,12 @@ jQuery(document).ready(function()
 							
 						}); // each request data item
 						
-						var default_format = citation_group_params.format;
+						
+						
+						var default_format = intext_citation_params.format;
 						
 						// Add in author
-						item_citation = citation_group_params.format.replace( "%a%" , item_authors );
+						item_citation = intext_citation_params.format.replace( "%a%" , item_authors );
 						
 						// Add in year
 						item_citation = item_citation.replace( "%d%" , item_year );
@@ -379,48 +399,55 @@ jQuery(document).ready(function()
 						}
 						
 						// If more than one item in group, remove ), (
-						if ( default_format == "(%a%, %d%, %p%)" && citation_group.length > 1 )
-							if ( cindex == 0 )
+						if ( default_format == "(%a%, %d%, %p%)" && intext_citation.length > 1 )
+						{
+							if ( cindex != intext_citation.length - 1 )
 								item_citation = item_citation.replace( ")", "" );
-							else
+							
+							if ( cindex != 0 )
 								if ( item_authors == "" )
 									item_citation = item_citation.replace( "(, ", "" );
 								else
 									item_citation = item_citation.replace( "(", "" );
+						}
 					}
 					
 					// Add anchors
 					item_citation = "<a class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
 					
-					// Add to citation_group array
-					citation_group[cindex]["citation"] = item_citation;
+					// Add to intext_citation array
+					intext_citation[cindex]["bib"] = item_citation;
 					
-				}); // each item
+				}); // format each item
+				
+				
 				
 				// Format citation group
-				var citation_group_pre = ""; if ( citation_group_params.brackets ) citation_group_pre = "["; // &#91;
-				var citation_group_post = ""; if ( citation_group_params.brackets ) citation_group_post = "]"; // &#93;
+				var intext_citation_pre = ""; if ( intext_citation_params.brackets ) intext_citation_pre = "["; // &#91;
+				var intext_citation_post = ""; if ( intext_citation_params.brackets ) intext_citation_post = "]"; // &#93;
 				
-				citation_group_output = citation_group_pre;
+				intext_citation_output = intext_citation_pre;
 				
-				jQuery.each( citation_group, function(gindex, gitem)
+				jQuery.each( intext_citation, function(cindex, item)
 				{
 					// Determine separator
-					if ( gindex != 0 )
+					if ( cindex != 0 )
 					{
-						if ( citation_group_params.separator == "comma" )
-							citation_group_output += "; ";
+						if ( intext_citation_params.separator == "comma" )
+							intext_citation_output += "; ";
 						else
-							citation_group_output += ", ";
+							intext_citation_output += ", ";
 					}
-					citation_group_output += gitem.citation;
-				});
-				citation_group_output += citation_group_post;
+					intext_citation_output += item.bib;
+					
+				}); // display each item
+				
+				intext_citation_output += intext_citation_post;
 				
 				// Add to placeholder
-				jQuery("#"+citation_group_id).removeClass("loading").html(citation_group_output);
+				jQuery("#"+intext_citation_id).removeClass("loading").html(intext_citation_output);
 				
-			}); // each citation_group
+			}); // each intext_citation
 			
 		} // zp_format_intext_citations
 		
