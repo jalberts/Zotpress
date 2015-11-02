@@ -16,6 +16,7 @@
 		
 		global $wpdb;
 		$zp_limit = 50; // max 100, 22 seconds
+		$zp_overwrite_request = false;
 		
 		// Deal with incoming variables
 		$zp_api_user_id = $_GET['api_user_id'];
@@ -45,7 +46,11 @@
 		$zp_author = false; if ( isset($_GET['author']) && $_GET['author'] != "false" ) $zp_author = $_GET['author'];
 		$zp_year = false; if ( isset($_GET['year']) && $_GET['year'] != "false" ) $zp_year = $_GET['year'];
 		$zp_style = zp_Get_Default_Style(); if ( isset($_GET['style']) && $_GET['style'] != "false" ) $zp_style = $_GET['style'];
-		if ( isset($_GET['limit']) && $_GET['limit'] != 0 ) $zp_limit = intval($_GET['limit']);
+		if ( isset($_GET['limit']) && $_GET['limit'] != 0 )
+		{
+			$zp_limit = intval($_GET['limit']);
+			$zp_overwrite_request = true;
+		}
 		$zp_title = false; if ( isset($_GET['title']) ) $zp_title = $_GET['title'];
 		
 		// Max tags, max results
@@ -121,7 +126,6 @@
 		
 		$zp_request_start = 0; if ( isset($_GET['request_start']) ) $zp_request_start = intval($_GET['request_start']);
 		$zp_request_last = 0; if ( isset($_GET['request_last']) ) $zp_request_last = intval($_GET['request_last']);
-		$zp_overwrite_request = false;
 		
 		
 		// Include relevant classes and functions
@@ -176,33 +180,6 @@
 			$zp_overwrite_request = true;
 		}
 		
-		// User type, user id, item type
-		$zp_import_url = "https://api.zotero.org/".$zp_account[0]->account_type."/".$zp_api_user_id."/". $zp_item_type;
-		
-		// Top or single item key
-		if ( $zp_get_top ) $zp_import_url .= "/top";
-		if ( $zp_item_key && strpos( $zp_item_key,"," ) === false ) $zp_import_url .= "/" . $zp_item_key;
-		if ( $zp_collection_id ) $zp_import_url .= "/" . $zp_collection_id;
-		if ( $zp_sub ) $zp_import_url .= "/" . $zp_sub;
-		$zp_import_url .= "?";
-		
-		// Public key, if needed
-		if (is_null($zp_account[0]->public_key) === false && trim($zp_account[0]->public_key) != "")
-			$zp_import_url .= "key=".$zp_account[0]->public_key."&";
-		
-		// Style
-		$zp_import_url .= "style=".$zp_style;
-		
-		// Format, limit, etc.
-		$zp_import_url .= "&format=json&include=data,bib&limit=".$zp_limit;
-		
-		// Sort and order
-		if ( $zp_sortby )
-		{
-			$zp_import_url .= "&sort=".$zp_sortby;
-			if ( $zp_order ) $zp_import_url .= "&direction=".$zp_order;
-		}
-		
 		// Deal with in-text citations
 		if ( $zp_item_key && strpos( $zp_item_key, "{" ) !== false )
 		{
@@ -229,6 +206,33 @@
 					$zp_item_key .= str_replace( "{", "", str_replace( "}", "" , $key ) );
 				}
 			}
+		}
+		
+		// User type, user id, item type
+		$zp_import_url = "https://api.zotero.org/".$zp_account[0]->account_type."/".$zp_api_user_id."/". $zp_item_type;
+		
+		// Top or single item key
+		if ( $zp_get_top ) $zp_import_url .= "/top";
+		if ( $zp_item_key && strpos( $zp_item_key,"," ) === false ) $zp_import_url .= "/" . $zp_item_key;
+		if ( $zp_collection_id ) $zp_import_url .= "/" . $zp_collection_id;
+		if ( $zp_sub ) $zp_import_url .= "/" . $zp_sub;
+		$zp_import_url .= "?";
+		
+		// Public key, if needed
+		if (is_null($zp_account[0]->public_key) === false && trim($zp_account[0]->public_key) != "")
+			$zp_import_url .= "key=".$zp_account[0]->public_key."&";
+		
+		// Style
+		$zp_import_url .= "style=".$zp_style;
+		
+		// Format, limit, etc.
+		$zp_import_url .= "&format=json&include=data,bib&limit=".$zp_limit;
+		
+		// Sort and order
+		if ( $zp_sortby )
+		{
+			$zp_import_url .= "&sort=".$zp_sortby;
+			if ( $zp_order ) $zp_import_url .= "&direction=".$zp_order;
 		}
 		
 		// Start if multiple
@@ -305,7 +309,11 @@
 		
 		
 		
+		
+		
 		//print_r($_GET); var_dump("url: ".$zp_import_url); exit;
+		
+		
 		
 		
 		
@@ -341,7 +349,6 @@
 			$zp_request_meta["request_next"] = 0;
 			$zp_request_meta["request_last"] = 0;
 		}
-		
 		
 		
 		/**
