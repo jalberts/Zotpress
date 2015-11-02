@@ -389,11 +389,9 @@ jQuery(document).ready(function()
 									item_citation = item_citation.replace( "(", "" );
 					}
 					
-					// TO-DO: group citation groups by same author/s, with anchored years in a list
-					
 					// Add anchors
 					item_citation = "<a class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
-					console.log(item_citation);
+					
 					// Add to citation_group array
 					citation_group[cindex]["citation"] = item_citation;
 					
