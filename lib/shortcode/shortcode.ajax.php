@@ -17,12 +17,14 @@
 		global $wpdb;
 		$zp_limit = 50; // max 100, 22 seconds
 		$zp_overwrite_request = false;
+		$zp_overwrite_last_request = false;
 		
 		// Deal with incoming variables
 		$zp_api_user_id = $_GET['api_user_id'];
 		$zp_item_type = "items"; if ( isset($_GET['item_type']) && $_GET['item_type'] != "" ) $zp_item_type = $_GET['item_type'];
 		$zp_get_top = false; if ( isset($_GET['get_top']) ) $zp_get_top = true;
 		$zp_sub = false;
+		$zp_is_dropdown = false; if ( isset($_GET['is_dropdown']) ) $zp_is_dropdown = true;
 		
 		// instance id, item key, collection id, tag id
 		$zp_instance_id = false; if ( isset($_GET['instance_id']) ) $zp_instance_id = $_GET['instance_id'];
@@ -45,7 +47,7 @@
 		// Author, year, style, limit, title
 		$zp_author = false; if ( isset($_GET['author']) && $_GET['author'] != "false" ) $zp_author = $_GET['author'];
 		$zp_year = false; if ( isset($_GET['year']) && $_GET['year'] != "false" ) $zp_year = $_GET['year'];
-		$zp_style = zp_Get_Default_Style(); if ( isset($_GET['style']) && $_GET['style'] != "false" ) $zp_style = $_GET['style'];
+		$zp_style = zp_Get_Default_Style(); if ( isset($_GET['style']) && $_GET['style'] != "false" && $_GET['style'] != "default" ) $zp_style = $_GET['style'];
 		if ( isset($_GET['limit']) && $_GET['limit'] != 0 )
 		{
 			$zp_limit = intval($_GET['limit']);
@@ -55,7 +57,7 @@
 		
 		// Max tags, max results
 		$zp_maxtags = false; if ( isset($_GET['maxtags']) ) $zp_maxtags = intval($_GET['maxtags']);
-		if ( isset($_GET['maxresults']) && intval($_GET['maxresults']) <= 100 ) $zp_limit = intval($_GET['maxresults']);
+		$zp_maxresults = false; if ( isset($_GET['maxresults']) ) $zp_maxresults = intval($_GET['maxresults']);
 		
 		// Term, filter
 		$zp_term = false; if ( isset($_GET['term']) ) $zp_term = $_GET['term'];
@@ -126,6 +128,7 @@
 		
 		$zp_request_start = 0; if ( isset($_GET['request_start']) ) $zp_request_start = intval($_GET['request_start']);
 		$zp_request_last = 0; if ( isset($_GET['request_last']) ) $zp_request_last = intval($_GET['request_last']);
+		//$zp_request_next = false; if ( isset($_GET['request_next']) ) $zp_request_next = intval($_GET['request_next']);
 		
 		
 		// Include relevant classes and functions
@@ -139,7 +142,7 @@
 		$zp_account = zp_get_account ($wpdb, $zp_api_user_id);
 		
 		// Set up request meta
-		$zp_request_meta = array( "request_last" => $zp_request_last, "request_next" => false );
+		$zp_request_meta = array( "request_last" => $zp_request_last, "request_next" => 0 );
 		
 		// Set up data variable
 		$zp_all_the_data = array();
@@ -172,12 +175,29 @@
 		}
 		
 		// Account for tag display - let's limit it
-		if ( $zp_item_type == "tags" )
+		if ( $zp_is_dropdown === true && $zp_item_type == "tags" )
 		{
 			$zp_sortby = "numItems";
 			$zp_order = "desc";
 			$zp_limit = "100"; if ( $zp_maxtags ) $zp_limit = $zp_maxtags;
 			$zp_overwrite_request = true;
+		}
+		
+		// Account for $zp_maxresults
+		if ( $zp_maxresults )
+		{
+			// If 50 or less, set as limit
+			if ( intval($zp_maxresults) <= 50 )
+			{
+				$zp_limit = $zp_maxresults;
+				$zp_overwrite_request = true;
+			}
+			
+			// If over 50, then overwrite last_request
+			else
+			{
+				$zp_overwrite_last_request = $zp_maxresults;
+			}
 		}
 		
 		// Deal with in-text citations
@@ -243,7 +263,22 @@
 		if ( $zp_item_key && strpos( $zp_item_key,"," ) !== false ) $zp_import_url .= "&itemKey=" . $zp_item_key;
 		
 		// Tag-specific
-		if ( $zp_tag_id ) $zp_import_url .= "&tag=" . urlencode($zp_tag_id);
+		if ( $zp_tag_id )
+		{
+			if ( strpos($zp_tag_id, ",") !== false )
+			{
+				$temp = explode( ",", $zp_tag_id );
+				
+				foreach ( $temp as $temp_tag )
+				{
+					$zp_import_url .= "&tag=" . urlencode($temp_tag);
+				}
+			}
+			else
+			{
+				$zp_import_url .= "&tag=" . urlencode($zp_tag_id);
+			}
+		}
 		
 		// Filtering: collections and tags take priority over authors and year
 		// EVENTUAL TO-DO: Searching by two+ values is not supported on the Zotero side ...
@@ -265,7 +300,7 @@
 				else // Set but not multiple
 				{
 					$zp_import_url .= "&qmode=titleCreatorYear";
-					if ( $zp_author ) $zp_import_url .= "&q=".str_replace( " ", "+", $zp_author );
+					if ( $zp_author ) $zp_import_url .= "&q=".urlencode( $zp_author );
 					if ( $zp_year && ! $zp_author ) $zp_import_url .= "&q=".$zp_year;
 				}
 			}
@@ -281,13 +316,13 @@
 					if ( $zp_inclusive === false )
 					{
 						$zp_authors = explode( ",", $zp_author );
-						$zp_import_url .= "&q=".str_replace( " ", "+", $zp_authors[0] );
+						$zp_import_url .= "&q=".urlencode( $zp_authors[0] );
 						unset( $zp_authors[0] );
 						$zp_author = $zp_authors;
 					}
 					else // inclusive
 					{
-						$zp_import_url .= "&q=".str_replace( " ", "+", $zp_author );
+						$zp_import_url .= "&q=".urlencode( $zp_author );
 					}
 				}
 				
@@ -303,9 +338,9 @@
 		// Deal with possible term
 		if ( $zp_term )
 			if ( $zp_filter && $zp_filter == "tag")
-				$zp_import_url .= "&tag=".$wpdb->esc_like($zp_term);
+				$zp_import_url .= "&tag=".urlencode( $wpdb->esc_like($zp_term) );
 			else
-				$zp_import_url .= "&q=".$wpdb->esc_like($zp_term);
+				$zp_import_url .= "&q=".urlencode( $wpdb->esc_like($zp_term) );
 		
 		
 		
@@ -349,6 +384,21 @@
 			$zp_request_meta["request_next"] = 0;
 			$zp_request_meta["request_last"] = 0;
 		}
+		
+		// Overwrite last_request
+		if ( $zp_overwrite_last_request )
+		{
+			// Make sure it's less than the total available items
+			if ( isset( $temp_headers->{"total-results"} ) 
+					&& $temp_headers->{"total-results"} < $zp_overwrite_last_request )
+				$zp_overwrite_last_request = intval( ceil( intval($temp_headers->{"total-results"}) / $zp_limit ) - 1 ) * $zp_limit;
+			else
+				$zp_overwrite_last_request = intval( ceil( $zp_overwrite_last_request / $zp_limit ) ) * $zp_limit;
+			
+			$zp_request_meta["request_last"] = $zp_overwrite_last_request;
+		}
+		//var_dump($temp_headers->{"total-results"});var_dump($zp_request_meta);exit;
+		
 		
 		
 		/**

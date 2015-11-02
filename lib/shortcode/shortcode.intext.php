@@ -96,11 +96,14 @@
 		
         $GLOBALS['zp_shortcode_instances'][get_the_ID()][] = array( "instance_id" => $zp_instance_id, "api_user_id" =>$api_user_id, "items" => $items );
 		
+		
 		// Show theme scripts
 		$GLOBALS['zp_is_shortcode_displayed'] = true;
         
 		// Output attributes and loading
-		return '<span id="zp-InText-'.$zp_instance_id.'"
+		//return '<span id="zp-InText-'.$zp_instance_id.'"
+		//return '<span class="zp-InText-'.$zp_instance_id."-".count($GLOBALS['zp_shortcode_instances'][get_the_ID()]).' zp-InText-Citation loading"
+		return '<span id="zp-InText-'.$zp_instance_id."-".count($GLOBALS['zp_shortcode_instances'][get_the_ID()]).'"
 						class="zp-InText-Citation loading"
 						rel="{ \'api_user_id\': \''.$api_user_id.'\', \'pages\': \''.$pages.'\', \'items\': \''.$items.'\', \'format\': \''.$format.'\', \'brackets\': \''.$brackets.'\', \'etal\': \''.$etal.'\', \'separator\': \''.$separator.'\', \'and\': \''.$and.'\' }"></span>';
     }

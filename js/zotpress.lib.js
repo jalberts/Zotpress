@@ -21,10 +21,8 @@ jQuery(document).ready(function()
 			// 0-9, 10-19, 20-29 ...
 			
 			// Set parameter defaults
-			if ( typeof(do_append) === "undefined" || do_append == "false" || do_append == "" )
-				do_append = false;
-			else
-				do_append = true;
+			if ( typeof(do_append) === "undefined" || do_append == "false" || do_append == "" ) do_append = false;
+			else do_append = true;
 			
 			if ( is_new_query == true ) window.zpPage = 1;
 			

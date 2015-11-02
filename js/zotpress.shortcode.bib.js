@@ -229,7 +229,8 @@ jQuery(document).ready(function()
 			}
 			else
 			{
-				if ( zp_params.zpTagId && zp_params.zpTagId.indexOf(",") != -1 )
+				// Inclusive tags (treat exclusive normally)
+				if ( zp_params.zpTagId && zp_params.zpInclusive == true && zp_params.zpTagId.indexOf(",") != -1 )
 				{
 					var tempTags = zp_params.zpTagId.split(",");
 					
