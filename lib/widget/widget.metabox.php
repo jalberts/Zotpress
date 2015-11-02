@@ -4,73 +4,80 @@
 <!-- START OF ZOTPRESS METABOX -------------------------------------------------------------------------->
 
 <div id="zp-ZotpressMetaBox">
+	
+	<?php
+	
+	if ($wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."zotpress;") > 1)
+	{
+		// See if default exists
+		$zp_default_account = false;
+		if (get_option("Zotpress_DefaultAccount")) $zp_default_account = get_option("Zotpress_DefaultAccount");
+		
+		if ($zp_default_account !== false)
+		{
+			$zp_account = $wpdb->get_results(
+				$wpdb->prepare(
+					"
+					SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress
+					WHERE api_user_id = %s
+					",
+					$zp_default_account
+				)
+			);
+		}
+		else
+		{
+			$zp_account = $wpdb->get_results(
+				"
+				SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress LIMIT 1;
+				"
+			);
+		}
+		
+		if (is_null($zp_account[0]->nickname) === false && $zp_account[0]->nickname != "")
+			$zp_default_account = $zp_account[0]->nickname . " (" . $zp_account[0]->api_user_id . ")";
+	?>
+	<!-- START OF ACCOUNT -->
+	<div id="zp-ZotpressMetaBox-Biblio-Account" rel="<?php echo $zp_account[0]->api_user_id; ?>">
+		Searching <?php echo $zp_default_account; ?>. <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">Change account?</a>
+	</div>
+	<!-- END OF ACCOUNT -->
+	<?php } ?>
+	
+	
+	<!-- START OF SEARCH -->
+	<div id="zp-ZotpressMetaBox-Biblio-Citations">
+		<input id="zp-ZotpressMetaBox-Biblio-Citations-Search" class="help" type="text" value="Type to search" />
+		<input type="hidden" id="ZOTPRESS_PLUGIN_URL" name="ZOTPRESS_PLUGIN_URL" value="<?php echo ZOTPRESS_PLUGIN_URL; ?>" />
+		
+	</div>
+	
+	<div id="zp-ZotpressMetaBox-List">
+		<div id="zp-ZotpressMetaBox-List-Inner"></div>
+		<hr class="clear" />
+	</div>
+	<!-- END OF SEARCH -->
+	
     
-    <ul>
-        <li><a href="#zp-ZotpressMetaBox-Bibliography">Bibliography</a></li>
-        <li><a href="#zp-ZotpressMetaBox-InTextCreator">In-Text</a></li>
-    </ul>
-    
+	<div  id="zp-ZotpressMetaBox-Type">
+		<h4>Type:</h4>
+		<ul class="ui-widget-header ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-corner-all">
+			<li class="ui-tabs-active ui-state-active ui-state-default ui-corner-top"><a href="#zp-ZotpressMetaBox-Bibliography">Bibliography</a></li>
+			<li class="ui-state-default ui-corner-top"><a href="#zp-ZotpressMetaBox-InTextCreator">In-Text</a></li>
+		</ul>
+    </div>
     
     
    
     <!-- START OF ZOTPRESS BIBLIOGRAPHY ------------------------------------------------------------------>
     <!-- NEXT: datatype [items, tags, collections], SEARCH items, tags, collections LIMIT -------------- -->
     
-    <div id="zp-ZotpressMetaBox-Bibliography">
-        
-        <?php
-        
-        if ($wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."zotpress;") > 1)
-        {
-            // See if default exists
-            $zp_default_account = false;
-            if (get_option("Zotpress_DefaultAccount")) $zp_default_account = get_option("Zotpress_DefaultAccount");
-            
-            if ($zp_default_account !== false)
-            {
-                $zp_account = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "
-                        SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress
-                        WHERE api_user_id = %s
-                        ",
-                        $zp_default_account
-                    )
-                );
-            }
-            else
-            {
-                $zp_account = $wpdb->get_results(
-					"
-					SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress LIMIT 1;
-					"
-				);
-            }
-            
-            if (is_null($zp_account[0]->nickname) === false && $zp_account[0]->nickname != "")
-                $zp_default_account = $zp_account[0]->nickname . " (" . $zp_account[0]->api_user_id . ")";
-        ?>
-        <!-- START OF ACCOUNT -->
-        <div id="zp-ZotpressMetaBox-Biblio-Account" rel="<?php echo $zp_account[0]->api_user_id; ?>">
-            Searching <?php echo $zp_default_account; ?>. <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">Change account?</a>
-        </div>
-        <!-- END OF ACCOUNT -->
-        <?php } ?>
-        
-        
-        <!-- START OF SEARCH -->
-        <div id="zp-ZotpressMetaBox-Biblio-Citations">
-            <input id="zp-ZotpressMetaBox-Biblio-Citations-Search" class="help" type="text" value="Type to search" />
-            <input type="hidden" id="ZOTPRESS_PLUGIN_URL" name="ZOTPRESS_PLUGIN_URL" value="<?php echo ZOTPRESS_PLUGIN_URL; ?>" />
-            
-        </div><div id="zp-ZotpressMetaBox-Biblio-Citations-List"><div id="zp-ZotpressMetaBox-Biblio-Citations-List-Inner"></div><hr class="clear" /></div>
-        <!-- END OF SEARCH -->
-        
+    <div id="zp-ZotpressMetaBox-Bibliography" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
         
         <!-- START OF OPTIONS -->
         <div id="zp-ZotpressMetaBox-Biblio-Options">
             
-            <h4>Options <span class='toggle'></span></h4>
+            <h4>Options: &nbsp;&nbsp; Expand <span class='toggle'></span></h4>
             
             <div id="zp-ZotpressMetaBox-Biblio-Options-Inner">
                 
@@ -107,7 +114,7 @@
                     
                     ?>
                 </select>
-                <p class="note">Add more styles <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">here</a>. Note: Requires re-import.</p>
+                <p class="note">Add more styles <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">here</a>. May require re-import.</p>
                 
                 <hr />
                 
@@ -220,21 +227,21 @@
         </div>
         <!-- END OF OPTIONS -->
         
-        <!-- START OF SHORTCODE -->
-        <div id="zp-ZotpressMetaBox-Biblio-Shortcode">
-            
-            <a id="zp-ZotpressMetaBox-Biblio-Generate-Button" class="button-primary" href="javascript:void(0);">Generate Shortcode</a>
-            <a id="zp-ZotpressMetaBox-Biblio-Clear-Button" class="button" href="javascript:void(0);">Clear</a>
-            
-            <hr class="clear" />
-            
-            <div id="zp-ZotpressMetaBox-Biblio-Shortcode-Inner">
-                <label for="zp-ZotpressMetaBox-Biblio-Shortcode-Text">Shortcode:</span></label>
-                <textarea id="zp-ZotpressMetaBox-Biblio-Shortcode-Text">[zotpress]</textarea>
-            </div>
-        </div>
-        <!-- END OF SHORTCODE -->
-        
+		<!-- START OF SHORTCODE -->
+		<div id="zp-ZotpressMetaBox-Biblio-Shortcode">
+			
+			<a id="zp-ZotpressMetaBox-Biblio-Generate-Button" class="button-primary" href="javascript:void(0);">Generate Shortcode</a>
+			<a id="zp-ZotpressMetaBox-Biblio-Clear-Button" class="button" href="javascript:void(0);">Clear</a>
+			
+			<hr class="clear" />
+			
+			<div id="zp-ZotpressMetaBox-Biblio-Shortcode-Inner">
+				<label for="zp-ZotpressMetaBox-Biblio-Shortcode-Text">Shortcode:</span></label>
+				<textarea id="zp-ZotpressMetaBox-Biblio-Shortcode-Text">[zotpress]</textarea>
+			</div>
+		</div>
+		<!-- END OF SHORTCODE -->
+		
     </div><!-- #zp-ZotpressMetaBox-Bibliography -->
     
     <!-- END OF ZOTPRESS BIBLIOGRAPHY --------------------------------------------------------------------->
@@ -243,59 +250,12 @@
     
     <!-- START OF ZOTPRESS IN-TEXT ------------------------------------------------------------------------->
     
-    <div id="zp-ZotpressMetaBox-InTextCreator">
-        
-        <?php if ($wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."zotpress;") > 1) { ?>
-        <!-- START OF ACCOUNT -->
-        <div id="zp-ZotpressMetaBox-Account">
-            <?php
-            
-            // See if default exists
-            $zp_default_account = false;
-            if (get_option("Zotpress_DefaultAccount"))
-                $zp_default_account = get_option("Zotpress_DefaultAccount");
-            
-            if ($zp_default_account !== false)
-            {
-                $zp_account = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "
-                        SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress
-                        WHERE api_user_id = %s",
-                        $zp_default_account
-                    )
-                );
-            }
-            else
-            {
-                $zp_account = $wpdb->get_results(
-					"
-					SELECT api_user_id, nickname FROM ".$wpdb->prefix."zotpress LIMIT 1;
-					"
-				);
-            }
-            
-            if (is_null($zp_account[0]->nickname) === false && $zp_account[0]->nickname != "")
-                $zp_default_account = $zp_account[0]->nickname . " (" . $zp_account[0]->api_user_id . ")";
-            
-            ?>
-            Searching <?php echo $zp_default_account; ?>. <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">Change account?</a>
-        </div>
-        <!-- END OF ACCOUNT -->
-        <?php } ?>
-        
-        <!-- START OF SEARCH -->
-        <div id="zp-ZotpressMetaBox-Citations">
-            <input id="zp-ZotpressMetaBox-Citations-Search" class="help" type="text" value="Type to search" />
-            <input type="hidden" id="ZOTPRESS_PLUGIN_URL" name="ZOTPRESS_PLUGIN_URL" value="<?php echo ZOTPRESS_PLUGIN_URL; ?>" />
-            
-        </div><div id="zp-ZotpressMetaBox-Citations-List"><div id="zp-ZotpressMetaBox-Citations-List-Inner"></div><hr class="clear" /></div>
-        <!-- END OF SEARCH -->
+    <div id="zp-ZotpressMetaBox-InTextCreator" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
         
         <!-- START OF OPTIONS -->
         <div id="zp-ZotpressMetaBox-InTextCreator-Options">
             
-            <h4>Options <span class='toggle'></span></h4>
+            <h4>Options: &nbsp;&nbsp; Expand <span class='toggle'></span></h4>
             
             <div id="zp-ZotpressMetaBox-InTextCreator-Options-Inner">
                 
@@ -355,7 +315,7 @@
                     
                     ?>
                 </select>
-                <p class="note">Add more styles <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">here</a>. Note: Requires re-import.</p>
+                <p class="note">Add more styles <a href="<?php echo admin_url( 'admin.php?page=Zotpress&options=true'); ?>">here</a>. May require re-import.</p>
                 
                 <hr />
                 
@@ -492,5 +452,3 @@
 </div><!-- #zp-ZotpressMetaBox -->
     
 <!-- END OF ZOTPRESS METABOX ------------------------------------------------------------------------------->
-
-

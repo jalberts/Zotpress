@@ -1,7 +1,7 @@
 <?php
 
 
-    require("shortcode.classes.php");
+    require("shortcode.class.lib.php");
     
     
     function Zotpress_zotpressLib($atts)
@@ -16,13 +16,25 @@
 			'type' => false, // dropdown, searchbar
 			'searchby' => false, // searchbar only - all [default], collections, items, tags
 			'minlength' => 3, // searchbar only - 3 [default]
-			'maxresults' => 100,
+			'maxresults' => 50,
 			'maxperpage' => 10,
+			'maxtags' => 100, // dropdown only
 			
+			'sortby' => 'default',
+			'order' => 'asc',
+			
+			'style' => false, // not implemented
 			'cite' => false,
 			'citeable' => false,
 			'download' => false,
-			'downloadable' => false
+			'downloadable' => false,
+			'showimage' => false,
+			'showimages' => false,
+			'showtags' => false, // not implemented
+			'abstract' => false, // not implemented
+			'notes' => false, // not implemented
+			'forcenumber' => false, // not implemented
+			'target' => false // not implemented
             
         ), $atts, "zotpress"));
         
@@ -39,15 +51,7 @@
 		
 		
 		// Type of display
-		if ( $type ) $type = str_replace('"','',html_entity_decode($type));
-		else $type = "dropdown";
-		
-		// Enqueue autocomplete UI scripts if type is "searchbar"
-		if ( $type == "searchbar" )
-		{
-			wp_enqueue_script( 'jquery-ui-autocomplete' );
-            wp_enqueue_script( 'zotpress.lib.searchbar.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.lib.searchbar.js', array( 'jquery' ) );
-		}
+		if ( $type ) $type = str_replace('"','',html_entity_decode($type)); else $type = "dropdown";
 		
 		
 		// Filters
@@ -62,6 +66,15 @@
 		// Max per page
 		if ( $maxperpage ) $maxperpage = str_replace('"','',html_entity_decode($maxperpage));
 		
+		// Max tags
+		if ( $maxtags ) $maxtags = str_replace('"','',html_entity_decode($maxtags));
+		
+		// Sortby
+		if ( $sortby ) $sortby = str_replace('"','',html_entity_decode($sortby));
+		
+		// Order
+		if ( $order ) $order = str_replace('"','',html_entity_decode($order));
+		
 		// Citeable
 		if ( $cite ) $cite = str_replace('"','',html_entity_decode($cite));
 		if ( $citeable ) $cite = str_replace('"','',html_entity_decode($citeable));
@@ -69,6 +82,10 @@
 		// Downloadable
 		if ( $download ) $download = str_replace('"','',html_entity_decode($download));
 		if ( $downloadable ) $download = str_replace('"','',html_entity_decode($downloadable));
+		
+		// Show image
+		if ( $showimages ) $showimage = str_replace('"','',html_entity_decode($showimages));
+		if ( $showimage ) $showimage = str_replace('"','',html_entity_decode($showimage));
 		
 		
 		// Get API User ID
@@ -108,7 +125,7 @@
 		
 		// Use Browse class
 		
-		$zpLib = new zotpressBrowse;
+		$zpLib = new zotpressLib;
 		
 		$zpLib->setAccount($zp_account);
 		$zpLib->setType($type);
@@ -116,8 +133,15 @@
 		$zpLib->setMinLength($minlength);
 		$zpLib->setMaxResults($maxresults);
 		$zpLib->setMaxPerPage($maxperpage);
+		$zpLib->setMaxTags($maxtags);
+		$zpLib->setSortBy($sortby);
+		$zpLib->setOrder($order);
 		$zpLib->setCiteable($cite);
 		$zpLib->setDownloadable($download);
+		$zpLib->setShowImage($showimage);
+		
+		// Show theme scripts
+        $GLOBALS['zp_is_shortcode_displayed'] = true;
 		
 		$zpLib->getLib();
 	}

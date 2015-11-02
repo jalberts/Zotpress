@@ -10,7 +10,7 @@
 		wp_die( __('Only logged-in editors can access this page.'), __('Zotpress: 403 Access Denied'), array( 'response' => 403 ) );
 
     // Include import functions
-    require_once("../import/import.functions.php");
+	include( dirname(__FILE__) . '/../request/request.functions.php' );
     
     // Set up XML document
     $xml = "";
@@ -38,50 +38,11 @@
         
         /*
          
-            SET DEFAULT ACCOUNT
-            
-        */
-        
-        if (isset($_GET['account']))
-        {
-            
-            // Check the post variables and record errors
-            if (trim($_GET['account']) != '')
-                if (preg_match('/^[\'0-9a-zA-Z -_]+$/', stripslashes($_GET['account'])) == 1)
-                    $account = str_replace("'","",str_replace(" ","",trim(urldecode($_GET['account']))));
-                else
-                    $errors['account_format'][0] = 1;
-            else
-                $errors['account_empty'][0] = 1;
-            
-            
-            // CHECK ERRORS
-            $errorCheck = false;
-            foreach ($errors as $field => $error) {
-                if ($error[0] == 1) {
-                    $errorCheck = true;
-                    break;
-                }
-            }
-            
-            
-            // SET DEFAULT STYLE
-            if ($errorCheck == false)
-            {
-                update_option("Zotpress_DefaultAccount", $account);
-                $xml .= "<result success='true' account='".$account."' />\n";
-            }
-        } // default account
-        
-        
-        
-        /*
-         
             SET REFERENCE WIDGET
             
         */
         
-        else if (isset($_GET['cpt']))
+        if (isset($_GET['cpt']))
         {
             // Check the post variables and record errors
             if (trim($_GET['cpt']) != '')
@@ -259,7 +220,7 @@
 				);
 				foreach ($zp_tags_array as $zp_tag_term) zp_delete_tag ($zp_tag_term->term_id);*/
                 
-                //delete_option( 'ZOTPRESS_PASSCODE' );
+		        delete_option( 'Zotpress_DefaultCPT' );
                 delete_option( 'Zotpress_DefaultAccount' );
                 delete_option( 'Zotpress_DefaultEditor' );
                 delete_option( 'Zotpress_LastAutoUpdate' );

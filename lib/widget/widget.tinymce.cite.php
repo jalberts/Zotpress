@@ -28,7 +28,7 @@
 		.zp-Zotpress-TinyMCE-Popup input { font-family: "Open Sans", sans-serif; }
 		.zp-Zotpress-TinyMCE-Popup label { font-size: 0.9em; padding: 0 0.5em 0 1.25em; }
 		.zp-Zotpress-TinyMCE-Popup .options label { font-size: 1em; padding-left: 5px; }
-		div#zp-ZotpressMetaBox-Biblio-Citations-List div.item div.options input, div#zp-ZotpressMetaBox-Citations-List div.item div.options input { font-size: 1em; border: none; padding: 0.15em 0.35em; }
+		div#zp-ZotpressMetaBox-List div.item div.options input, div#zp-ZotpressMetaBox-Citations-List div.item div.options input { font-size: 1em; border: none; padding: 0.15em 0.35em; }
 		div#zp-ZotpressMetaBox-Biblio-Options p.note, div#zp-ZotpressMetaBox-InTextCreator-Options p.note { margin: 0 1em 0.75em 1.5em; }
 		</style>
 		

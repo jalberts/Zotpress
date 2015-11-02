@@ -4,6 +4,7 @@
     
     $zp_accounts = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress ORDER BY account_type DESC");
     $zp_accounts_total = $wpdb->num_rows;
+	
     
 	
 	// Display Browse page if there's at least one Zotero account synced
@@ -85,9 +86,13 @@
 		
 		// Use Browse class
 		
-		$zpLib = new zotpressBrowse;
+		$zpLib = new zotpressLib;
 		$zpLib->setAccount($zp_account);
 		$zpLib->setType("dropdown");
+		$zpLib->setAdmin(true);
+		$zpLib->setShowImage(true);
+		
+		//add_thickbox();
 	?>
     
     <div id="zp-Zotpress" class="wrap">
@@ -132,7 +137,6 @@
 			<div id="zp-Browse-Account-Options">
 				
 				<?php $is_default = false; if ( get_option("Zotpress_DefaultAccount") && get_option("Zotpress_DefaultAccount") == $api_user_id ) { $is_default = true; } ?>
-				<a href="admin.php?page=Zotpress&selective=true&api_user_id=<?php echo $api_user_id; ?>" class="zp-Browse-Account-Import button button-secondary">Selectively Import</a>
 				<a href="javascript:void(0);" rel="<?php echo $api_user_id; ?>" class="zp-Browse-Account-Default button button-secondary<?php if ( $is_default ) { echo " selected disabled"; } ?>"><?php if ( $is_default ) { echo "Default"; } else { echo "Set as Default"; } ?></a>
 				
 			</div>

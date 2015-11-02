@@ -22,23 +22,6 @@
     }
 	
 	
-	// GET DATE
-	// Used by: n/a
-	function zp_get_date($date)
-	{
-		$year = zp_get_year($date); // 4 digits
-		
-		preg_match_all( '/(\w)/', $date, $matches );
-		//var_dump($matches);
-		
-		$month = date_parse( $matches[0][0] );
-		
-		//var_dump($date['month']);
-		
-		//var_dump($month);
-	}
-    
-    
     
     // SUBVAL SORT
     // Used by: Bibliography Shortcode, In-Text Bibliography Shortcode
@@ -80,6 +63,8 @@
 	
 	
 	/**
+	 * ZP DATE FORMAT
+	 * 
 	 * Returns the date in a standard format: yyyy-mm-dd.
 	 * 
 	 * Can read the following:
@@ -252,75 +237,10 @@
 		// Format date in standard form: yyyy-mm-dd
 		$date_formatted = implode( "-", array_filter( $date_formatted ) );
 		
-		//var_dump($date, $date_formatted, "<br /><br />");
-		
 		if ( !isset($date_formatted) ) $date_formatted = $date;
 		
 		return $date_formatted;
 	}
-    
-    
-    
-	/**
-	 * Returns HTML-formatted subcollections for parent collection.
-	 *
-	 * Used by:    shortcode.php
-	 *
-	 * @param     resource	$wpdb				the WP db resource link
-	 * @param     string		$api_user_id		the Zotero API user ID
-	 * @param     string		$parent				the parent collection
-	 * @param     string		$sortby				what to sort by
-	 * @param     string		$order				the order of the sort, e.g. asc, desc
-	 * @param     string		$link					whether to add the URL
-	 * 
-	 * @return     string          the HTML-formatted subcollections
-	 */
-    function zp_get_subcollections ($wpdb, $api_user_id, $parent, $sortby, $order, $link=false)
-    {
-		$zp_query = "SELECT ".$wpdb->prefix."zotpress_zoteroCollections.* FROM ".$wpdb->prefix."zotpress_zoteroCollections";
-		$zp_query .= " WHERE api_user_id='".$api_user_id."' AND parent = '".$parent."' ";
-		
-		// Sort by and sort direction
-		if ($sortby)
-		{
-			if ($sortby == "default") $sortby = "retrieved";
-			else if ($sortby == "date" || $sortby == "author") continue;
-			
-			$zp_query .= " ORDER BY ".$sortby." " . $order;
-		}
-		
-		$zp_results = $wpdb->get_results($zp_query, OBJECT);
-		
-		$zp_output = "";
-		
-		//$zp_output = "<li class='zp-NestedCollection'><ul>\n";
-		$zp_output .= "<ul class='zp-NestedCollection'>\n";
-		
-		foreach ($zp_results as $zp_collection)
-		{
-			$zp_output .= "<li>";
-			if ($link == "yes")
-			{
-				$zp_output .= "<a class='zp-CollectionLink' title='" . $zp_collection->title . "' href='" . $_SERVER["REQUEST_URI"];
-				if ( strpos($_SERVER["REQUEST_URI"], "?") === false ) { $zp_output .= "?"; } else { $zp_output .= "&"; }
-				$zp_output .= "zpcollection=" . $zp_collection->item_key . "'>";
-			}
-			$zp_output .= $zp_collection->title;
-			if ($link == "yes") { $zp_output .= "</a>"; }
-			
-			// Thanks to @mlwk for 2+ level nexted collections fix
-			if ($zp_collection->numCollections > 0)
-				$zp_output .= zp_get_subcollections($wpdb, $api_user_id, $zp_collection->item_key, $sortby, $order, $link);
-			
-			$zp_output .= "</li>\n";
-		}
-		
-		//$zp_output .= "</ul></li>\n";
-		$zp_output .= "</ul>\n";
-		
-		return $zp_output;
-    }
-    
     
     
 ?>

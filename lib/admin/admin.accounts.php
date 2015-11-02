@@ -70,7 +70,9 @@ if ( current_user_can('edit_others_posts') )
 								}
 								else
 								{
-									$code .= 'No private key entered. <a class="zp-OAuth-Button" href="'.get_bloginfo( 'url' ).'/wp-content/plugins/zotpress/lib/admin/admin.accounts.oauth.php?oauth_user='.$account->api_user_id.'&amp;return_uri='.get_bloginfo('url').'">Start OAuth?</a>';
+									add_thickbox();
+									$code .= 'No private key entered. <a class="zp-OAuth-Button thickbox" href="'.get_bloginfo( 'url' ).'/wp-content/plugins/zotpress/lib/admin/admin.accounts.oauth.php?TB_iframe=true&width=600&height=480&oauth_user='.$account->api_user_id.'&amp;return_uri='.get_bloginfo('url').'">Start OAuth?</a>';
+									//$code .= 'No private key entered. <a class="zp-OAuth-Button" href="'.get_bloginfo( 'url' ).'/wp-content/plugins/zotpress/lib/admin/admin.accounts.oauth.php?oauth_user='.$account->api_user_id.'&amp;return_uri='.get_bloginfo('url').'">Start OAuth?</a>';
 								}
 								$code .= "</td>\n";
 								
@@ -82,11 +84,8 @@ if ( current_user_can('edit_others_posts') )
 								
 								// ACTIONS
 								$code .= "                          <td class='actions last'>\n";
-								//$code .= "                              <a title='Sync' class='sync' rel='".$account->api_user_id."' href='javascript:void(0);'><span class='icon'></span>Sync</a>\n";
-								$code .= "                              <a title='Selective Import' class='selective' rel='".$account->api_user_id."' href='admin.php?page=Zotpress&selective=true&api_user_id=" . $account->api_user_id . "'>Selective Import</a>\n";
-								$code .= "                              <a title='(Re)Import' class='import' href='admin.php?page=Zotpress&import=true&api_user_id=" . $account->api_user_id . "'>Import</a>\n";
-								$code .= "                              <a title='Remove this account' class='delete' href='#" . $account->id . "'>Remove</a>\n";
-								//$code .= "                              <span class='zp-Sync-Messages'>&nbsp;</span>\n";
+								$code .= "                              <a title='Clear Cache' class='cache' href='#" . $account->api_user_id . "'>Clear Cache</a>\n";
+								$code .= "                              <a title='Remove this account' class='delete' href='#" . $account->api_user_id . "'>Remove</a>\n";
 								$code .= "                          </td>\n";
 								
 								$code .= "                         </tr>\n\n";
@@ -103,7 +102,7 @@ if ( current_user_can('edit_others_posts') )
 			<span id="ZOTPRESS_PLUGIN_URL" style="display: none;"><?php echo ZOTPRESS_PLUGIN_URL; ?></span>
 			<span id="ZOTPRESS_PASSCODE" style="display: none;"><?php /*echo get_option('ZOTPRESS_PASSCODE'); */ ?></span>
 			
-			<?php if (!$oauth_is_not_installed){ ?>
+			<?php if ( ! $oauth_is_not_installed ) { ?>
 				<h3>What is OAuth?</h3>
 				
 				<p>
