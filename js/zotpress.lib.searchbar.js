@@ -27,6 +27,8 @@ jQuery(document).ready(function()
 			zpSearchBarParams += "&api_user_id="+jQuery("#ZOTPRESS_USER").val();
 			zpSearchBarParams += "&item_type=items";
 			zpSearchBarParams += "&downloadable="+jQuery("#ZOTPRESS_AC_DOWNLOAD").val();
+			zpSearchBarParams += "&sort_by="+jQuery("#ZP_SORTBY").text();
+			zpSearchBarParams += "&order="+jQuery("#ZP_ORDER").text();
 			zpSearchBarParams += "&citeable="+jQuery("#ZOTPRESS_AC_CITE").val();
 			
 			// Deal with possible max results
@@ -104,6 +106,9 @@ jQuery(document).ready(function()
 					// Show loading icon
 					jQuery(".zp-List .zpSearchLoading").addClass("show");
 					
+					// Empty pagination
+					if ( jQuery("#zpSearchResultsPaging").length > 0 ) jQuery("#zpSearchResultsPaging").empty();
+					
 					// Remove old results
 					jQuery("#zpSearchResultsContainer").empty();
 				},
@@ -146,6 +151,7 @@ jQuery(document).ready(function()
 					}
 					else
 					{
+						if ( jQuery("#zpSearchResultsPaging").length > 0 ) jQuery("#zpSearchResultsPaging").empty();
 						jQuery("#zpSearchResultsContainer").append("<p>No items found.</p>\n");
 					}
 				},

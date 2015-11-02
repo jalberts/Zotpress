@@ -8,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 4.3.1
-Stable tag: 6.0.1
+Stable tag: 6.0.2
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -64,10 +64,18 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Changelog ==
 
+= 6.0.2 =
+
+* Fixed multiple terms bug for searchbars.
+* Fixed non-English characters bug for searchbars.
+* Fixed sortby/order for searchbars.
+* Fixed style value "default" bug.
+* Pagination for searchbars now hidden on search and no items found.
+
 = 6.0.1 =
 
 * Fixed "limit" attribute bug for the Zotpress Bibliography Shortcode.
-* Fixed single item but for the Zotpress In-Text Shortcode.
+* Fixed single item bug for the Zotpress In-Text Shortcode.
 
 = 6.0 =
 

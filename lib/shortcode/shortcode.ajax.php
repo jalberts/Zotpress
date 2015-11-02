@@ -23,6 +23,7 @@
 		$zp_item_type = "items"; if ( isset($_GET['item_type']) && $_GET['item_type'] != "" ) $zp_item_type = $_GET['item_type'];
 		$zp_get_top = false; if ( isset($_GET['get_top']) ) $zp_get_top = true;
 		$zp_sub = false;
+		$zp_is_dropdown = false; if ( isset($_GET['is_dropdown']) ) $zp_is_dropdown = true;
 		
 		// instance id, item key, collection id, tag id
 		$zp_instance_id = false; if ( isset($_GET['instance_id']) ) $zp_instance_id = $_GET['instance_id'];
@@ -45,7 +46,7 @@
 		// Author, year, style, limit, title
 		$zp_author = false; if ( isset($_GET['author']) && $_GET['author'] != "false" ) $zp_author = $_GET['author'];
 		$zp_year = false; if ( isset($_GET['year']) && $_GET['year'] != "false" ) $zp_year = $_GET['year'];
-		$zp_style = zp_Get_Default_Style(); if ( isset($_GET['style']) && $_GET['style'] != "false" ) $zp_style = $_GET['style'];
+		$zp_style = zp_Get_Default_Style(); if ( isset($_GET['style']) && $_GET['style'] != "false" && $_GET['style'] != "default" ) $zp_style = $_GET['style'];
 		if ( isset($_GET['limit']) && $_GET['limit'] != 0 )
 		{
 			$zp_limit = intval($_GET['limit']);
@@ -172,7 +173,7 @@
 		}
 		
 		// Account for tag display - let's limit it
-		if ( $zp_item_type == "tags" )
+		if ( $zp_is_dropdown === true && $zp_item_type == "tags" )
 		{
 			$zp_sortby = "numItems";
 			$zp_order = "desc";
@@ -265,7 +266,7 @@
 				else // Set but not multiple
 				{
 					$zp_import_url .= "&qmode=titleCreatorYear";
-					if ( $zp_author ) $zp_import_url .= "&q=".str_replace( " ", "+", $zp_author );
+					if ( $zp_author ) $zp_import_url .= "&q=".urlencode( $zp_author );
 					if ( $zp_year && ! $zp_author ) $zp_import_url .= "&q=".$zp_year;
 				}
 			}
@@ -281,13 +282,13 @@
 					if ( $zp_inclusive === false )
 					{
 						$zp_authors = explode( ",", $zp_author );
-						$zp_import_url .= "&q=".str_replace( " ", "+", $zp_authors[0] );
+						$zp_import_url .= "&q=".urlencode( $zp_authors[0] );
 						unset( $zp_authors[0] );
 						$zp_author = $zp_authors;
 					}
 					else // inclusive
 					{
-						$zp_import_url .= "&q=".str_replace( " ", "+", $zp_author );
+						$zp_import_url .= "&q=".urlencode( $zp_author );
 					}
 				}
 				
@@ -303,9 +304,9 @@
 		// Deal with possible term
 		if ( $zp_term )
 			if ( $zp_filter && $zp_filter == "tag")
-				$zp_import_url .= "&tag=".$wpdb->esc_like($zp_term);
+				$zp_import_url .= "&tag=".urlencode( $wpdb->esc_like($zp_term) );
 			else
-				$zp_import_url .= "&q=".$wpdb->esc_like($zp_term);
+				$zp_import_url .= "&q=".urlencode( $wpdb->esc_like($zp_term) );
 		
 		
 		

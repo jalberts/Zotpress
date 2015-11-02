@@ -174,6 +174,7 @@ jQuery(document).ready(function()
 					'api_user_id': jQuery("#ZP_API_USER_ID").text(),
 					'citeable': jQuery("#ZP_CITEABLE").text(),
 					'downloadable': jQuery("#ZP_DOWNLOADABLE").text(),
+					'is_dropdown': true,
 					'showimage': jQuery("#ZP_SHOWIMAGE").text(),
 					'item_type': 'items',
 					'collection_id': zpCollectionId,
