@@ -12,7 +12,7 @@ if ( current_user_can('edit_others_posts') )
 			
 			<div id="zp-Options-Wrapper">
 				
-				<h3>Defaults</h3>
+				<h3>Options</h3>
 				
 				<?php include('admin.options.form.php'); ?>
 				

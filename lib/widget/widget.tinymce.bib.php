@@ -66,12 +66,12 @@
 							{
 								for (var s = 0; s < scItems.length; s++)
 								{
-									jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List-Inner").append("<div class='item' rel='"+scItems[s]+"'><span class='label'>"+summary[s]+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><div class='id'>Key: "+scItems[s]+"</div></div></div>\n");
+									jQuery("#zp-ZotpressMetaBox-List-Inner").append("<div class='item' rel='"+scItems[s]+"'><span class='label'>"+summary[s]+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><div class='id'>Key: "+scItems[s]+"</div></div></div>\n");
 								}
 							}
 							else if (scItems.length == 1) // one item
 							{
-								jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List-Inner").append("<div class='item' rel='"+scItems[0]+"'><span class='label'>"+summary[0]+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><div class='id'>Key: "+scItems[0]+"</div></div></div>\n");
+								jQuery("#zp-ZotpressMetaBox-List-Inner").append("<div class='item' rel='"+scItems[0]+"'><span class='label'>"+summary[0]+"</span><div class='toggle'></div><div class='delete'></div><div class='options'><div class='id'>Key: "+scItems[0]+"</div></div></div>\n");
 							}
 						}
 						//else if ( attribute[0].replace(/"/gi, '') == "format")
@@ -100,14 +100,14 @@
 				var zpItemsExist = false;
 				
 				// Check items
-				if ( jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List .item").length > 0 )
+				if ( jQuery("#zp-ZotpressMetaBox-List .item").length > 0 )
 				{
 					zpItemsExist = true;
 					summary = "";
 					var newShortcode = "[zotpress userid=\""+jQuery("#zp-ZotpressMetaBox-Account-ID").text()+"\"";
 					var newShortcodeItems = "";
 					
-					jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List .item").each(function()
+					jQuery("#zp-ZotpressMetaBox-List .item").each(function()
 					{
 						if ( newShortcodeItems.length == 0 ) newShortcodeItems = ' item="'; else newShortcodeItems += ",";
 						newShortcodeItems += jQuery(this).attr("rel");
@@ -192,7 +192,7 @@
 				<input id="zp-ZotpressMetaBox-Biblio-Citations-Search" class="help" type="text" value="Type to search" />
 				<input type="hidden" id="ZOTPRESS_PLUGIN_URL" name="ZOTPRESS_PLUGIN_URL" value="<?php echo ZOTPRESS_PLUGIN_URL; ?>" />
 				
-			</div><div id="zp-ZotpressMetaBox-Biblio-Citations-List"><div id="zp-ZotpressMetaBox-Biblio-Citations-List-Inner"></div><hr class="clear" /></div>
+			</div><div id="zp-ZotpressMetaBox-List"><div id="zp-ZotpressMetaBox-List-Inner"></div><hr class="clear" /></div>
 			<!-- END OF SEARCH -->
 			
 			

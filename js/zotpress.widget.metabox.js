@@ -3,30 +3,44 @@ jQuery(document).ready(function()
     
     
     /****************************************************************************************
-     *
-     *     ZOTPRESS METABOX
-     *
-     ****************************************************************************************/
+	*
+	*     ZOTPRESS METABOX
+	*
+	****************************************************************************************/
     
-    if ( jQuery("#zp-ZotpressMetaBox").length > 0 ) jQuery("#zp-ZotpressMetaBox").tabs();
+    if ( jQuery("#zp-ZotpressMetaBox").length > 0 )
+	{
+		jQuery("#zp-ZotpressMetaBox").tabs(
+		{
+			activate: function( event, ui )
+			{
+				if ( ui.newPanel.attr('id') == "zp-ZotpressMetaBox-InTextCreator" )
+					jQuery("#zp-ZotpressMetaBox-List").addClass("intext");
+				else
+					jQuery("#zp-ZotpressMetaBox-List").removeClass("intext");
+			}
+		});
+	}
     
     
     
     /****************************************************************************************
-     *
-     *     ZOTPRESS BIBLIO CREATOR
-     *
-     ****************************************************************************************/
+	*
+	*     ZOTPRESS BIBLIO CREATOR
+	*
+	****************************************************************************************/
     
     var zpBiblio = {
 		"author": false, "year": false, "style": false, "sortby": false, "sort": false, "image": false,
-		"download": false, "notes": false, "zpabstract": false, "cite": false, "title": false, "limit": false,
-		"items": []
+		"download": false, "notes": false, "zpabstract": false, "cite": false, "title": false, "limit": false
 		};
-	
-	var zpAutoCompleteURL = "../wp-content/plugins/zotpress/lib/widget/widget.metabox.search.php";
-	if ( jQuery(".zp-Zotpress-TinyMCE-Popup").length > 0 ) zpAutoCompleteURL = "widget.metabox.search.php";
+    var zpInText = {
+		"format": false, "etal": false, "and": false, "separator": false, "style": false, "sortby": false,
+		"sort": false, "image": false, "download": false, "notes": false, "zpabstract": false, "cite": false, "title": false
+		};
+	var zpRefItems = [];
     
+	
     jQuery("input#zp-ZotpressMetaBox-Biblio-Citations-Search")
         .bind( "keydown", function( event ) {
             // Don't navigate away from the field on tab when selecting an item
@@ -47,6 +61,7 @@ jQuery(document).ready(function()
             }
             // Hide the shortcode, if shown
             jQuery("#zp-ZotpressMetaBox-Biblio-Shortcode-Inner").hide('fast');
+			jQuery("#zp-ZotpressMetaBox-InTextCreator-Shortcode-Inner").hide('fast');
         })
         .bind( "blur", function( event ) {
             // Add help text on blur, if nothing there
@@ -56,7 +71,7 @@ jQuery(document).ready(function()
             }
         })
         .autocomplete({
-            source: zpAutoCompleteURL,
+			source: zpWidgetMetabox_object.ajaxurl + "?action=zpWidgetMetabox-submit",
             minLength: 3,
             focus: function() {
                 // prevent value inserted on focus
@@ -74,7 +89,6 @@ jQuery(document).ready(function()
 						menu = widget.menu,
 						$ul = menu.element;
 				menu.element.addClass("zp-autocomplete");
-                //jQuery(this).data("autocomplete").menu.element.addClass("zp-autocomplete");
                 jQuery(".zp-autocomplete .ui-menu-item:first").addClass("first");
                 
                 // Change width of autocomplete dropdown based on input size
@@ -87,7 +101,7 @@ jQuery(document).ready(function()
             {
                 // Check if item is already in the list
                 var check = false;
-                jQuery.each(zpBiblio.items, function(index, item) {
+                jQuery.each(zpRefItems, function(index, item) {
                     if (item.itemkey == ui.item.value)
                         check = true;
                 });
@@ -100,12 +114,12 @@ jQuery(document).ready(function()
                 if (check === false)
 				{
                     // Add to list, if not already there
-                    zpBiblio.items.push(ui.item.value);
+					zpRefItems.push({ "itemkey": ui.item.value, "pages": false});
 					
                     // Add visual indicator
-                    //var uilabel = (ui.item.label).split(")",1) + ")";
-                    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List-Inner")
-							.append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+ ui.item.author + ui.item.label +"</span><div class='item_key'>&rsaquo; " + ui.item.value + "</div><div class='delete'>&times;</div></div>\n");
+                    var uilabel = (ui.item.label).split(")",1) + ")";
+                    jQuery("#zp-ZotpressMetaBox-List-Inner")
+						.append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+ ui.item.author + ui.item.label +"</span><div class='options'><label for='zp-Item-"+ui.item.value+"'>Page(s):</label><input id='zp-Item-"+ui.item.value+"' type='text' /></div><div class='item_key'>&rsaquo; " + ui.item.value + "</div><div class='delete'>&times;</div></div>\n");
 					
                     // Remove text from input
                     jQuery("input#zp-ZotpressMetaBox-Biblio-Citations-Search").val("").focus();
@@ -115,8 +129,8 @@ jQuery(document).ready(function()
         });
     
     
-    // ITEM
-    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List div.item")
+    // HIDE SHORTCODE ON ITEM CHANGE
+    jQuery("#zp-ZotpressMetaBox-List div.item")
         .livequery('click', function(event)
         {
             // Hide the shortcode, if shown
@@ -124,20 +138,9 @@ jQuery(document).ready(function()
         });
 
     
-    // ITEM TOGGLE BUTTON
-    //jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List div.item .toggle")
-    //    .livequery('click', function(event)
-    //    {
-    //        var $parent = jQuery(this).parent();
-    //        
-    //        // Toggle action
-    //        jQuery(this).toggleClass("active");
-    //        jQuery(".options", $parent).slideToggle('fast');
-    //    });
-    
     
     // ITEM CLOSE BUTTON
-    jQuery("#zp-ZotpressMetaBox-Biblio-Citations-List div.item .delete")
+    jQuery("#zp-ZotpressMetaBox-List div.item .delete")
         .livequery('click', function(event)
         {
             var $parent = jQuery(this).parent();
@@ -149,9 +152,9 @@ jQuery(document).ready(function()
             }
             
             // Remove item from JSON
-            jQuery.each(zpBiblio.items, function(index, item) {
+            jQuery.each(zpRefItems, function(index, item) {
                 if (item.itemkey == $parent.attr("rel"))
-                    zpBiblio.items.splice(index, 1);
+                    zpRefItems.splice(index, 1);
             });
             
             // Remove visual indicator
@@ -159,11 +162,11 @@ jQuery(document).ready(function()
             
             // Hide the shortcode, if shown
             jQuery("#zp-ZotpressMetaBox-Biblio-Shortcode-Inner").hide('fast');
-            //alert(JSON.stringify(zpBiblio));
+			jQuery("#zp-ZotpressMetaBox-InTextCreator-Shortcode-Inner").hide('fast');
         });
     
     
-    // OPTIONS PANEL
+    // HIDE SHORTCODE ON BIBLIOGRAPHY OPTIONS PANEL CHANGE
     jQuery("#zp-ZotpressMetaBox-Biblio-Options")
         .click(function(event)
         {
@@ -172,7 +175,7 @@ jQuery(document).ready(function()
         });
     
     
-    // OPTIONS BUTTON
+    // BIBLIOGRAPHY OPTIONS TOGGLE
     jQuery("#zp-ZotpressMetaBox-Biblio-Options h4 .toggle")
         .click(function(event)
         {
@@ -181,7 +184,7 @@ jQuery(document).ready(function()
         });
     
     
-    // GENERATE SHORTCODE BUTTON
+    // GENERATE BIBLIOGRAPHY SHORTCODE BUTTON
     jQuery("#zp-ZotpressMetaBox-Biblio-Generate-Button")
         .click(function(event)
         {
@@ -238,8 +241,18 @@ jQuery(document).ready(function()
             var zpBiblioShortcode = "[zotpress";
             
             if (jQuery("#zp-ZotpressMetaBox-Biblio-Account").length > 0) zpBiblioShortcode += " userid=\"" + jQuery("#zp-ZotpressMetaBox-Biblio-Account").attr("rel") + "\"";
-            if (zpBiblio.items.length > 0) zpBiblioShortcode += " items=\"" + zpBiblio.items + "\"";
-            if (zpBiblio.author != "") zpBiblioShortcode += " author=\"" + zpBiblio.author + "\"";
+            
+			if (zpRefItems.length > 0)
+			{
+				var tempItems = "";
+				jQuery.each(zpRefItems, function(index, item) {
+					if ( index != "0") tempItems = tempItems + ",";
+					tempItems = tempItems + item.itemkey;
+				});
+				zpBiblioShortcode += " items=\"" + tempItems + "\"";
+			}
+			
+			if (zpBiblio.author != "") zpBiblioShortcode += " author=\"" + zpBiblio.author + "\"";
             if (zpBiblio.year != "") zpBiblioShortcode += " year=\"" + zpBiblio.year + "\"";
             if (zpBiblio.style != "") zpBiblioShortcode += " style=\"" + zpBiblio.style + "\"";
             if (zpBiblio.sortby != "" && zpBiblio.sortby != "default") zpBiblioShortcode += " sortby=\"" + zpBiblio.sortby + "\"";
@@ -263,7 +276,7 @@ jQuery(document).ready(function()
         });
     
     
-    // CLEAR SHORTCODE BUTTON
+    // CLEAR BIBLIOGRAPHY SHORTCODE BUTTON
     jQuery("#zp-ZotpressMetaBox-Biblio-Clear-Button")
         .click(function(event)
         {
@@ -280,8 +293,8 @@ jQuery(document).ready(function()
             zpBiblio.cite = false;
             zpBiblio.title = false;
             zpBiblio.limit = false;
-            jQuery.each(zpBiblio.items, function(index, item) {
-                zpBiblio.items.splice(index, 1);
+            jQuery.each(zpRefItems, function(index, item) {
+                zpRefItems.splice(index, 1);
             });
             
             // Hide options and shortcode
@@ -322,169 +335,16 @@ jQuery(document).ready(function()
             jQuery("input#zp-ZotpressMetaBox-Biblio-Options-Cite-No").attr('checked', 'checked');
             
             // Remove visual indicators
-            jQuery("div#zp-ZotpressMetaBox-Biblio-Citations-List div.item").remove();
+            jQuery("div#zp-ZotpressMetaBox-List div.item").remove();
             
             //alert(JSON.stringify(zpBiblio));
         });
     
     
     
-    /****************************************************************************************
-     *
-     *     ZOTPRESS IN-TEXT CREATOR
-     *
-     ****************************************************************************************/
-    
-    var zpInText = { "format": false, "etal": false, "and": false, "separator": false, "style": false, "sortby": false, "sort": false, "image": false, "download": false, "notes": false, "zpabstract": false, "cite": false, "title": false, "items": [] };
-	var zpAutoCompleteURL = "../wp-content/plugins/zotpress/lib/widget/widget.metabox.search.php";
-	if ( jQuery(".zp-Zotpress-TinyMCE-Popup").length > 0 ) zpAutoCompleteURL = "widget.metabox.search.php";
-    
-    jQuery("input#zp-ZotpressMetaBox-Citations-Search")
-        .bind( "keydown", function( event ) {
-            // Don't navigate away from the field on tab when selecting an item
-            if ( event.keyCode === jQuery.ui.keyCode.TAB &&
-                    jQuery( this ).data( "autocomplete" ).menu.active ) {
-                event.preventDefault();
-            }
-            // Don't submit the form when pressing enter
-            if ( event.keyCode === 13 ) {
-                event.preventDefault();
-            }
-        })
-        .bind( "focus", function( event ) {
-            // Remove help text on focus
-            if (jQuery(this).val() == "Type to search") {
-                jQuery(this).val("");
-                jQuery(this).removeClass("help");
-            }
-            // Hide the shortcode, if shown
-            jQuery("#zp-ZotpressMetaBox-InTextCreator-Shortcode-Inner").hide('fast');
-        })
-        .bind( "blur", function( event ) {
-            // Add help text on blur, if nothing there
-            if (jQuery.trim(jQuery(this).val()) == "") {
-                jQuery(this).val("Type to search");
-                jQuery(this).addClass("help");
-            }
-        })
-        .autocomplete({
-            source: zpAutoCompleteURL,
-            minLength: 3,
-            focus: function() {
-                // prevent value inserted on focus
-                return false;
-            },
-			create: function () {
-				jQuery(this).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-					return jQuery( "<li>" )
-						.append( "<a><strong>" + item.author + "</strong> " + item.label + "</a>" )
-						.appendTo( ul );
-				}
-			},
-            open: function () {
-				var widget = jQuery(this).data('ui-autocomplete'),
-						menu   = widget.menu,
-						$ul    = menu.element;
-				menu.element.addClass("zp-autocomplete");
-                //jQuery(this).data("autocomplete").menu.element.addClass("zp-autocomplete");
-                jQuery(".zp-autocomplete .ui-menu-item:first").addClass("first");
-                
-                // Change width of autocomplete dropdown based on input size
-                if ( jQuery("#ZotpressMetaBox").parent().attr("id") == "normal-sortables" )
-                    menu.element.addClass("zp-autocomplete-wide");
-                else
-                    menu.element.removeClass("zp-autocomplete-wide");
-            },
-            select: function( event, ui )
-            {
-                // Check if item is already in the list
-                var check = false;
-                jQuery.each(zpInText.items, function(index, item) {
-                    if (item.itemkey == ui.item.value)
-                        check = true;
-                });
-				// Check for duplicates in popup
-				if ( jQuery(".zp-Zotpress-TinyMCE-Popup").length > 0 )
-				{
-					if ( jQuery(".item[rel="+ui.item.value+"]").length > 0 ) check = true;
-				}
-                
-                if (check === false)
-				{
-                    // Add to list, if not already there
-                    zpInText.items.push({ "itemkey": ui.item.value, "pages": false});
-					
-                    // Add visual indicator
-                    var uilabel = (ui.item.label).split(")",1) + ")";
-                    jQuery("#zp-ZotpressMetaBox-Citations-List-Inner")
-						.append("<div class='item' rel='"+ui.item.value+"'><span class='label'>"+ ui.item.author + ui.item.label +"</span><div class='options'><label for='zp-Item-"+ui.item.value+"'>Page(s):</label><input id='zp-Item-"+ui.item.value+"' type='text' /></div><div class='item_key'>&rsaquo; " + ui.item.value + "</div><div class='delete'>&times;</div></div>\n");
-					
-                    // Remove text from input
-                    jQuery("input#zp-ZotpressMetaBox-Citations-Search").val("").focus();
-                }
-                //alert(JSON.stringify(zpInText));
-                return false;
-            }
-        });
-    
-    
-    //// ACCOUNTS
-    //jQuery("#zp-ZotpressMetaBox-InTextCreator-Options-Account option")
-    //    .click(function()
-    //    {
-    //        jQuery("#zp-DefaultAccount").text(jQuery(this).val());
-    //    });
-    
-    
-    // ITEM
-    jQuery("#zp-ZotpressMetaBox-Citations-List div.item")
-        .livequery('click', function(event)
-        {
-            // Hide the shortcode, if shown
-            jQuery("#zp-ZotpressMetaBox-InTextCreator-Shortcode-Inner").hide('fast');
-        });
 
-    
-    // ITEM TOGGLE BUTTON
-    //jQuery("#zp-ZotpressMetaBox-Citations-List div.item .toggle")
-    //    .livequery('click', function(event)
-    //    {
-    //        var $parent = jQuery(this).parent();
-    //        
-    //        // Toggle action
-    //        jQuery(this).toggleClass("active");
-    //        jQuery(".options", $parent).slideToggle('fast');
-    //    });
-    
-    
-    // ITEM CLOSE BUTTON
-    jQuery("#zp-ZotpressMetaBox-Citations-List div.item .delete")
-        .livequery('click', function(event)
-        {
-            var $parent = jQuery(this).parent();
-            
-            // Make sure toggle is closed
-            if (jQuery(".toggle", $parent).hasClass("active")) {
-                jQuery(this).toggleClass("active");
-                jQuery(".options", $parent).slideToggle('fast');
-            }
-            
-            // Remove item from JSON
-            jQuery.each(zpInText.items, function(index, item) {
-                if (item.itemkey == $parent.attr("rel"))
-                    zpInText.items.splice(index, 1);
-            });
-            
-            // Remove visual indicator
-            $parent.remove();
-            
-            // Hide the shortcode, if shown
-            jQuery("#zp-ZotpressMetaBox-InTextCreator-Shortcode-Inner").hide('fast');
-            //alert(JSON.stringify(zpInText));
-        });
-    
-    
-    // OPTIONS PANEL
+
+    // HIDE SHORTCODE ON IN-TEXT OPTIONS PANEL CHANGE
     jQuery("#zp-ZotpressMetaBox-InTextCreator-Options")
         .click(function(event)
         {
@@ -493,7 +353,7 @@ jQuery(document).ready(function()
         });
     
     
-    // OPTIONS BUTTON
+    // IN-TEXT OPTIONS TOGGLE
     jQuery("#zp-ZotpressMetaBox-InTextCreator-Options h4 .toggle")
         .click(function(event)
         {
@@ -502,17 +362,20 @@ jQuery(document).ready(function()
         });
     
     
-    // GENERATE SHORTCODE BUTTON
+    // GENERATE IN-TEXT SHORTCODE BUTTON
     jQuery("#zp-ZotpressMetaBox-InTextCreator-Generate-Button")
         .click(function(event)
         {
             // Update page parameters for all citations
-            jQuery("#zp-ZotpressMetaBox-Citations-List .item").each(function(vindex, vitem) {
+            jQuery("#zp-ZotpressMetaBox-List .item").each(function(vindex, vitem) {
+				//alert(vitem);
                 if (jQuery.trim(jQuery("input", vitem).val()).length > 0)
                 {
-                    jQuery.each(zpInText.items, function(index, item) {
-                        if (item.itemkey == jQuery(vitem).attr("rel"))
+                    jQuery.each(zpRefItems, function(index, item) {
+						//alert(item);
+                        if (item.itemkey == jQuery(vitem).attr("rel")) {
                             item.pages = jQuery.trim(jQuery("input", vitem).val());
+                        }
                     });
                 }
             });
@@ -579,7 +442,7 @@ jQuery(document).ready(function()
             
             // Generate in-text shortcode
             var zpIntTextVal = "[zotpressInText item=\"";
-            jQuery.each(zpInText.items, function(index, item) {
+            jQuery.each(zpRefItems, function(index, item) {
                 zpIntTextVal += "{" + item.itemkey;
                 if (item.pages !== false) zpIntTextVal += "," + item.pages;
                 zpIntTextVal += "},";
@@ -628,7 +491,7 @@ jQuery(document).ready(function()
         });
     
     
-    // CLEAR SHORTCODE BUTTON
+    // CLEAR IN-TEXTSHORTCODE BUTTON
     jQuery("#zp-ZotpressMetaBox-InTextCreator-Clear-Button")
         .click(function(event)
         {
@@ -646,8 +509,8 @@ jQuery(document).ready(function()
             zpInText.notes = false;
             zpInText.cite = false;
             zpInText.title = false;
-            jQuery.each(zpInText.items, function(index, item) {
-                zpInText.items.splice(index, 1);
+            jQuery.each(zpRefItems, function(index, item) {
+                zpRefItems.splice(index, 1);
             });
             
             // Hide options and shortcode
@@ -689,7 +552,7 @@ jQuery(document).ready(function()
             jQuery("input#zp-ZotpressMetaBox-InTextCreator-Options-Cite-No").attr('checked', 'checked');
             
             // Remove visual indicators
-            jQuery("div#zp-ZotpressMetaBox-Citations-List div.item").remove();
+            jQuery("div#zp-ZotpressMetaBox-List div.item").remove();
             
             //alert(JSON.stringify(zpInText));
         });

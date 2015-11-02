@@ -6,7 +6,7 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bringing Zotero and scholarly blogging to your WordPress website.
     Author: Katie Seaborn
-    Version: 5.5.5
+    Version: 6.0
     Author URI: http://katieseaborn.com
     
 */
@@ -37,12 +37,12 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
-    define('ZOTPRESS_VERSION', '5.5.5' );
+    define('ZOTPRESS_VERSION', '6.0' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
     
-    $GLOBALS['Zotpress_update_db_by_version'] = "5.2.6"; // Only change this if the db needs updating - 5.2.6
+    $GLOBALS['Zotpress_update_db_by_version'] = "6.0"; // Only change this if the db needs updating - 5.2.6
 
 // GLOBAL VARS ----------------------------------------------------------------------------------
     
@@ -75,77 +75,65 @@
 
 
 
-// SIDEBAR WIDGET -------------------------------------------------------------------------------
+// WIDGETS -----------------------------------------------------------------------------------------
     
     include( dirname(__FILE__) . '/lib/widget/widget.sidebar.php' );
-
-// SIDEBAR WIDGET -------------------------------------------------------------------------------
-
-
-
-// META BOX WIDGET -----------------------------------------------------------------------------
+	include( dirname(__FILE__) . '/lib/widget/widget.php' );
     
-    function Zotpress_add_meta_box()
-    {
-        $zp_default_cpt = "post,page";
-        if (get_option("Zotpress_DefaultCPT"))
-            $zp_default_cpt = get_option("Zotpress_DefaultCPT");
-        $zp_default_cpt = explode(",",$zp_default_cpt);
-        
-        foreach ($zp_default_cpt as $post_type )
-        {
-            add_meta_box( 
-                'ZotpressMetaBox',
-                __( 'Zotpress Reference', 'Zotpress_textdomain' ),
-                'Zotpress_show_meta_box',
-                $post_type,
-                'side'
-            );
-        }
-    }
-    add_action('admin_init', 'Zotpress_add_meta_box', 1); // backwards compatible
-    
-    function Zotpress_show_meta_box()
-    {
-        require( dirname(__FILE__) . '/lib/widget/widget.metabox.php');
-    }
-    
-// META BOX WIDGET ---------------------------------------------------------------------------------
+// WIDGETS -----------------------------------------------------------------------------------------
 
 
 
-// REGISTER ACTIONS ---------------------------------------------------------------------------------
+// REGISTER ACTIONS -----------------------------------------------------------------------------
     
     /**
     * Admin scripts and styles
     */
     function Zotpress_admin_scripts_css($hook)
     {
-        wp_enqueue_script( 'jquery' );
-        wp_enqueue_media();
-        wp_enqueue_script( 'jquery.dotimeout.min.js', ZOTPRESS_PLUGIN_URL . 'js/jquery.dotimeout.min.js', array( 'jquery' ) );
-        wp_enqueue_script( 'zotpress.default.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.default.js', array( 'jquery' ) );
-        
-        if ( in_array( $hook, array('post.php', 'post-new.php') ) === true )
-        {
-            wp_enqueue_script( 'jquery.livequery.js', ZOTPRESS_PLUGIN_URL . 'js/jquery.livequery.js', array( 'jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-tabs', 'jquery-ui-autocomplete' ) );
-            wp_enqueue_script( 'zotpress.widget.metabox.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.widget.metabox.js', array( 'jquery' ) );
-        }
-        else
-        {
-            wp_enqueue_script( 'jquery.livequery.js', ZOTPRESS_PLUGIN_URL . 'js/jquery.livequery.js', array( 'jquery' ) );
-        }
-        
-        if ( isset($_GET['accounts']) || isset($_GET['setup']) || isset($_GET['import']) || isset($_GET['selective']) )
-        {
-            wp_register_script('zotpress.accounts.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.accounts.js', array('jquery','media-upload','thickbox'));
-            wp_enqueue_script('zotpress.accounts.js');
-        }
-        
-        wp_enqueue_style( 'zotpress.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.css' );
-        wp_enqueue_style( 'ZotpressGoogleFonts.css', 'http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600|Droid+Serif:400,400italic,700italic|Oswald:300,400' );
+		if ( isset($_GET['page']) && ($_GET['page'] == 'Zotpress') )
+		{
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_media();
+			wp_enqueue_script( 'jquery.dotimeout.min.js', ZOTPRESS_PLUGIN_URL . 'js/jquery.dotimeout.min.js', array( 'jquery' ) );
+			wp_enqueue_script( 'zotpress.default.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.default.js', array( 'jquery' ) );
+			
+			if ( in_array( $hook, array('post.php', 'post-new.php') ) !== true )
+			{
+				wp_enqueue_script( 'jquery.livequery.js', ZOTPRESS_PLUGIN_URL . 'js/jquery.livequery.js', array( 'jquery' ) );
+			}
+			
+			if ( isset($_GET['help']) && ($_GET['help'] == 'true') )
+			{
+				wp_enqueue_script('jquery-ui-core');
+				wp_enqueue_script('jquery-ui-tabs');
+				wp_enqueue_style( 'zotpress.help.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.help.css' );
+			}
+			
+			wp_enqueue_style( 'zotpress.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.css' );
+			wp_enqueue_style( 'ZotpressGoogleFonts.css', 'http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600|Droid+Serif:400,400italic,700italic|Oswald:300,400' );
+		}
     }
     add_action( 'admin_enqueue_scripts', 'Zotpress_admin_scripts_css' );
+	
+	
+	function Zotpress_enqueue_admin_ajax( $hook )
+	{
+		if ( strpos( strtolower($hook), "zotpress" ) !== false )
+		{
+			wp_enqueue_script( 'zotpress.admin.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.admin.js', array( 'jquery','media-upload','thickbox' ) );
+			wp_localize_script( 
+				'zotpress.admin.js',
+				'zpAccountsAJAX', 
+				array( 
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					'zpAccountsAJAX_nonce' => wp_create_nonce( 'zpAccountsAJAX_nonce_val' ),
+					'action' => 'zpAccountsViaAJAX'
+				)
+			);
+		}
+	}
+    add_action( 'admin_enqueue_scripts', 'Zotpress_enqueue_admin_ajax' );
     
     
     /**
@@ -190,10 +178,7 @@
     /**
     * Change HTTP request timeout
     */
-    function Zotpress_change_timeout($time)
-    {
-        return 60; // seconds
-    }
+    function Zotpress_change_timeout($time) { return 60; /* second */ }
     add_filter('http_request_timeout', 'Zotpress_change_timeout');
     
     
@@ -230,43 +215,13 @@
         array_push($buttons, "zotpress-cite", "zotpress-list", "zotpress-bib" );
         return $buttons;
     }
-   
-   
-    /**
-    * Metabox styles
-    */
-    function Zotpress_admin_post_styles()
-    {
-        wp_register_style('zotpress.metabox.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.metabox.css');
-        wp_enqueue_style('zotpress.metabox.css');
-        
-        wp_enqueue_style('jquery-ui-tabs', ZOTPRESS_PLUGIN_URL . 'css/smoothness/jquery-ui-1.8.11.custom.css');
-    }
-    add_action('admin_print_styles-post.php', 'Zotpress_admin_post_styles');
-    add_action('admin_print_styles-post-new.php', 'Zotpress_admin_post_styles');
-    
-    
-    // CKEDITOR SCRIPTS & STYLES
-    // In progress and experimental
-    
-    //function Zotpress_admin_editor_scripts()
-    //{
-    //    //wp_register_script('zotpress.widget.ckeditor.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.widget.ckeditor.js', array('jquery'));
-    //    //wp_enqueue_script('zotpress.widget.ckeditor.js');
-    //}
-    
-    //function Zotpress_admin_ckeditor_css()
-    //{
-    //    wp_register_style('zotpress.ckeditor.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.ckeditor.css');
-    //    wp_enqueue_style('zotpress.ckeditor.css');
-    //}
     
     
     // Enqueue jQuery in theme if it isn't already enqueued
     // Thanks to WordPress user "eceleste"
     function Zotpress_enqueue_scripts()
     {
-        if (!isset( $GLOBALS['wp_scripts']->registered[ "jquery" ] )) wp_enqueue_script("jquery");
+        if ( ! isset( $GLOBALS['wp_scripts']->registered[ "jquery" ] ) ) wp_enqueue_script("jquery");
     }
     add_action( 'wp_enqueue_scripts' , 'Zotpress_enqueue_scripts' );
 
@@ -288,75 +243,105 @@
 			
 			wp_enqueue_script("jquery-effects-core");
 			wp_enqueue_script("jquery-effects-highlight");
-            
-            wp_register_script('zotpress.frontend.js', ZOTPRESS_PLUGIN_URL . 'js/zotpress.frontend.js', array('jquery'));
-            wp_enqueue_script('zotpress.frontend.js');
         }
     }
     add_action('wp_footer', 'Zotpress_theme_conditional_scripts_footer');
-    
-    
 	
-    // 5.2 - Notice of required re-import
-    // Thanks to http://wptheming.com/2011/08/admin-notices-in-wordpress/
-    
-    function zotpress_5_2_admin_notice()
-    {
-        global $wpdb;
-        global $current_user;
-        
-        // See if any accounts are the old version
-        $temp_version_count =
-                $wpdb->get_var( "SELECT COUNT(version) FROM ".$wpdb->prefix."zotpress
-                                            WHERE version != '".$GLOBALS['Zotpress_update_db_by_version']."';" );
-        
-        if ( $temp_version_count > 0
-                && !get_user_meta($current_user->ID, 'zotpress_5_2_ignore_notice')
-                && ( current_user_can('edit_posts') || current_user_can('edit_pages') )
-                && ( !isset($_GET['setup']) && !isset($_GET['selective']) && !isset($_GET['import']) )
-            )
-        {
-            echo '<div class="error"><p>';
-            printf(__('<strong>URGENT:</strong> Due to major changes in Zotpress, your Zotero account(s) need to be <a href="admin.php?page=Zotpress&accounts=true">re-imported</a>. | <a href="%1$s">Hide Notice</a>'), 'admin.php?page=Zotpress&zotpress_5_2_ignore=0');
-            echo "</p></div>";
-        }
-    }
-    add_action( 'admin_notices', 'zotpress_5_2_admin_notice' );
-    
-    function zotpress_5_2_ignore()
-    {
-        global $current_user;
-        if ( isset($_GET['zotpress_5_2_ignore']) && $_GET['zotpress_5_2_ignore'] == '0' )
-            add_user_meta($current_user->ID, 'zotpress_5_2_ignore_notice', 'true', true);
-    }
-    add_action('admin_init', 'zotpress_5_2_ignore');
 	
-// REGISTER ACTIONS ---------------------------------------------------------------------------------
+	function Zotpress_enqueue_shortcode_bib()
+	{
+		wp_register_script( 'zotpress.shortcode.bib.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.shortcode.bib.js', array( 'jquery' ), false, true );
+		wp_localize_script( 
+			'zotpress.shortcode.bib.js',
+			'zpShortcodeAJAX', 
+			array( 
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'zpShortcode_nonce' => wp_create_nonce( 'zpShortcode_nonce_val' ),
+				'action' => 'zpRetrieveViaShortcode'
+			)
+		);
+	}
+	add_action( 'wp_enqueue_scripts', 'Zotpress_enqueue_shortcode_bib' );
+	
+	
+	function Zotpress_enqueue_shortcode_intext()
+	{
+		wp_register_script( 'zotpress.shortcode.intext.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.shortcode.intext.js', array( 'jquery' ), false, true );
+		wp_localize_script( 
+			'zotpress.shortcode.intext.js',
+			'zpShortcodeAJAX', 
+			array( 
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'zpShortcode_nonce' => wp_create_nonce( 'zpShortcode_nonce_val' ),
+				'action' => 'zpRetrieveViaShortcode'
+			)
+		);
+	}
+	add_action( 'wp_enqueue_scripts', 'Zotpress_enqueue_shortcode_intext' );
+	
+	
+	function Zotpress_enqueue_lib_dropdown()
+	{
+		wp_register_script( 'zotpress.lib.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.lib.js', array( 'jquery' ), false, true );
+		wp_register_script( 'zotpress.lib.dropdown.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.lib.dropdown.js', array( 'jquery' ), false, true );
+		wp_localize_script( 
+			'zotpress.lib.dropdown.js',
+			'zpShortcodeAJAX', 
+			array( 
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'zpShortcode_nonce' => wp_create_nonce( 'zpShortcode_nonce_val' ),
+				'action' => 'zpRetrieveViaShortcode'
+			)
+		);
+	}
+	add_action( 'wp_enqueue_scripts', 'Zotpress_enqueue_lib_dropdown' );
+	add_action( 'admin_enqueue_scripts', 'Zotpress_enqueue_lib_dropdown' );
+	
+	
+	function Zotpress_enqueue_lib_searchbar()
+	{
+		wp_register_script( 'zotpress.lib.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.lib.js', array( 'jquery' ), false, true );
+		wp_register_script( 'zotpress.lib.searchbar.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.lib.searchbar.js', array( 'jquery' ), false, true );
+		wp_localize_script( 
+			'zotpress.lib.searchbar.js',
+			'zpShortcodeAJAX', 
+			array( 
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'zpShortcode_nonce' => wp_create_nonce( 'zpShortcode_nonce_val' ),
+				'action' => 'zpRetrieveViaShortcode'
+			)
+		);
+	}
+	add_action( 'wp_enqueue_scripts', 'Zotpress_enqueue_lib_searchbar' );
+	add_action( 'admin_enqueue_scripts', 'Zotpress_enqueue_lib_searchbar' );
+	
+// REGISTER ACTIONS 	---------------------------------------------------------------------------------
 
 
-// IMPORT -----------------------------------------------------------------------------------------
-
-    include( dirname(__FILE__) . '/lib/import/import.actions.php' );
-	
-	// NOTE: This overwrites the error everywhere. How to limit to Zotpress?
-	//function zp_nonce_message ($translation)
-	//{
-	//	if ( $translation == 'Are you sure you want to do this?' )
-	//		return 'Access denied: You cannot access this Zotpress page.';
-	//	else
-	//		return $translation;
-	//}
-	//add_filter('gettext', 'zp_nonce_message');
-	
-	// Make sure that nonces live at least 12 hours
-	//add_filter( 'nonce_life', function () { return 12 * HOUR_IN_SECONDS; } ); // Breaking on some servers
+// SECURITY 	----------------------------------------------------------------------------------------------
 	
 	function zp_nonce_life() {
 		return 24 * HOUR_IN_SECONDS;
 	}
 	add_filter( 'nonce_life', 'zp_nonce_life' );
 
-// IMPORT -----------------------------------------------------------------------------------------
+// SECURITY 	----------------------------------------------------------------------------------------------
+
+
+// ZOTPRESS 6.0 NOTIFICATION 	------------------------------------------------------------------------
+
+	$zp_file = basename( __FILE__ );
+	$zp_folder = basename( dirname( __FILE__ ) );
+	$hook = "in_plugin_update_message-{$zp_folder}/{$zp_file}";
+	
+	add_action( $hook, 'update_message_zotpress', 10, 2 ); 
+	
+	function update_message_zotpress( $plugin_data, $r )
+	{
+		echo "Warning: Zotpress 6.0 features major updates to the code and database. Testing on a development server before updating is highly recommended.";
+	}
+
+// ZOTPRESS 6.0 NOTIFICATION 	------------------------------------------------------------------------
 
 
 ?>

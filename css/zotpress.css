@@ -32,14 +32,12 @@
         padding: 9px 15px 4px 0;
         text-transform: uppercase;
     }
-    div#zp-Zotpress h3.zp-HeaderGroup {
-        /*margin-bottom: -0.5em;*/
-    }
     div#zp-Setup h3.pair {
         border-bottom: 0;
         padding: 15px 30px 0;
     }
     
+	div.zp-Collection-Title,
     div#zp-Setup h4,
     div#zp-Zotpress h4 {
         font: italic 400 17px/21px "Droid Serif", "Georgia", serif;
@@ -73,11 +71,13 @@
         margin-bottom: 0;
     }
     
+	div#zp-Setup ul,
     div#zp-Zotpress ul {
         list-style: none;
         margin: 20px 0 25px;
         padding: 0;
     }
+	div#zp-Setup ul li,
     div#zp-Zotpress ul li {
         background: url('../images/sprite.png') no-repeat -40px -60px;
         padding-left: 15px;
@@ -210,7 +210,16 @@
     div#zp-Setup div.zp-Zotpress-Options div.zp-Loading {
         margin-top: 6px;
     }
-    
+	
+	
+	div#zp-Setup div.zp-Column,
+	div#zp-Zotpress div.zp-Column {
+		border-bottom: 1px solid #eee;
+	}
+	div#zp-Setup div.zp-Column div.zp-Column-Inner {
+		padding: 0 25px;
+	}
+
     
     div.zp-Step-Import,
     div#zp-Step-Import {
@@ -246,7 +255,6 @@
     }
     
     
-    iframe.zp-Setup-Sync,
     iframe#zp-Setup-Import {
         position: absolute;
         top: 0;
@@ -592,30 +600,27 @@
     div#zp-Zotpress div#zp-Options-Wrapper div.zp-Column-Inner {
         padding: 0 25px;
     }
-    
-    div#zp-Browse {
-        background-color: #F9F9F9;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        width: 100%;
-    }
-    div#zp-Browse-Bar {
-        background-color: #ACBAD5;
-        float: left;
-        padding-bottom: 5000px;
-        margin-bottom: -5000px;
-        width: 25%;
-    }
-    div#zp-Browse label,
-    div#zp-Browse-Accounts label {
-        /*font: normal 600 1em/1.5em "Open Sans", Helvetica, Arial, sans-serif;*/
-        font: normal 600 1em/1.75em "Droid Serif", serif;
-        color: #fff;
-        display: block;
-        padding: 4% 0 0 6%;
-        text-transform: uppercase;
-    }
+	
+	
+	/* Browse Dropdowns */
+	
+	#zp-Browse-Bar:after {
+		clear: both;
+		content: "";
+		display: table;
+	}
+	
+	#zp-Browse-Collections,
+	#zp-Browse-Tags {
+		float: left;
+		width: 50%;
+	}
+	.zp-Browse-Select {
+		padding: 0 30px;
+	}
+	.zp-Browse-Select select {
+		width: 100%;
+	}
     
     
     /* Accounts */
@@ -697,227 +702,35 @@
     
     
     /* Collection Folders */
-    
-    div#zp-Browse-Collections {
-        background-color: #ACBAD5;
-        width: 100%;
-    }
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection,
-    div#zp-Browse-Collections a.zp-List-Subcollection:visited
-    {
-        background-color: #7c8798;
-        border-bottom: 1px solid #687384;
-        color: #fff;
-        display: block;
-        font-size: 9pt;
-        line-height: 1.1;
-        padding: 4% 6% 4.5%;
-        outline: none;
-        text-decoration: none;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection:hover
-    {
-        background-color: #9aa3af;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection.selected,
-    div#zp-Browse-Collections a.zp-List-Subcollection.down,
-    div#zp-Browse-Collections a.zp-List-Subcollection:active,
-    div#zp-Browse-Collections a.zp-List-Subcollection:focus
-    {
-        background-color: #6d798b;
-		box-shadow: none;
-        color: #9aa3af;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection span.name {
-        display: block;
-        font-weight: 600;
-        padding-bottom: 4%;
-    }
-    
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel.selected {
-        background-color: #ACBAD5;
-        color: #fff;
-        font: normal 600 1em/1.75em "Droid Serif", serif;
-        padding: 3% 6%;
-        text-transform: uppercase;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel.down span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel.down:hover span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel:active span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel.selected span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.toplevel.selected:hover span {
-        background: transparent url('../images/sprite.png') no-repeat -250px -558px;
-        padding-left: 24px;
-    }
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection.child span.name,
-    div#zp-Browse-Collections a.zp-List-Subcollection.child:active span.name,
-    div#zp-Browse-Collections a.zp-List-Subcollection.child:hover span.name {
-        background: transparent url('../images/sprite.png') no-repeat 0 -730px;
-        padding-left: 10px;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection.child.down span.name,
-    div#zp-Browse-Collections a.zp-List-Subcollection.child.down:hover span.name {
-        background: transparent url('../images/sprite.png') no-repeat -490px -730px;
-        padding-left: 10px;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection.child span.item_key,
-    div#zp-Browse-Collections a.zp-List-Subcollection.child span.meta {
-        padding-left: 10px;
-    }
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection span.item_key,
-    div#zp-Browse-Collections a.zp-List-Subcollection span.meta {
-        display: block;
-        font-size: 0.75em;
-        text-transform: uppercase;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection span.item_key {
-        padding-bottom: 3px;
-    }
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection.back span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.back:hover span {
-        background: transparent url('../images/sprite.png') no-repeat 0 -812px;
-        padding-left: 15px;
-    }
-    div#zp-Browse-Collections a.zp-List-Subcollection.back:active span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.back.down span,
-    div#zp-Browse-Collections a.zp-List-Subcollection.back.down:hover span {
-        background: transparent url('../images/sprite.png') no-repeat -490px -812px;
-        padding-left: 15px;
-    }
-    
-    div#zp-Browse-Collections a.zp-List-Subcollection.last {
-        border-bottom: none;
-    }
-    
+	
     div.zp-Collection-Title {
-        background-color: #fff;
-        border-bottom: 1px solid #eee;
-        color: #444;
-        font: normal 400 1em/1.75em "Droid Serif", serif;
-        padding: 0.9% 2%;
-        padding-right: 15px;
-        text-transform: uppercase;
+		margin-left: 30px;
     }
     div.zp-Collection-Title .item_key {
-        float: right;
         color: #ccc;
+		font-size: 0.75em;
+		padding-left: 1em;
     }
-    div.zp-Collection-Title .item_key_inner {
-        float: right;
-    }
-    div.zp-Collection-Title .item_key_inner input,
-    div.zp-Collection-Title .item_key_inner span {
-        color: #444;
-        cursor: pointer;
-        display: block;
-        float: right;
-        text-align: right;
-        width: 6em;
-    }
-    div.zp-Collection-Title .item_key_inner input {
-        background: none;
-        border: none;
-        display: none;
-        font: normal 400 1em/1em "Droid Serif", serif;
-        margin: 0;
-        padding: 0;
-    }
-    div.zp-Collection-Title .item_key_inner input:focus {
-        border: none;
-        box-shadow: none;
-        margin-top: 0.3em;
-    }
-    
-    /* Browse Tags */
-    
-    div#zp-Browse-Tags {
-        background-color: #ACBAD5;
-        border-top: 1px solid #687384;
-        padding: 0.05em 0 5%;
-        width: 100%;
-    }
-	div#zp-Browse-Tags:before,
-	div#zp-Browse-Tags:after {
-		content: "";
-		display: table;
-	}
-	div#zp-Browse-Tags:after {
-		clear: both;
-	}
-    div#zp-Browse-Tags label span {
-        background: transparent url('../images/sprite.png') no-repeat -483px -556px;
-        padding-left: 22px;
-    }
-    select#zp-List-Tags {
-        background: #99abcc;
-        border: none;
-        border: 1px solid #8798b4;
-        box-shadow: 0 1px 2px #8798b4 inset;
-        color: #fff;
-        font-size: 0.9em;
-        margin: 4% 6%;
-        width: 88%;
-    }
-    select#zp-List-Tags.active {
-        background-color: #fff;
-        color: #7988a2;
-    }
-    select#zp-List-Tags:focus {
-        border: 1px solid #8798b4;
-        box-shadow: none;
-    }
-    select#zp-List-Tags:focus {
-        background: #8397b8;
-        border-color: #7185a6;
-        color: #fff;
-    }
-    select#zp-List-Tags option {
-        background: #fff;
-        border-bottom: 1px solid #eee;
-        color: #666;
-        padding: 0.5em 1em;
-    }
-    
-    
-    /* Pagination */
-    
-    div#zp-Zotpress div#zp-Pagination {
-        position: relative;
-        background-color: #fff;
-        /*border-top: 1px solid #eee;*/
-        clear: both;
-        min-height: 3em;
-    }
-    div#zp-Pagination span {
-        display: block;
-        font-size: 12px;
-        font-family: "Droid Serif", serif;
-        padding: 1em;
-        text-align: right;
-        text-shadow: 0 1px 0 #FAFAFA;
-    }
-    
+	
     /* END BROWSE */
     
     
     
-    /* START CITATION LISTS */
+    /* START OF BROWSE CITATION LISTS */
     
-    div#zp-Zotpress div#zp-List {
-        float: right;
-        border-top: 1px solid #E5E5E5;
-        border-bottom: 1px solid #eee;
-        width: 75%;
+	#zpSearchResultsContainer {
+		border-top: 1px solid #eee;
+		padding: 20px 0;
+	}
+	div#zp-Zotpress div.zp-List.loading #zpSearchResultsContainer {
+		background: transparent url('../images/loading_default.gif') no-repeat center 2em;
+		min-height: 2em;
+	}
+    
+    div#zp-Zotpress div.zp-List {
     }
     
-    div#zp-Zotpress div#zp-List h3 {
+    div#zp-Zotpress div.zp-List h3 {
         display: block;
         color: #bbb;
         background: #333;
@@ -925,68 +738,63 @@
         margin: -3px 0 0;
         padding: 10px 15px;
     }
-    div#zp-Zotpress div#zp-List h3 em {
+    div#zp-Zotpress div.zp-List h3 em {
         color: #fff;
         font-style: normal;
     }
     
-    div#zp-Zotpress div#zp-List p {
+    div#zp-Zotpress div.zp-List p {
         margin: 1em;
     }
     
-    div#zp-Zotpress div#zp-List a,
-    div#zp-Zotpress div#zp-List a:visited
+    div#zp-Zotpress div.zp-List a,
+    div#zp-Zotpress div.zp-List a:visited
     {
         color: #E14D43; /* bae1fe */
         text-decoration: none;
     }
-    div#zp-Zotpress div#zp-List h3 a {
+    div#zp-Zotpress div.zp-List h3 a {
         float: right;
     }
-    div#zp-Zotpress div#zp-List a:hover {
-        color: #fff;
+    div#zp-Zotpress div.zp-List a:hover {
+        color: #ddd;
     }
-    div#zp-Zotpress div#zp-List a:active {
-        color: #999;
+    div#zp-Zotpress div.zp-List a:active {
+        color: #666;
     }
     
-    /* END CITATION LISTS */
+	
     
-    
-    
-    /* START CITATIONS */
-    
-    div#zp-Zotpress div#zp-List div.zp-Entry {
-        background-color: #fff;
-        padding: 15px;
+    div#zp-Zotpress div.zp-List div.zp-Entry {
+        padding: 0 30px;
     }
-	div#zp-Zotpress div#zp-List div.zp-Entry:before,
-	div#zp-Zotpress div#zp-List div.zp-Entry:after {
+	div#zp-Zotpress div.zp-List div.zp-Entry:before,
+	div#zp-Zotpress div.zp-List div.zp-Entry:after {
 		content: "";
 		display: table;
 	}
-	div#zp-Zotpress div#zp-List div.zp-Entry:after {
+	div#zp-Zotpress div.zp-List div.zp-Entry:after {
 		clear: both;
 	}
-    div#zp-Zotpress div#zp-List div.zp-Entry.odd {
-        background-color: transparent;
-    }
     
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image {
         position: relative;
         float: right;
-        margin-left: 15px;
+        margin: 0 0 5px 15px;
         overflow: hidden;
         text-align: center;
         width: 100px;
-        height: 100px;
+        height: 2.05em;
     }
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image.hasImage {
+        width: 100px;
+        height: 100px;
+	}
     
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.upload,
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.upload:link,
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.upload:visited,
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.upload:active
-    {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload,
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload:link,
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload:visited,
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload:active {
         z-index: 2;
         top: 0;
         left: 0;
@@ -997,12 +805,12 @@
         display: block;
         font-size: 0.9em;
         font-weight: bold;
-        line-height: 96px;
+        line-height: 2em;
         text-decoration: none;
         width: 96px;
-        height: 96px;
+        height: 2em;
     }
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image.hasimage a.upload {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image.hasImage a.upload {
         background: transparent;
         border: none;
         color: #fff;
@@ -1012,16 +820,17 @@
         -moz-opacity: 0;
         -khtml-opacity: 0;
         text-shadow: 0px 0px 3px rgba(0, 0, 0, 1.0);
+		line-height: 96px;
         width: 100px;
         height: 100px;
     }
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.upload:hover {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload:hover {
         background-color: #a8cf30;
         border: 2px solid #a8cf30;
         color: #fff;
     }
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image.hasimage a.upload:hover {
-        background: transparent;
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image.hasImage a.upload:hover {
+        background: #a8cf30;
         border: none;
         opacity: 1;
         -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -1031,7 +840,7 @@
         width: 100px;
         height: 100px;
     }
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image a.delete {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image a.delete {
         position: absolute;
         z-index: 3;
         top: 0;
@@ -1048,11 +857,11 @@
         width: 25px;
         height: 25px;
     }
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image.hover.hasimage a.delete {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image.hover.hasImage a.delete {
         display: block;
     }
     
-    div#zp-Zotpress div#zp-List div.zp-Entry-Image img {
+    div#zp-Zotpress div.zp-List div.zp-Entry-Image img {
         z-index: 1;
         position: absolute;
         top: 0;
@@ -1061,13 +870,7 @@
         height: 100px;
     }
     
-    div#zp-Zotpress div.zp-Entry div.csl-bib-body {
-        font-size: 0.9em;
-        margin: 0 0 15px;
-    }
-    
     div#zp-Zotpress div.zp-Entry div.zp-Entry-ID {
-        /*border-top: 1px dashed #EEEEEE;*/
         color: #999;
         font-size: 10px;
         display: block;
@@ -1092,8 +895,40 @@
         padding: 0;
         margin: 0;
     }
+	
+	
+	/* Pagination */
+	
+	#zpSearchResultsPaging {
+		padding: 10px 30px;
+		border-top: 1px solid #eee;
+	}
+	#zpSearchResultsPaging:after {
+		clear: both;
+        content: "";
+        display: table;
+	}
+	
+	#zpSearchResultsPaging .title {
+		font: italic 400 17px/21px "Droid Serif","Georgia",serif;
+		float: left;
+		padding: 7px 15px 0 0;
+	}
+	
+	#zpSearchResultsPaging a {
+		float: left;
+		display: block;
+		padding: 1em;
+		min-width: 3em;
+		text-align: center;
+		padding: 10px 0;
+	}
+	#zpSearchResultsPaging a.selected {
+		background-color: #f9f9f9;
+		color: #000 !important;
+	}
     
-    /* END CITATIONS */
+    /* END OF BROWSE CITATIONS */
     
     
     
@@ -1291,23 +1126,8 @@
         -khtml-opacity: 0.5;
         opacity: 0.5;
     }
-    #zp-AccountsList .actions a.sync span.icon {
-        background-position: -31px -422px;
-    }
-    #zp-AccountsList .actions a.sync.syncing span.icon {
-        background: transparent url('../images/syncing.gif') no-repeat 0 0;
-    }
-    #zp-AccountsList .actions a.sync.error span.icon {
-        background-position: -51px -422px;
-    }
-    #zp-AccountsList .actions a.sync.success span.icon {
-        background-position: -61px -422px;
-    }
-    #zp-AccountsList .actions a.selective:before {
-        background-position: -252px -423px;
-    }
-    #zp-AccountsList .actions a.import:before {
-        background-position: 0 -423px;
+    #zp-AccountsList .actions a.cache:before {
+        background-position: -343px -423px;
     }
     #zp-AccountsList .actions a.delete:before {
         background-position: -105px 0;
@@ -1509,7 +1329,7 @@
         padding: 2em;
     }
     div.zp-Message p.rate {
-        background-color: #333;
+        background-color: #26292c;
         color: #fff;
         text-shadow: 0 1px 0 #000;
     }
@@ -1659,9 +1479,9 @@
     
     /* END OF OPTIONS PAGE CSS */
     
-    
+	
     .ui-tooltip-tipsy .ui-tooltip-titlebar, .ui-tooltip-tipsy .ui-tooltip-content {
         font-weight: normal !important;
         width: 300px !important;
     }
-    
+	

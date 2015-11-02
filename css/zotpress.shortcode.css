@@ -18,18 +18,13 @@
     
     div.zp-Zotpress div.zp-Entry.zp-HasImage {
         clear: both;
-        min-height: 150px;
     }
     div.zp-Zotpress div.zp-Entry-Image {
-        float: left;
+        float: right;
     }
     
     div.zp-Zotpress div.zp-Entry .csl-left-margin {
         width: auto !important;
-    }
-
-    div.zp-Zotpress div.zp-Entry.zp-HasImage div.csl-bib-body {
-        margin-left: 170px;
     }
     
     div.zp-Zotpress span.zp-Loading {
@@ -70,6 +65,17 @@
 	.zp-ZotpressShortcode.cite .summary,
 	.zp-ZotpressShortcode.bib .summary {
 		display: none;
+	}
+	
+	.zp-InText-Citation.loading {
+		background: transparent url('../images/loading_default.gif') no-repeat center;
+		background-size: contain;
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		/*line-height: 0;*/
+		/*font-size: 0;*/
+		/*padding: 18px 18px 0 0;*/
 	}
 	
 	
@@ -114,17 +120,23 @@
 	#zp-Browse-Collections-Select {
 		border-right: 2px solid #000;
 	}
+	.zp-List.loading {
+		background: transparent url('../images/loading_default.gif') no-repeat center 2em;
+		min-height: 5em;
+	}
+	#zp-Browse-Collections-Select.loading,
+	.zp-List-Tags.loading {
+		background: transparent url('../images/loading_default.gif') no-repeat 0.5em center;
+		padding-left: 1.75em;
+	}
 	
-	#zp-Pagination,
 	.zp-Collection-Title {
 		letter-spacing: 0.15em;
 		font-size: 0.9em;
 		font-weight: bold;
-		margin: 3em 0 2em;
+		margin: 3em 0 0;
+		padding: 0 0 2em;
 		text-transform: uppercase;
-	}
-	#zp-Pagination {
-		margin: 2em 0 0;
 	}
 	
 	.zp-Entry-Image {
@@ -134,14 +146,20 @@
 	
 	#zp-Zotpress-SearchBox input[type="radio"] {
 		cursor: pointer;
-		margin: 0.5em;
+		margin: 0.5em 0.25em 0.5em 0.5em;
 		vertical-align: middle;
 	}
 	#zp-Zotpress-SearchBox label {
 		cursor: pointer;
 	}
 	#zp-Zotpress-SearchBox .zp-SearchBy {
-		margin-left: 0.5em;
+		margin-left: 1em;
+	}
+	#zp-Zotpress-SearchBox label,
+	#zp-Zotpress-SearchBox .zp-SearchBy {
+		font-size: 0.5em;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 	
 	.zpSearchLoading {
@@ -153,6 +171,12 @@
 		visibility: visible;
 	}
 	
+	.zpSearchResultsItem:after {
+		clear: both;
+		content: "";
+		display: table;
+	}
+	
 	.zpSearchResultsItem .item_key {
 		display: block;
 		font-weight: bold;
@@ -161,6 +185,14 @@
 	
 	.zpSearchResultsItem.hidden {
 		display: none;
+	}
+	
+	#zp-Zotpress-SearchBox-Input {
+		border: none;
+	}
+	
+	#zpSearchResultsPaging {
+		margin: 2em 0;
 	}
 	
 	#zpSearchResultsPaging:before,

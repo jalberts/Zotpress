@@ -29,7 +29,7 @@
 		global $wpdb;
 		
 		// Include Request Functionality
-		require('rss.request.php');
+		require('request.class.php');
 		
 		// Set up vars
 		$zp_xml = "";
