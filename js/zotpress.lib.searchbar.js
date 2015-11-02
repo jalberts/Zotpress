@@ -115,7 +115,6 @@ jQuery(document).ready(function()
 				{
 					var tempCurrentTerm = false; if ( event.hasOwnProperty('currentTarget') ) tempCurrentTerm = event.currentTarget.value;
 					
-<<<<<<< HEAD
 					if ( zpItemsFlag == true
 						|| ( tempCurrentTerm && tempCurrentTerm != zpLastTerm ) )
 					{
@@ -138,13 +137,6 @@ jQuery(document).ready(function()
 						if ( zpItemsFlag == true && tempCurrentTerm )
 							zpLastTerm = tempCurrentTerm;
 					}
-=======
-					// Empty pagination
-					if ( jQuery("#zpSearchResultsPaging").length > 0 ) jQuery("#zpSearchResultsPaging").empty();
-					
-					// Remove old results
-					jQuery("#zpSearchResultsContainer").empty();
->>>>>>> master
 				},
 				response: function( event, ui )
 				{
