@@ -289,12 +289,12 @@ jQuery(document).ready(function()
 						// Feedback on where in item chunking we're at
 						if ( ! jQuery(".zp-List").hasClass("updating")
 								&& ( zp_items.meta.request_last !== false && zp_items.meta.request_last != "false" ) 
-								&& zp_items.meta.request_last !== 0 )
+								&& ( zp_items.meta.request_last !== 0 ) )
 						{
 							jQuery(".zp-List").find(".zp_display_progress").html(
 								"Loading "
-								+ (zp_items.meta.request_next-50) + "-" + zp_items.meta.request_next
-								+ " out of " + zp_items.meta.request_last + "..." );
+								+ (zp_items.meta.request_next) + "-" + (zp_items.meta.request_next+50)
+								+ " out of " + (parseInt(zp_items.meta.request_last)+50) + "..." );
 						}
 
 						jQuery.each(zp_items.data, function( index, item )
@@ -363,6 +363,9 @@ jQuery(document).ready(function()
 							if ( zpItemsFlag == true ) window.zpACPagination(zpItemsFlag, false); 
 							else window.zpACPagination(zpItemsFlag, true); 
 							zpItemsFlag = false;
+                            
+                            // If numeric, update numbers
+                            zp_relabel_numbers();
 							
 							zp_get_items ( zp_items.meta.request_next, zp_items.meta.request_last, update );
 						}
@@ -380,16 +383,17 @@ jQuery(document).ready(function()
 							{
 								zp_get_items ( 0, 0, true );
 							}
-							else // Re-sort if not numbered and sorting by author
+							else 
 							{
-								if ( jQuery(".ZP_SORTBY").text() == "author"
+                                // Re-sort if not numbered and sorting by author
+								if ( ( jQuery("#ZP_SORTBY").text() == "author" )
 										&& jQuery("div.zp-List .csl-left-margin").length == 0 )
 								{
 									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b)
 									{
 										// Sort based on Trent's: http://trentrichardson.com/2013/12/16/sort-dom-elements-jquery/
 										var an = a.getAttribute("data-zp-author-year").toLowerCase(),
-											  bn = b.getAttribute("data-zp-author-year").toLowerCase();
+                                            bn = b.getAttribute("data-zp-author-year").toLowerCase();
 										
 										if (an > bn)
 											return 1;
@@ -400,6 +404,9 @@ jQuery(document).ready(function()
 										
 									}).detach().appendTo("#"+zp_items.instance+" .zp-List");
 								}
+                                
+                                // If numerical, update numbers
+                                zp_relabel_numbers();
 							}
 						}
 					}
@@ -407,13 +414,13 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						if ( update === true )
-						{
+						//if ( update === true )
+						//{
 							jQuery(".zp-List").removeClass("loading");
 							jQuery(".zp-List").find(".zp_display_progress").remove();
 							
 							jQuery("#zpSearchResultsContainer").append("<p>There are no citations to display.</p>\n");
-						}
+						//}
 					}
 				},
 				error: function(errorThrown)
@@ -423,6 +430,28 @@ jQuery(document).ready(function()
 			});
 		}
 		zp_get_items ( 0, 0, false );
+        
+        
+        /**
+         * Corrects numeric citations.
+         *
+         */
+        function zp_relabel_numbers()
+        {
+            //console.log("start relabel");
+            if ( jQuery("div.zp-List .csl-left-margin").length != 0 
+                && /\d/.test( jQuery("div.zp-List .csl-left-margin").text() ) )
+            {
+                var count = 1;
+                
+                jQuery("div.zp-List .csl-left-margin").each(function()
+                {
+                    jQuery(this).text( jQuery(this).text().replace(/(\d+)/, count) );
+                    count++;
+                });
+            }
+            //console.log("stop relabel");
+        }
 		
 		
 	} // Zotpress DropDown Library
