@@ -216,8 +216,6 @@
 		
 		wp_enqueue_script( 'zotpress.shortcode.bib.js' );
 		
-		$zp_output = "";
-        
         // Get account (api_user_id)
         $zp_account = false;
         
@@ -225,7 +223,9 @@
         {
             $zp_account = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."zotpress WHERE nickname='".$nickname."'", OBJECT);
 			
-			if ( is_null($zp_account) ): echo "<p>Sorry, but the selected Zotpress nickname can't be found.</p>"; return false; endif;
+			if ( is_null($zp_account) ):
+                return "<p>Sorry, but the selected Zotpress nickname can't be found.</p>";
+            endif;
 			
             $api_user_id = $zp_account->api_user_id;
         }
@@ -233,7 +233,9 @@
         {
             $zp_account = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."zotpress WHERE api_user_id='".$api_user_id."'", OBJECT);
 			
-			if ( is_null($zp_account) ): echo "<p>Sorry, but the selected Zotpress account can't be found.</p>"; return false; endif;
+			if ( is_null($zp_account) ):
+                return "<p>Sorry, but the selected Zotpress account can't be found.</p>";
+            endif;
 			
             $api_user_id = $zp_account->api_user_id;
         }
@@ -304,9 +306,7 @@
         // GENERATE SHORTCODE
         
         if ($zp_account === false)
-        {
             $zp_output .= "\n<div id='".$zp_instance_id."' class='zp-Zotpress'>Sorry, no citation(s) found for this account.</div>\n";
-        }
 		
 		$zp_output .= "</div><!-- .zp-List --></div><!--.zp-Zotpress-->\n\n";
 		

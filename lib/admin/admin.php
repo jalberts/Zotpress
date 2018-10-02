@@ -422,39 +422,12 @@
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_oauth;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroItems;");
-		        //$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroItemImages;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroCollections;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroTags;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroRelItemColl;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroRelItemTags;");
                 $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_cache ;");
-                
-                /*// Delete entries/items
-                $zp_entry_array = get_posts(
-					array(
-						'posts_per_page'   => -1,
-						'post_type' => 'zp_entry'
-					)
-				);
-				foreach ($zp_entry_array as $zp_entry) wp_delete_post( $zp_entry->ID, true );
-                
-                // Delete collections
-                $zp_collections_array = get_terms(
-					'zp_collections',
-					array(
-						'hide_empty' => false
-					)
-				);
-				foreach ($zp_collections_array as $zp_collection_term) zp_delete_collection ($zp_collection_term->term_id);
-                
-                // Delete tags
-				$zp_tags_array = get_terms(
-					'zp_tags',
-					array(
-						'hide_empty' => false
-					)
-				);
-				foreach ($zp_tags_array as $zp_tag_term) zp_delete_tag ($zp_tag_term->term_id);*/
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroItemImages ;");
                 
 		        delete_option( 'Zotpress_cache_version' );
 		        delete_option( 'Zotpress_DefaultCPT' );
@@ -470,6 +443,8 @@
                 delete_option( 'Zotpress_zoteroTags_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemColl_db_version' );
                 delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
+				delete_option( 'Zotpress_zoteroItemImages_db_version' );
+				delete_option( 'Zotpress_update_notice_dismissed' );
 				delete_option( 'Zotpress_zoteroItemImages_db_version' );
                 
                 delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );
