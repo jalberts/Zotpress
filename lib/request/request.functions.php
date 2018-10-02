@@ -161,9 +161,13 @@
 			}
 			else // first and last names
 			{
-				if ( isset($creator->firstName)
-						&& ( strtolower($creator->firstName) == $author[0]
-								&& strtolower($creator->lastName) == $author[1] ) )
+				if 	(
+						( isset($creator->firstName)
+							&& ( strtolower($creator->firstName) == $author[0]
+									&& strtolower($creator->lastName) == $author[1] )
+						)
+						|| ( isset($creator->name) && ( strtolower($creator->name) == implode(" ", $author) ) )
+					)
 					$author_continue = true;
 			}
 		}

@@ -1,6 +1,6 @@
 jQuery(document).ready(function()
 {
-	
+
     /****************************************************************************************
      *
      *     ZOTPRESS BIBLIOGRAPHY
@@ -13,7 +13,7 @@ jQuery(document).ready(function()
 	{
 		var zp_all_items = new Array();
 		
-		// Get list items
+		// Get list items:
 		function zp_get_items ( request_start, request_last, $instance, params, update )
 		{
 			if ( typeof(request_start) === "undefined" || request_start == "false" || request_start == "" )
@@ -69,7 +69,7 @@ jQuery(document).ready(function()
 				{
 					var zp_items = jQuery.parseJSON( data );
 					
-					// First, display the items from this request, if any
+					// First, display the items from this request, if any:
 					if ( typeof zp_items != 'undefined' && zp_items != null && zp_items != 0 && zp_items.data.length > 0 )
 					{
 						var tempItems = "";
@@ -77,14 +77,14 @@ jQuery(document).ready(function()
 						if ( params.zpTitle == true ) var tempTitle = "";
 						
 						
-						// Indicate whether cache has been used
+						// Indicate whether cache has been used:
 						if ( update === false )
 						{
 							jQuery("#"+zp_items.instance+" .zp-List").addClass("used_cache");
 						}
 						else if ( update === true )
 						{
-							// Remove existing notes temporarily
+							// Remove existing notes temporarily:
 							if ( ! jQuery("#"+zp_items.instance+" .zp-List").hasClass("updating")
 									&& jQuery("#"+zp_items.instance+" .zp-Citation-Notes").length > 0 )
 								jQuery("#"+zp_items.instance+" .zp-Citation-Notes").remove();
@@ -219,11 +219,11 @@ jQuery(document).ready(function()
 						
 						
 						
-						// Append cached/initial items to list
+						// Append cached/initial items to list:
 						if ( update === false ) jQuery("#"+zp_items.instance+" .zp-List").append( tempItems );
 						
 						
-						// Append notes to container
+						// Append notes to container:
 						if ( params.zpShowNotes == true && tempNotes.length > 0 )
 						{
 							tempNotes = "<div class='zp-Citation-Notes'>\n<h4>Notes</h4>\n<ol>\n" + tempNotes;
@@ -268,9 +268,20 @@ jQuery(document).ready(function()
 								if ( jQuery(".ZP_SORTBY", $instance).text() == "author"
 										&& jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").length == 0 )
 								{
-									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b){
-										return jQuery(a).data('zp-author-year') > jQuery(b).data('zp-author-year');
-									}).appendTo("#"+zp_items.instance+" .zp-List");
+									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b)
+									{
+										// Sort based on Trent's: http://trentrichardson.com/2013/12/16/sort-dom-elements-jquery/
+										var an = a.getAttribute("data-zp-author-year").toLowerCase(),
+											  bn = b.getAttribute("data-zp-author-year").toLowerCase();
+										
+										if (an > bn)
+											return 1;
+										else if (an < bn)
+											return -1;
+										else
+											return 0;
+										
+									}).detach().appendTo("#"+zp_items.instance+" .zp-List");
 								}
 							}
 						}

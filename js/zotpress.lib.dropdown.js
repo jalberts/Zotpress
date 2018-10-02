@@ -356,9 +356,24 @@ jQuery(document).ready(function()
 								if ( jQuery(".ZP_SORTBY").text() == "author"
 										&& jQuery("div.zp-List .csl-left-margin").length == 0 )
 								{
-									jQuery('div.zp-List div.zp-Entry').sort(function(a,b){
-										return jQuery(a).data('zp-author-year') > jQuery(b).data('zp-author-year');
-									}).appendTo('div.zp-List');
+									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b)
+									{
+										// Sort based on Trent's: http://trentrichardson.com/2013/12/16/sort-dom-elements-jquery/
+										var an = a.getAttribute("data-zp-author-year").toLowerCase(),
+											  bn = b.getAttribute("data-zp-author-year").toLowerCase();
+										
+										if (an > bn)
+											return 1;
+										else if (an < bn)
+											return -1;
+										else
+											return 0;
+										
+									}).detach().appendTo("#"+zp_items.instance+" .zp-List");
+									
+									//jQuery('div.zp-List div.zp-Entry').sort(function(a,b) {
+									//	return jQuery(a).getAttribute("zp-author-year") > jQuery(b).getAttribute("zp-author-year");
+									//}).appendTo('div.zp-List');
 								}
 							}
 						}

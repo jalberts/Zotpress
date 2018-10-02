@@ -296,6 +296,7 @@
 		
 		// Start if multiple
 		if ( $zp_request_start != 0 ) $zp_import_url .= "&start=".$zp_request_start;
+		//$zp_import_url .= "&start=".$zp_request_start;
 		
 		// Multiple item keys
 		// EVENTUAL TO-DO: Limited to 50 item keys at a time ... can I get around this?
@@ -537,10 +538,10 @@
 							
 							// First: Get rid of text URL if it appears as text in the citation:
 							// TO-DO: Does this account for all citation styles?
-							/* chicago-author-date */$item->bib = str_replace( htmlentities($item->data->url."."), "", $item->bib ); // Note the period
-							/* APA */ $item->bib = str_replace( htmlentities($item->data->url), "", $item->bib );
-							$item->bib = str_replace( " Retrieved from ", "", $item->bib );
-							$item->bib = str_replace( " Available from: ", "", $item->bib );
+							/* chicago-author-date */$item->bib = str_ireplace( htmlentities($item->data->url."."), "", $item->bib ); // Note the period
+							/* APA */ $item->bib = str_ireplace( htmlentities($item->data->url), "", $item->bib );
+							$item->bib = str_ireplace( " Retrieved from ", "", $item->bib );
+							$item->bib = str_ireplace( " Available from: ", "", $item->bib );
 							
 							
 							// Next, get rid of double space characters (two space characters next to each other):
@@ -548,8 +549,8 @@
 							
 							
 							// Next, prep bib by replacing entity quotes:
-							$item->bib = str_replace( "&ldquo;", "&quot;",
-													str_replace( "&rdquo;", "&quot;",
+							$item->bib = str_ireplace( "&ldquo;", "&quot;",
+													str_ireplace( "&rdquo;", "&quot;",
 															htmlentities(
 																html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ),
 																ENT_QUOTES,
@@ -590,7 +591,7 @@
 							);
 							$chr = array_keys( $chr_map ); 
 							$rpl = array_values( $chr_map ); 
-							$item->bib = str_replace( $chr, $rpl, html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ) );
+							$item->bib = str_ireplace( $chr, $rpl, html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ) );
 							
 							// Re-encode for foreign characters, but don't encode quotes:
 							$item->bib = htmlentities( $item->bib, ENT_NOQUOTES, "UTF-8" );
@@ -598,10 +599,10 @@
 							
 							// Next, prep title:
 							$item->data->title = htmlentities( $item->data->title, ENT_COMPAT, "UTF-8" );
-							$item->data->title = str_replace("&nbsp;", " ", $item->data->title );
+							$item->data->title = str_ireplace("&nbsp;", " ", $item->data->title );
 							
 							// If wrapping title, wrap it:
-							$item->bib = str_replace(
+							$item->bib = str_ireplace(
 									$item->data->title,
 									"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->title."</a>",
 									$item->bib
@@ -616,7 +617,7 @@
 						}
 						else // Just hyperlink the URL text
 						{
-							$item->bib = str_replace(
+							$item->bib = str_ireplace(
 									htmlentities($item->data->url),
 									"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->url."</a>",
 									$item->bib
@@ -630,7 +631,7 @@
 						// Most styles
 						if ( strpos( $item->bib, "http://doi.org/" ) !== false )
 						{
-							$item->bib = str_replace(
+							$item->bib = str_ireplace(
 									"http://doi.org/" . $item->data->DOI,
 									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
 									$item->bib
@@ -638,7 +639,7 @@
 						}
 						else // Styles without the http://
 						{
-							$item->bib = str_replace(
+							$item->bib = str_ireplace(
 									"doi:" . $item->data->DOI,
 									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
 									$item->bib
@@ -652,7 +653,7 @@
 					
 					// Highlight text
 					if ( $zp_highlight )
-						$item->bib = str_replace( $zp_highlight, "<strong>".$zp_highlight."</strong>", $item->bib );
+						$item->bib = str_ireplace( $zp_highlight, "<strong>".$zp_highlight."</strong>", $item->bib );
 					
 					// Downloads, notes
 					if ( $zp_downloadable || $zp_shownotes )
