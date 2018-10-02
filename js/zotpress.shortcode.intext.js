@@ -249,6 +249,8 @@ jQuery(document).ready(function()
 				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" ).replace( /\//g, "_" ).replace( /\+/g, "_" ).replace( /&/g, "_" ).replace( / /g, "_" );
 				var intext_citation_id = "zp-InText-zp-ID-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+tempId+"-"+jQuery(".ZP_POSTID", $instance).text()+"-"+(index+1);
 				var intext_citation_params = JSON.parse( jQuery("#"+intext_citation_id, $postRef ).attr("rel").replace( /'/g, '"') );
+				
+				
 				var intext_citation_output = "";
 				
 				// Create array from item keys
