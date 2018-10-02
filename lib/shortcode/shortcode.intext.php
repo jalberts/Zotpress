@@ -32,8 +32,8 @@
         
         // PREPARE ATTRIBUTES
         
-        if ($items) $items = str_replace('"','',html_entity_decode($items));
-        else if ($item) $items = str_replace('"','',html_entity_decode($item));
+        if ($items) $items = str_replace(" ", "", str_replace('"','',html_entity_decode($items)));
+        else if ($item) $items = str_replace(" ", "", str_replace('"','',html_entity_decode($item)));
         
         $pages = str_replace('"','',html_entity_decode($pages));
         $format = str_replace('"','',html_entity_decode($format));
@@ -89,7 +89,7 @@
         
         // Generate instance id for shortcode
 		//$zp_instance_id = "zotpress-".md5(get_the_ID().$api_user_id.$items);
-		$zp_instance_id = "zp-ID-".$api_user_id."-".str_replace( "{", "-", str_replace( "}", "-", str_replace( ",", "_", $items ) ) )."-".get_the_ID();
+		$zp_instance_id = "zp-ID-".$api_user_id."-" . str_replace( " ", "_", str_replace( "&", "_", str_replace( "+", "_", str_replace( "/", "_", str_replace( "{", "-", str_replace( "}", "-", str_replace( ",", "_", $items ) ) ) ) ) ) ) ."-".get_the_ID();
 		
 		if ( ! isset( $GLOBALS['zp_shortcode_instances'][get_the_ID()] ) )
 			$GLOBALS['zp_shortcode_instances'][get_the_ID()] = array();

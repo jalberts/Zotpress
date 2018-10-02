@@ -63,7 +63,7 @@
 		if ( $zp_xml !== false && strlen(trim($zp_xml["json"])) > 0 )
 		{
 			header( "Content-Type:".$zp_content_type);
-			header( "Content-Disposition:attachment;filename='".$zp_filename."'");
+			header( "Content-Disposition:attachment;filename=".$zp_filename);
 			echo $zp_xml["json"];
 			//readfile( $zp_xml["json"] );
 		}

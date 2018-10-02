@@ -29,6 +29,7 @@ jQuery(document).ready(function()
 					'action': 'zpRetrieveViaShortcode',
 					'instance_id': $instance.attr("id"),
 					'api_user_id': jQuery(".ZP_API_USER_ID", $instance).text(),
+					'type': "intext",
 					
 					'item_key': params.zpItemkey,
 					
@@ -51,6 +52,9 @@ jQuery(document).ready(function()
 					'request_last': request_last,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(data)
 				{
 					var zp_items = jQuery.parseJSON( data );
@@ -61,7 +65,7 @@ jQuery(document).ready(function()
 						var tempItems = "";
 						if ( params.zpShowNotes == true ) var tempNotes = "";
 						if ( params.zpTitle == true ) var tempTitle = "";
-						
+						var $postRef = jQuery($instance).parent();
 						
 						// Format in-text citations
 						zp_format_intext_citations( $instance, params.zpItemkey, zp_items.data, params );
@@ -89,6 +93,7 @@ jQuery(document).ready(function()
 							
 							tempItems += "<div id='zp-ID-"+jQuery(".ZP_POSTID", $instance).text()+"-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+item.key+"' class='zp-Entry zpSearchResultsItem";
 							
+							// Image
 							if ( jQuery("#"+zp_items.instance+" .ZP_SHOWIMAGE").text().trim().length > 0
 									&& item.hasOwnProperty('image') )
 							{
@@ -179,8 +184,8 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						jQuery("#"+zp_items.instance+" .zp-List").removeClass("loading");
-						jQuery("#"+zp_items.instance+" .zp-List").append("<p>There are no citations to display.</p>\n");
+						jQuery("#"+$instance.attr("id")+" .zp-List").removeClass("loading");
+						jQuery("#"+$instance.attr("id")+" .zp-List").append("<p>There are no citations to display.</p>\n");
 					}
 				},
 				error: function(errorThrown)
@@ -217,7 +222,11 @@ jQuery(document).ready(function()
 		
 		function zp_format_intext_citations ( $instance, item_keys, item_data, params )
 		{
-			// Possible format: NUM,{NUM,3-9};{NUM,8}, including repeats
+			// Tested formats:
+			// KEY
+			// {KEY}
+			// {KEY,3-9}
+			// KEY,{KEY,8}
 			var intext_citations = new Array();
 			
 			// Create array for multiple in-text citations -- semicolon
@@ -226,15 +235,11 @@ jQuery(document).ready(function()
 			
 			jQuery.each( intext_citations, function (index, intext_citation)
 			{
-				var postRef = "";
-				if ( jQuery("#post-"+jQuery(".ZP_POSTID", $instance).text()).length > 0 )
-					postRef = "#post-"+jQuery(".ZP_POSTID", $instance).text();
-				else // assume class
-					postRef = ".post-"+jQuery(".ZP_POSTID", $instance).text();
+				var $postRef = jQuery($instance).parent();
 				
-				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" );
+				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" ).replace( /\//g, "_" ).replace( /\+/g, "_" ).replace( /&/g, "_" ).replace( / /g, "_" );
 				var intext_citation_id = "zp-InText-zp-ID-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+tempId+"-"+jQuery(".ZP_POSTID", $instance).text()+"-"+(index+1);
-				var intext_citation_params = JSON.parse( jQuery("#"+intext_citation_id, postRef ).attr("rel").replace( /'/g, '"') );
+				var intext_citation_params = JSON.parse( jQuery("#"+intext_citation_id, $postRef ).attr("rel").replace( /'/g, '"') );
 				var intext_citation_output = "";
 				
 				// Create array from item keys
@@ -276,7 +281,7 @@ jQuery(document).ready(function()
 				{
 					intext_citation = [{ "key": intext_citation, "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "bib": "", "citation_ids": "" }];
 				}
-				// Now we have an array
+				// Now we have an array in intext_citation
 				// e.g.  [{ key="3NNACKP2",  pages=false,  citation=""}, { key="S74KCIJR",  pages=false,  citation=""}]
 				
 				
@@ -288,6 +293,7 @@ jQuery(document).ready(function()
 					var item_citation = "";
 					var item_authors = "";
 					var item_year ="";
+					var item_title_attr = "";
 					
 					// Add to global array, if not already there
 					if ( ! window.zpIntextCitations["post-"+item.post_id].hasOwnProperty(item.key) )
@@ -295,90 +301,97 @@ jQuery(document).ready(function()
 					else
 						window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"] += intext_citation_id + " ";
 					
+					
+					// Deal with authors and etal
+					jQuery.each( item_data, function ( kindex, response_item )
+					{
+						if ( response_item.data.key != item.key ) return true;
+						
+						if ( response_item.data.hasOwnProperty("creators") )
+						{
+							// Deal with authors
+							jQuery.each ( response_item.data.creators, function ( ai, author )
+							{
+								if ( ai != 0 ) item_authors += ", ";
+								if ( author.hasOwnProperty("name") ) item_authors += author.name;
+								else if ( author.hasOwnProperty("lastName") ) item_authors += author.lastName;
+							});
+							
+							// Deal with duplicates in the group
+							if ( group_authors.indexOf(item_authors) == -1 )
+								group_authors[group_authors.length] = item_authors;
+							else
+								item_authors = "";
+							
+							// Create authors array (easier to deal with)
+							item_authors = item_authors.split(", ");
+							
+							// Deal with et al for more than two authors
+							if ( item_authors.length > 2 )
+							{
+								if ( intext_citation_params.etal == ""
+										|| intext_citation_params.etal == "default" )
+								{
+									if ( window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"].length > 1 ) 
+										item_authors = item_authors[0] + " <em>et al.</em>";
+								}
+								else if ( intext_citation_params.etal == "yes" )
+								{
+									item_authors = item_authors[0] + " <em>et al.</em>";
+								}
+							}
+							
+							// Deal with "and" for multiples that are not using "etal"
+							if ( jQuery.isArray(item_authors) && item_authors.length > 1 )
+							{
+								if ( item_authors.indexOf("et al") == -1 )
+								{
+									var temp_and = ", ";
+									
+									if ( intext_citation_params.and == ""
+											|| intext_citation_params.and == "and"
+											|| intext_citation_params.and == "comma-and" )
+									{
+										if ( intext_citation_params.and == "" ) temp_and = " and ";
+										else if ( intext_citation_params.and == "and" ) temp_and = " and ";
+										else if ( intext_citation_params.and == "comma-and" ) temp_and = ", and ";
+										
+										var temp = item_authors.join().replace( /,/g, ", " );
+										item_authors = temp.substring( 0, temp.lastIndexOf(", ") ) + temp_and +  item_authors[item_authors.length-1];
+									}
+								}
+							}
+						}
+						else // Use title instead
+						{
+							item_authors += response_item.data.title;
+						}
+						
+						// Get year or n.d.
+						if ( response_item.meta.hasOwnProperty("parsedDate") ) 
+							item_year = response_item.meta.parsedDate.substring(0, 4);
+						else
+							item_year = "n.d.";
+						
+						// Format anchor title attribute
+						item_title_attr = JSON.stringify(item_authors).replace( "<em>et al.</em>", "et al." ).replace( /\"/g, "" ).replace( "[", "" ).replace( "]", "" ) + " (" + item_year + "). " + response_item.data.title + ".";
+						
+					}); // each request data item
+					
 					// Display with numbers
 					if ( intext_citation_params.format.indexOf("%num%") != -1 )
 					{
 						item_citation = Object.keys(window.zpIntextCitations["post-"+item.post_id]).indexOf( item.key) + 1;
+						
+						// If using parenthesis format:
+						if ( intext_citation_params.format == "(%num%)" )
+							item_citation = "("+item_citation+")";
+						
 					}
 					
 					// Display regularly, e.g. author and year and pages
 					else
 					{
-						// Deal with authors and etal
-						jQuery.each( item_data, function ( kindex, response_item )
-						{
-							if ( response_item.data.key != item.key ) return true;
-							
-							if ( response_item.data.hasOwnProperty("creators") )
-							{
-								// Deal with authors
-								jQuery.each ( response_item.data.creators, function ( ai, author )
-								{
-									if ( ai != 0 ) item_authors += ", ";
-									if ( author.hasOwnProperty("name") ) item_authors += author.name;
-									else if ( author.hasOwnProperty("lastName") ) item_authors += author.lastName;
-								});
-								
-								// Deal with duplicates in the group
-								if ( group_authors.indexOf(item_authors) == -1 )
-									group_authors[group_authors.length] = item_authors;
-								else
-									item_authors = "";
-								
-								// Create authors array (easier to deal with)
-								item_authors = item_authors.split(", ");
-								
-								// Deal with et al for more than two authors
-								if ( item_authors.length > 2 )
-								{
-									if ( intext_citation_params.etal == ""
-											|| intext_citation_params.etal == "default" )
-									{
-										if ( window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"].length > 1 ) 
-											item_authors = item_authors[0] + " <em>et al.</em>";
-									}
-									else if ( intext_citation_params.etal == "yes" )
-									{
-										item_authors = item_authors[0] + " <em>et al.</em>";
-									}
-								}
-								
-								// Deal with "and" for multiples that are not using "etal"
-								if ( jQuery.isArray(item_authors) && item_authors.length > 1 )
-								{
-									if ( item_authors.indexOf("et al") == -1 )
-									{
-										var temp_and = ", ";
-										
-										if ( intext_citation_params.and == ""
-												|| intext_citation_params.and == "and"
-												|| intext_citation_params.and == "comma-and" )
-										{
-											if ( intext_citation_params.and == "" ) temp_and = " and ";
-											else if ( intext_citation_params.and == "and" ) temp_and = " and ";
-											else if ( intext_citation_params.and == "comma-and" ) temp_and = ", and ";
-											
-											var temp = item_authors.join().replace( /,/g, ", " );
-											item_authors = temp.substring( 0, temp.lastIndexOf(", ") ) + temp_and +  item_authors[item_authors.length-1];
-										}
-									}
-								}
-							}
-							else // Use title instead
-							{
-								item_authors += response_item.data.title;
-							}
-							
-							// Get year or n.d.
-							if ( response_item.meta.hasOwnProperty("parsedDate") ) 
-								item_year = response_item.meta.parsedDate.substring(0, 4);
-							else
-								item_year = "n.d.";
-							
-						}); // each request data item
-						
-						
-						
 						var default_format = intext_citation_params.format;
 						
 						// Add in author
@@ -410,10 +423,16 @@ jQuery(document).ready(function()
 								else
 									item_citation = item_citation.replace( "(", "" );
 						}
-					}
+						
+					} // non-numerical display
+					
 					
 					// Add anchors
-					item_citation = "<a class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
+					if ( item_title_attr != "" ) item_title_attr = " title='"+item_title_attr+"'";
+					item_citation = "<a "+item_title_attr+"class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
+					
+					// Deal with <sup>
+					if ( intext_citation_params.format.indexOf("sup") != "-1" ) item_citation = "<sup>"+item_citation+"</sup>";
 					
 					// Add to intext_citation array
 					intext_citation[cindex]["bib"] = item_citation;

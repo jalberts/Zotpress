@@ -726,6 +726,9 @@
 		background: transparent url('../images/loading_default.gif') no-repeat center 2em;
 		min-height: 2em;
 	}
+	.wp-admin #zpSearchResultsContainer {
+		padding-bottom: 0;
+	}
     
     div#zp-Zotpress div.zp-List {
     }
@@ -775,6 +778,16 @@
 	}
 	div#zp-Zotpress div.zp-List div.zp-Entry:after {
 		clear: both;
+	}
+	
+	div#zp-Zotpress div.zp-List div.zp-Entry span.item_key:before {
+		content: "Item Key: ";
+		font-weight: bold;
+		display: inline;
+	}
+	div#zp-Zotpress div.zp-List div.zp-Entry span.item_key {
+		display: block;
+		margin-bottom: 2em;
 	}
     
     div#zp-Zotpress div.zp-List div.zp-Entry-Image {

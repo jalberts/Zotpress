@@ -41,6 +41,9 @@ jQuery(document).ready(function()
 					'get_top': true,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(data)
 				{
 					var zp_collections = jQuery.parseJSON( data );
@@ -113,6 +116,9 @@ jQuery(document).ready(function()
 					'request_start': request_start,
 					'request_last': request_last,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
+				},
+				xhrFields: {
+					withCredentials: true
 				},
 				success: function(data)
 				{
@@ -187,6 +193,9 @@ jQuery(document).ready(function()
 					'request_last': request_last,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(data)
 				{
 					var zp_items = jQuery.parseJSON( data );
@@ -216,6 +225,10 @@ jQuery(document).ready(function()
 							}
 							
 							tempItems += item.bib;
+							
+							// Show item key if admin
+							if ( zpIsAdmin ) tempItems += "<span class='item_key'>"+item.key+"</span>\n";
+							
 							tempItems += "</div><!-- .zp-Entry -->\n";
 						});
 						

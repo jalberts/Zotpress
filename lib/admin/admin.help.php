@@ -136,7 +136,7 @@
 					</div>
 					<div class="zp-Zotero-API-Attribute">
 						<h4>Display > <strong>limit</strong></h4>
-						<div class="description"><p>Limit the item list to by a given number. <strong>Optional.</strong> Options: Any number between 1 and 100.</p></div>
+						<div class="description"><p>Limit the item list to by a given number. Displays all items by default. <strong>Optional.</strong> Options: Any number between 1 and 100.</p></div>
 						<div class="example"><p><code>[zotpress limit="5"]</code></p></div>
 					</div>
 					
@@ -203,7 +203,8 @@
 						</div>
 						
 						<p>
-							Use one or more <code>[zotpressInText]</code> shortcodes in your blog entry to create in-text citations.
+							Use one or more <code>[zotpressInText]</code> shortcodes in your post, page or what-have-you to create placeholders for in-text citations.
+							Follow up these shortcodes with the <strong>required</strong> <code>[zotpressInTextBib]</code> shortcode.
 						</p>
 						<p>
 							Here's what an in-text citation might look like in your rich text editor:
@@ -220,7 +221,7 @@
 						</p>
 						
 						<p>
-							To display the auto-generated bibliography, place the <code>[zotpressInTextBib]</code> shortcode somewhere in your entry after the in-text citation shortcodes.
+							To generate the in-text citations and accompanying bibliography, place the <strong>required</strong> <code>[zotpressInTextBib]</code> shortcode somewhere in your entry <strong>after</strong> the in-text citation shortcodes.
 							The <code>[zotpressInTextBib]</code> shortcode takes the same attributes as the <code>[zotpress]</code> shortcode, minus the "userid," "nickname," and "limit" attributes.
 						</p>
 						
