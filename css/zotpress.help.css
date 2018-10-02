@@ -30,7 +30,7 @@
 	div#zp-Zotpress ul#zp-Zotero-API-Menu li a {
 		color: #fff;
 		display: block;
-		font: 400 16px/21px "Oswald","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+		font: normal 1em/2.15em "Helvetica", "Helvetica Neue", "Arial", sans-serif;
 		padding: 1em 2em;
 		text-transform: uppercase;
 		text-decoration: none;
@@ -56,7 +56,7 @@
 	}
 	
 	div#zp-Zotpress div.zp-Zotero-API-Attribute h4 {
-		font: 600 1em/1em "Source Sans Pro","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+		font: 600 1em/1em "Tahoma","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
 		margin-top: 0.5em;
 		text-transform: uppercase;
 	}
