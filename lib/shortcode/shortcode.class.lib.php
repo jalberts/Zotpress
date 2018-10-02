@@ -15,6 +15,7 @@ class zotpressLib
 	private $maxresults = false;
 	private $maxperpage = false;
 	private $maxtags = false;
+	private $style = false;
 	private $sortby = false;
 	private $order = false;
 	private $citeable = false;
@@ -87,6 +88,11 @@ class zotpressLib
 	public function setCiteable($citeable)
 	{
 		$this->citeable = $citeable;
+	}
+	
+	public function setStyle($style)
+	{
+		$this->style = strtolower( $style );
 	}
 	
 	public function setSortBy($sortby)
@@ -200,6 +206,7 @@ class zotpressLib
 				<?php if ( $collection_name ): ?><span id="ZP_COLLECTION_NAME" style="display: none;"><?php echo $collection_name; ?></span><?php endif; ?>
 				<?php if ( $tag_id ): ?><span id="ZP_TAG_ID" style="display: none;"><?php echo $tag_id; ?></span><?php endif; ?>
 				<span id="ZP_MAXTAGS" style="display: none;"><?php echo $this->maxtags; ?></span>
+				<span id="ZP_STYLE" style="display: none;"><?php echo $this->style; ?></span>
 				<span id="ZP_SORTBY" style="display: none;"><?php echo $this->sortby; ?></span>
 				<span id="ZP_ORDER" style="display: none;"><?php echo $this->order; ?></span>
 				<span id="ZP_CITEABLE" style="display: none;"><?php echo $this->citeable; ?></span>

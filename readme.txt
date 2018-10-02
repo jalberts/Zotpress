@@ -7,8 +7,8 @@ Tags: zotero, zotpress, citation manager, citations, citation, cite, citing, bib
 Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
-Tested up to: 4.4.1
-Stable tag: 6.1.2
+Tested up to: 4.5.2
+Stable tag: 6.1.3
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -24,7 +24,7 @@ Zotpress displays your Zotero citations on WordPress.
 * Provides a range of additional features, such as allowing visitors to cite and download citations
 * And more!
 
-Compatible with Firefox, Safari, Chrome, IE7, IE8, and IE9. Made with jQuery, jQuery UI, jQuery doTimeout, Live Query, OAuth, and [Open Library](https://openlibrary.org/ "Open Library").
+Compatible with Firefox, Safari, Chrome, and IE9. Made with jQuery, jQuery UI, jQuery doTimeout, Live Query, OAuth, and [Open Library](https://openlibrary.org/ "Open Library").
 
 Special thanks to Joe Alberts for substantial contributions to the code, comprehensive testing, and design ideation. Thanks also to contributors Christopher Cheung and Jason S. for their development support and advice. Finally, my sincere gratitude goes out to all who have donated in support of this plugin.
 
@@ -64,10 +64,18 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Changelog ==
 
+= 6.1.3 =
+
+* Fixed security issue with zp_get_account().
+* New! "style" attribute for searchbar.
+* Updated widget account selection and fixed retrieval error.
+* Minor image and code style updates.
+
 = 6.1.2 =
 
 * Applied more cases for URL wrapping.
-* Applied encyclopedia author/editor cases for in-text citations.
+* Fix for encyclopedia author/editor cases for in-text citations.
+* Fix for authors who are also editors for in-text citations.
 * Fixed in-text number-based sorting for 50+ items.
 * Better in-text error handling.
 
@@ -822,3 +830,7 @@ Shortcode Creator. "Show Image" and "Sort" bugs fixed.
 = 6.0 =
 
 * Warning: Major updates to the code and database. Testing on a development server before updating is highly recommended.
+
+= 6.1.3 =
+
+* Security update.

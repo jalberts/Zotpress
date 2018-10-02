@@ -1,5 +1,8 @@
 <?php
     
+	// Require admin functions
+	require( dirname(__FILE__) . '/../admin/admin.functions.php' );
+	
     class ZotpressSidebarWidget extends WP_Widget
     {
         function ZotpressSidebarWidget()
@@ -16,7 +19,6 @@
             $widget_title = apply_filters('widget_title', $instance['widget_title'] );
             
             $api_user_id = $instance['api_user_id'];
-            $nickname = isset( $instance['nickname'] ) ? $instance['nickname'] : false;
 			
             $author = isset( $instance['author'] ) ? $instance['author'] : false;
             $year = isset( $instance['year'] ) ? $instance['year'] : false;
@@ -53,7 +55,6 @@
 			$zp_sidebar_shortcode = "[zotpress";
 			
 			if ($api_user_id)	{ $zp_sidebar_shortcode .= " userid='$api_user_id' "; }
-			if ($nickname)	{ $zp_sidebar_shortcode .= " nickname='$nickname' "; }
 			if ($author)		{ $zp_sidebar_shortcode .= " author='$author' "; }
 			if ($year)		{ $zp_sidebar_shortcode .= " year='$year' "; }
 			if ($data_type)	{ $zp_sidebar_shortcode .= " datatype='$data_type' "; }
@@ -91,7 +92,6 @@
             $instance['widget_title'] = strip_tags( $new_instance['widget_title'] );
             
             $instance['api_user_id'] = strip_tags( $new_instance['api_user_id'] );
-            $instance['nickname'] = strip_tags($new_instance['nickname']);
 			
             $instance['author'] = str_replace(" ", "+", strip_tags($new_instance['author']));
             $instance['year'] = str_replace(" ", "+", strip_tags($new_instance['year']));
@@ -125,8 +125,7 @@
 			if ( ! isset($instance) || count($instance) == 0)
 			{
 				$instance['widget_title'] = "";
-				$instance['api_user_id'] = "";
-				$instance['nickname'] = "";
+				//$instance['api_user_id'] = "";
 				
 				$instance['author'] = "";
 				$instance['year'] = "";
@@ -144,12 +143,14 @@
                 <style type="text/css">
                 <!--
 					#zp-Sidebar-Widget-Container select {
-					background-color: #fff;
+						background-color: #fff;
+						display: block;
 					}
                     div.zp-ZotpressSidebarWidget-Required span.req {
                         color: #CC0066;
                         font-weight: bold;
                         font-size: 1.4em;
+						padding-left: 0.25em;
                         vertical-align: -35%;
                     }
                     
@@ -174,19 +175,12 @@
 					
 					<div class="zp-ZotpressSidebarWidget-Required">
 					
-					<p>
-						Fill in <strong>one</strong> of the below. Req'd.
-					</p>
+					<?php
 					
-					<p>
-						<label for="<?php echo $this->get_field_id( 'api_user_id' ); ?>">API User/Group ID: <span class="req">*</span></label>
-						<input id="<?php echo $this->get_field_id( 'api_user_id' ); ?>" name="<?php echo $this->get_field_name( 'api_user_id' ); ?>" type="text" value="<?php echo $instance['api_user_id']; ?>" class="widefat" />
-					</p>
+					if ( zp_get_total_accounts() > 0 )
+						echo zp_get_accounts( false, true, true, $this->get_field_id( 'api_user_id' ), $this->get_field_name( 'api_user_id' ), $instance['api_user_id'] );
 					
-					<p>
-						<label for="<?php echo $this->get_field_id( 'nickname' ); ?>">Nickname: <span class="req">*</span></label>
-						<input id="<?php echo $this->get_field_id( 'nickname' ); ?>" name="<?php echo $this->get_field_name( 'nickname' ); ?>" type="text" value="<?php echo $instance['nickname']; ?>" class="widefat" />
-					</p>
+					?>
 					
 					</div>
 					

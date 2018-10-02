@@ -13,6 +13,7 @@ jQuery(document).ready(function()
 	if ( jQuery("#zp-Zotpress-SearchBox").length > 0 )
 	{
 		var zpItemsFlag = true;
+		var zpItemNum = 1;
 		var zpLastTerm = "";
 		var zpSearchBarParams = "";
 		var zpSearchBarSource = zpShortcodeAJAX.ajaxurl + "?action=zpRetrieveViaShortcode&zpShortcode_nonce="+zpShortcodeAJAX.zpShortcode_nonce;
@@ -34,6 +35,7 @@ jQuery(document).ready(function()
 			zpSearchBarParams += "&api_user_id="+jQuery("#ZOTPRESS_USER").val();
 			zpSearchBarParams += "&item_type=items";
 			zpSearchBarParams += "&downloadable="+jQuery("#ZOTPRESS_AC_DOWNLOAD").val();
+			zpSearchBarParams += "&style="+jQuery("#ZP_STYLE").text();
 			zpSearchBarParams += "&sort_by="+jQuery("#ZP_SORTBY").text();
 			zpSearchBarParams += "&order="+jQuery("#ZP_ORDER").text();
 			zpSearchBarParams += "&citeable="+jQuery("#ZOTPRESS_AC_CITE").val();
@@ -120,6 +122,9 @@ jQuery(document).ready(function()
 				{
 					var tempCurrentTerm = false; if ( event.hasOwnProperty('currentTarget') ) tempCurrentTerm = event.currentTarget.value;
 					
+					// Reset item numbering
+					zpItemNum = 1;
+					
 					if ( zpItemsFlag == true
 						|| ( tempCurrentTerm && tempCurrentTerm != zpLastTerm ) )
 					{
@@ -161,6 +166,15 @@ jQuery(document).ready(function()
 								temp += "<img class='thumb' src='"+item.image[0]+"' alt='image' />\n";
 								temp += "</div><!-- .zp-Entry-Image -->\n";
 							}
+							
+							// Replace num due to style
+							if ( item.bib.indexOf("[1]") != -1 )
+							{
+								item.bib = item.bib.replace("[1]", "["+zpItemNum+"]");
+								zpItemNum++;
+							}
+							
+							// Bibliography entry
 							temp += item.bib;
 							
 							if ( jQuery("input#tag[name=zpSearchFilters]:checked").length > 0 )

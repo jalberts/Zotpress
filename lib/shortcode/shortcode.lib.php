@@ -23,7 +23,7 @@
 			'sortby' => 'default',
 			'order' => 'asc',
 			
-			'style' => false, // not implemented
+			'style' => false, 
 			'cite' => false,
 			'citeable' => false,
 			'download' => false,
@@ -58,6 +58,9 @@
 		
 		// Filters
 		if ( $searchby ) $searchby = str_replace('"','',html_entity_decode($searchby));
+		
+		// Style
+		if ( $style ) $style = str_replace('"','',html_entity_decode($style));
 		
 		// Min length
 		if ( $minlength ) $minlength = str_replace('"','',html_entity_decode($minlength));
@@ -140,6 +143,7 @@
 		$zpLib->setMaxResults($maxresults);
 		$zpLib->setMaxPerPage($maxperpage);
 		$zpLib->setMaxTags($maxtags);
+		$zpLib->setStyle($style);
 		$zpLib->setSortBy($sortby);
 		$zpLib->setOrder($order);
 		$zpLib->setCiteable($cite);
