@@ -46,7 +46,6 @@
 		
 		// Read the external data
         $zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, true ); // Unsure about "true"
-		// header("Location: ".$zp_download_url[0]->citation."/file?key=".$zp_download_url[0]->public_key);
 		
 		// Determine filename based on content type
 		$zp_filename ="download-".$zp_item_key.".";
@@ -65,7 +64,6 @@
 			header( "Content-Type:".$zp_content_type);
 			header( "Content-Disposition:attachment;filename=".$zp_filename);
 			echo $zp_xml["json"];
-			//readfile( $zp_xml["json"] );
 		}
 		else {
 			$zp_xml = "No cite file found.";

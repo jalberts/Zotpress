@@ -250,6 +250,7 @@ class zotpressLib
                         
                         if ( $this->filters ):
                         
+                        $content .= "<div class='zp-SearchBy-Container'>";
                         $content .= "<span class=\"zp-SearchBy\">Search by:</span>";
                         
                         // Turn filter string into array
@@ -261,11 +262,14 @@ class zotpressLib
                             if ( $filter == "tags" ) $filter = "tag";
                             else $filter = "item";
                             
+                            $content .= '<div class="zpSearchFilterContainer">';
                             $content .= '<input type="radio" name="zpSearchFilters" id="'.$filter.'" value="'.$filter.'"';
                             if ( $id == 0 || count($filters) == 1 ) $content .= ' checked="checked"';
                             $content .= '><label for="'.$filter.'">'.$filter.'</label>';
+                            $content .= '</div>';
                             $content .= "\n";
                         }
+                        $content .= "</div>\n\n";
                         
                         endif; // Filters
                         

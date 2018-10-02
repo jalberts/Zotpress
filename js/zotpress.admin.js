@@ -650,11 +650,11 @@ jQuery(document).ready( function()
 					if ( $result == "true" )
 					{
 						if ( $this.parent().find(".thumb").length > 0 ) {
-							$this.parent().find(".thumb").attr("src", attachment.url);
+							$this.parent().find(".thumb").attr("src", attachment.sizes.thumbnail.url);
 						}
 						else {
 							$this.parent().addClass("hasImage");
-							$this.parent().prepend("<img class='thumb' src='"+attachment.url+"' alt='image' />");
+							$this.parent().prepend("<img class='thumb' src='"+attachment.sizes.thumbnail.url+"' alt='image' />");
 						}
 					}
 					else // Show errors

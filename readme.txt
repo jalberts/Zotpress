@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Zotpress ===
 Contributors: kseaborn
 Plugin Name: Zotpress
 Plugin URI: http://katieseaborn.com/plugins/
@@ -8,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 4.8.3
-Stable tag: 6.2.3
+Stable tag: 6.2.4
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -35,20 +35,22 @@ jQuery included in your theme (Zotpress will do this for you if it isn't already
 
 1. Upload the folder `zotpress` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-1. Add the Zotero API information for each account you'd like to use. 
-1. On the Browse page, look up the keys of the items, collections or tags you wish to display. Or, use the Zotpress Reference Widget to generate shortcodes.
+1. Add the Zotero API information for each Zotero account you'd like to use. 
+1. On the Browse page, look up the keys of the items, collections, or tags that you wish to display. Or, use the Zotpress Reference Widget to generate shortcodes.
 1. Place the shortcodes in your blog post or page, or enable the Zotpress sidebar widget.
 
 = Shortcode =
 You can display your Zotero citations in a number of ways. To display a list of five citations from the collection with the key "ZKDTKM3X", use this shortcode:
 
-[zotpress collection="ZKDTKM3X" limit="5"]
+> [zotpress collection="ZKDTKM3X" limit="5"]
 
-You can also use in-text citations:
+You can also use in-text citations as follows:
 
-[zotpressInText item="{U9Z5JTKC,36-45}"]
+> [zotpressInText item="{U9Z5JTKC,36-45}"]
 
-This shortcode will display the following in-text citation for the citation with the key "U9Z5JTKC": (Seaborn, 2011, p. 36). The full citation can be displayed in an auto-generated bibliography using the [zotpressInTextBib] shortcode.
+> [zotpressInTextBib]
+
+The first shortcode will display an in-text citation for an item with the key "U9Z5JTKC", which will look something like this: (Seaborn, 2011, p. 36). The [zotpressInTextBib] will auto-generate a bibliography for all [zotpressInText] shortcodes on the post/page.
 
 Check out the "Help" page on your installation of Zotpress for more information and a full listing of parameters for all shortcodes.
 
@@ -58,11 +60,20 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Screenshots ==
 
-1. Browse your Zotero citations by account, collection or tag. Add custom images to citations. Special characters are supported.
-2. Search for items and build bibliography and in-text shortcodes using the "Zotpress Reference" meta box widget.
-3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
+1. Display items from individual or group Zotero libraries on your WordPress website. Special characters are supported.
+2. Search for items using the autocomplete feature. Generate shortcodes for bibliographies and in-text citations using the "Zotpress Reference" widget on edit screens.
+3. Give your citation an image using WordPress's Media Library or Open Library.
+4. Share your library through your website. Allow visitors to browse by collection or tag.
+5. Allow visitors to search your library by item metadata or tag, or both.
 
 == Changelog ==
+
+= 6.2.4 =
+
+* Updated shortcode styles and fixed the Search Bar display.
+* Updated Zotpress Reset to remove additional options and tables from db.
+* Download now looks for import_url as well as import_file.
+* Updated the readme and screenshots.
 
 = 6.2.3 =
 
@@ -691,169 +702,6 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Upgrade Notice ==
 
-= 1.2 =
-Lots of little issues fixed. Plus, you can now use a Zotpress widget instead of shortcode.
+= 6.2.4 =
 
-= 1.3 =
-Implemented cURL, which should help those having read/write issues on their server.
-
-= 1.6 =
-Critical request method issue fixed.
-
-= 2.0 =
-Zotpress overhaul. Security and performance increases.
-
-= 2.1 =
-Now cURL-friendly again.
-
-= 2.2 =
-Fixed CURLOPT_FOLLOWLOCATION error.
-
-= 2.3 =
-Fixed Group "invalid key" error.
-
-= 2.4 =
-Can now display by year. Option to display download links.
-
-= 2.5 =
-Re-wrote display code and tidied up JavaScript. Fixed update table code.
-
-= 2.5.1 =
-Fixed single citation display bug.
-
-= 2.6 =
-Important: JavaScript reductions; download option added to Widget; proper PDF download links.
-
-= 3.0 =
-Major release! OAuth, convenient "Zotpress Reference" meta box, friendly lag handling, numerous bug fixes, and more!
-
-= 4.0 =
-Requests now processed by PHP instead of jQuery. Shortcode parameters re-envisioned (but backwards-compatible). Can now sort by author and date.
-
-= 4.1 =
-Bugfixes: Filtering by year and author reinstated. New: Titles for year.
-
-= 4.2 =
-Bugfixes and metabox widget refinements.
-
-= 4.3 =
-Zotpress InText and various fixes.
-
-= 4.4 =
-Security measures added. Fixed "Help" page info. Zotpress shortcode now accepts lists for these parameters: collection, item. Notes can now be shown. Zotpress Reference on custom post type writing/editing pages and working with the latest versions of Chrome and Safari.
-
-= 5.0 =
-* Fixed for Wordpress 3.5! Many new and improved features.
-
-= 5.01 =
-
-* Critical patch for case-sensitive tables and import functionality.
-
-= 5.02 =
-
-* Fixed display of styles with numbered lists, e.g. IEEE, nature, etc.
-* Fixed critical in-text citation bug when multiple accounts are synced.
-* Long URLs in citations will now wrap.
-
-= 5.0.3 =
-
-* Fixed import and sync for large libraries.
-* Removed autoupdate feature. Please use the sync feature for the time being.
-* Fixed metabox widget error.
-* Minor bug fixes.
-
-= 5.0.4 =
-
-* Fixed table install, update and uninstall issues.
-* New import and sync scripts for large libraries.
-* Zotpress admin now accessible to Editors.
-* Styles updated and Help page shortcode documentation redesigned.
-
-= 5.0.5 =
-
-* New! Can now display abstracts using the "abstract" parameter.
-* Blank author fields now filled with other author (e.g. editor) information.
-* Added support for %num% formatting option (in-text).
-* Fixed front-end style update script for large (50+) items.
-* Fixed "datatype" filtering error.
-* Fixed typos in the Help page.
-* Added default account constraint to Zotpress Reference results.
-
-= 5.0.6 =
-
-* Fixed incompatibility bugs with jQuery UI; some style updates, too.
-* Fixed "abstract" attribute bug.
-* Fixed in-text %num% numbering bug.
-* In-text shortcodes are now unique to posts.
-* Fixed hyperlink bug for special characters.
-* Fixed search when no default account set.
-* New! In-text citations are now hyperlinked to the generated bibliography.
-
-= 5.0.8 =
-
-* New! Import functionality check added.
-* New! Reset Zotpress feature on Options page.
-* New! Added security measures to prevent direct access.
-* New! Import items, collections and tags separately.
-* Updated import script; sessions removed.
-* Fixed minor shortcode bugs.
-* Removed extraneous code.
-* Minor style updates.
-
-= 5.0.9 =
-
-* Fixed incorrect abstracts issue.
-* Fixed "years", "authors" and "nick" shortcode attributes.
-* Help information for finding Group IDs has been updated.
-* Lowercase style names enforced.
-
-= 5.0.10 =
-
-* Fixed display issue for multiple in-text citations per shortcode.
-* Updated the Help/FAQ page.
-* Restructured request class and enforced Zotoro API Version 1.
-* Fixed style update errors related to undefined variables.
-* Added "citeable" as an alternate for the "cite" attribute.
-
-= 5.4 =
-
-* New! "zotpressLib" shortcode for displaying your library on the front-end of your website.
-* Fixed "set image" bug for single-account setups.
-* Fixed "remove image" bug.
-* Optimized nested collections display.
-* Optimized notes with display for single notes and anchors.
-
-= 5.4.1 =
-
-* Fixed display bug for single libraries on Browse page.
-* Set nonce lifetime to 12 hours.
-
-= 5.4.2 =
-
-* Fixed code-breaking error that occurred for some users.
-
-= 6.0 =
-
-* Warning: Major updates to the code and database. Testing on a development server before updating is highly recommended.
-
-= 6.1.3 =
-
-* Security update.
-
-= 6.1.6 =
-
-* Fixed wp_remote_retrieve_headers issue (WP core change) that limited total results.
-
-= 6.2 =
-
-* Added compression to bring down the size of the cache.
-* Fixed logic error around WordPress Media Library images vs. Open Library images.
-* Browse page Tags dropdown now accounts for no tags.
-* Browse page has clearer loading feedback.
-* Browse page collection and item keys are now text inputs to prevent styled text from being copied into the visual editor.
-* Now hyperlinking https-based DOI URLs.
-* Help page tab links have been fixed.
-
-= 6.2.2 =
-
-* Fixed notification error for older versions of PHP.
+Updates what kinds of metadata the "download" feature will look for and what's removed from the database on reset. Minor style updates.

@@ -209,8 +209,8 @@
 		// Account for tag display - let's limit it
 		if ( $zp_is_dropdown === true && $zp_item_type == "tags" )
 		{
-			$zp_sortby = "numItems";
-			$zp_order = "desc";
+			$zp_sortby = "numItems"; // title
+			$zp_order = "desc"; // asc
 			$zp_limit = "100"; if ( $zp_maxtags ) $zp_limit = $zp_maxtags;
 			$zp_overwrite_request = true;
 		}
@@ -385,10 +385,10 @@
 		
 		
 		
-		
+		//var_dump($zp_account[0]->public_key);
 		//print_r($_GET); var_dump("<br /><br />url: ".$zp_import_url); exit;
 		
-		
+        
 		
 		
 		
@@ -693,7 +693,11 @@
 								// Check for downloads
 								if ( $zp_downloadable )
 								{
-									if ( isset($zp_child->data->linkMode) && $zp_child->data->linkMode == "imported_file" )
+									if ( isset($zp_child->data->linkMode)
+                                        && ( $zp_child->data->linkMode == "imported_file"
+                                            || $zp_child->data->linkMode == "imported_url")
+                                        && preg_match('(pdf|doc|docx|ppt|pptx|latex|rtf|odt|odp)', $zp_child->data->filename) === 1 
+                                    )
 									{
 										$zp_download_meta = array (
 												"key" => $zp_child->data->key,

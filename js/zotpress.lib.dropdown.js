@@ -326,9 +326,11 @@ jQuery(document).ready(function()
 								if ( item.hasOwnProperty('image') ) tempItem += " hasImage";
 								tempItem += "' rel='"+item.key+"'>\n";
 								
-								if ( zpIsAdmin ) tempItem += "<a title='Set Image' class='upload' rel='"+item.key+"' href='#'>Set Image</a>\n";
-								if ( zpIsAdmin && item.hasOwnProperty('image') ) tempItem += "<a title='Remove Image' class='delete' rel='"+item.key+"' href='#'>&times;</a>\n";
 								if ( item.hasOwnProperty('image') ) tempItem += "<img class='thumb' src='"+item.image[0]+"' alt='image' />\n";
+								if ( zpIsAdmin )
+                                    if ( item.hasOwnProperty('image') ) tempItem += "<a title='Change Image' class='upload' rel='"+item.key+"' href='#'>Change Image</a>\n";
+                                    else tempItem += "<a title='Set Image' class='upload' rel='"+item.key+"' href='#'>Set Image</a>\n";
+								if ( zpIsAdmin && item.hasOwnProperty('image') ) tempItem += "<a title='Remove Image' class='delete' rel='"+item.key+"' href='#'>&times;</a>\n";
 								
 								tempItem += "</div><!-- .zp-Entry-Image -->\n";
 							}
