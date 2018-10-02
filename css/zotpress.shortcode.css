@@ -121,8 +121,9 @@
 		border-right: 2px solid #000;
 	}
 	.zp-List.loading {
-		background: transparent url('../images/loading_default.gif') no-repeat center 2em;
-		min-height: 5em;
+		background: transparent url('../images/loading_default.gif') no-repeat bottom center;
+		padding-bottom: 2em;
+		min-height: 3em;
 	}
 	#zp-Browse-Collections-Select.loading,
 	.zp-List-Tags.loading {

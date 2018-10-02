@@ -62,7 +62,7 @@
 		$zp_import_url .= "format=json&q=".urlencode($_GET['term'])."&limit=10&itemType=-attachment+||+note";
 		
 		// Read the external data
-		$zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, false );
+		$zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, true ); // Unsure about "true"
 		$zpResultJSON = json_decode( $zp_xml["json"] );
 		
 		if ( count($zpResultJSON) > 0 )

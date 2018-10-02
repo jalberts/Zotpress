@@ -4,16 +4,14 @@ jQuery(document).ready( function()
     
     /*
      
-        SETUP BUTTONS
+        SETUP PAGE "COMPLETE" BUTTON
         
     */
 
     jQuery("input#zp-Zotpress-Setup-Options-Complete").click(function()
     {
-        //if ( jQuery(this).hasClass("import") )
-        //    window.parent.location = "admin.php?page=Zotpress";
-        //else
-            window.parent.location = "admin.php?page=Zotpress&accounts=true";
+		window.parent.location = "admin.php?page=Zotpress&accounts=true";
+		
         return false;
     });
     
@@ -24,7 +22,7 @@ jQuery(document).ready( function()
         SYNC ACCOUNT WITH ZOTPRESS
         
     */
-
+	
     jQuery('#zp-Connect').click(function ()
     {
         // Disable all the text fields
@@ -232,6 +230,29 @@ jQuery(document).ready( function()
 		// Prep for data validation
 		$this.addClass("loading");
 		
+		// Determine account
+		var zpTempType = "button";
+		var zpTempAccount = "";
+		
+		if ( $this.attr("rel") != "undefined" )
+		{
+			zpTempType = "icon";
+			zpTempAccount = $this.attr("rel");
+		}
+		
+		if ( jQuery("select#zp-Zotpress-Options-Account").length > 0 )
+		{
+			zpTempType = "form";
+			zpTempAccount = jQuery("select#zp-Zotpress-Options-Account option:selected").val();
+		}
+		
+		// Prep for data validation
+		if ( zpTempType == "form" )
+		{
+			jQuery(this).attr('disabled','true');
+			jQuery('#zp-Zotpress-Options-Account .zp-Loading').show();
+		}
+		
 		// AJAX
 		jQuery.ajax(
 		{
@@ -239,7 +260,7 @@ jQuery(document).ready( function()
 			data: {
 				'action': 'zpAccountsViaAJAX',
 				'action_type': 'default_account',
-				'api_user_id': $this.attr("rel"),
+				'api_user_id': zpTempAccount,
 				'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
 			},
 			xhrFields: {
@@ -249,21 +270,48 @@ jQuery(document).ready( function()
 			{
 				var $result = jQuery('result', xml).attr('success');
 				
-				$this.removeClass("success loading");
-				
-				if ($result == "true")
+				if ( zpTempType == "form" )
 				{
-					$this.addClass("success");
-					jQuery(".zp-Accounts-Default").parent().removeClass("selected");
+					jQuery('#zp-Zotpress-Options-Account .zp-Loading').hide();
+					jQuery('input#zp-Zotpress-Options-Account-Button').removeAttr('disabled');
 					
-					jQuery.doTimeout(1000,function() {
-						$this.removeClass("success");
-						$this.parent().addClass("selected");
-					});
+					if ($result == "true")
+					{
+						jQuery('#zp-Zotpress-Options-Account div.zp-Errors').hide();
+						jQuery('#zp-Zotpress-Options-Account div.zp-Success').show();
+						
+						jQuery.doTimeout(1000,function() {
+							jQuery('#zp-Zotpress-Options-Account div.zp-Success').hide();
+						});
+					}
+					else // Show errors
+					{
+						jQuery('#zp-Zotpress-Options-Account div.zp-Errors').html("<p>"+jQuery('errors', xml).text()+"</p>\n");
+						jQuery('#zp-Zotpress-Options-Account div.zp-Errors').show();
+					}
 				}
-				else // Show errors
+				
+				else
 				{
-					alert(jQuery('errors', xml).text());
+					$this.removeClass("success loading");
+					
+					if ($result == "true")
+					{
+						$this.addClass("success");
+						jQuery(".zp-Accounts-Default").parent().removeClass("selected");
+						
+						jQuery.doTimeout(1000,function() {
+							$this.removeClass("success");
+							$this.parent().addClass("selected");
+							
+							if ( $this.hasClass("zp-Browse-Account-Default") )
+								$this.addClass("selected disabled");
+						});
+					}
+					else // Show errors
+					{
+						alert(jQuery('errors', xml).text());
+					}
 				}
 			},
 			error: function(errorThrown)
@@ -279,7 +327,278 @@ jQuery(document).ready( function()
 	
 	
 	
+
+
+
+
     /*
+        
+        SET STYLE
+        
+    */
+	
+	if ( jQuery("select#zp-Zotpress-Options-Style").length > 0 )
+	{
+		// Show/hide add style input
+		jQuery("#zp-Zotpress-Options-Style").change(function()
+		{
+			if (this.value === 'new-style')
+			{
+				jQuery("#zp-Zotpress-Options-Style-New-Container").show();
+			}
+			else
+			{
+				jQuery("#zp-Zotpress-Options-Style-New-Container").hide();
+				jQuery("#zp-Zotpress-Options-Style-New").val("");
+			}
+		});
+		
+		
+		jQuery("#zp-Zotpress-Options-Style-Button").click(function()
+		{
+			var $this = jQuery(this);
+			var updateStyleList = false;
+			
+			// Prep for data validation
+			$this.addClass("loading");
+			
+			// Determine if using existing or adding new; if adding new, also update Zotpress_StyleList option
+			var styleOption = jQuery('select#zp-Zotpress-Options-Style').val();
+			if ( styleOption == "new-style" )
+			{
+				styleOption = jQuery("#zp-Zotpress-Options-Style-New").val();
+				updateStyleList = true;
+			}
+			
+			if ( styleOption != "" )
+			{
+				// Prep for data validation
+				jQuery(this).attr('disabled','true');
+				jQuery('#zp-Zotpress-Options-Style-Container .zp-Loading').show();
+				
+				// AJAX
+				jQuery.ajax(
+				{
+					url: zpAccountsAJAX.ajaxurl,
+					data: {
+						'action': 'zpAccountsViaAJAX',
+						'action_type': 'default_style',
+						'style': styleOption,
+						'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					success: function(xml)
+					{
+						var $result = jQuery('result', xml).attr('success');
+						
+						jQuery('input#zp-Zotpress-Options-Style-Button').removeAttr('disabled');
+						jQuery('#zp-Zotpress-Options-Style-Container .zp-Loading').hide();
+						
+						if ($result == "true")
+						{
+							jQuery('#zp-Zotpress-Options-Style-Container div.zp-Errors').hide();
+							jQuery('#zp-Zotpress-Options-Style-Container div.zp-Success').show();
+							
+							jQuery.doTimeout(1000,function()
+							{
+								jQuery('#zp-Zotpress-Options-Style-Container div.zp-Success').hide();
+								
+								if (updateStyleList === true)
+								{
+									jQuery('#zp-Zotpress-Options-Style').prepend(jQuery("<option/>", {
+										value: styleOption,
+										text: styleOption,
+										selected: "selected"
+									}));
+									
+									jQuery("#zp-Zotpress-Options-Style-New-Container").hide();
+									jQuery("#zp-Zotpress-Options-Style-New").val("");
+								}
+							});
+						}
+						else // Show errors
+						{
+							jQuery('#zp-Zotpress-Options-Style-Container div.zp-Errors').html(jQuery('errors', xml).text()+"\n");
+							jQuery('#zp-Zotpress-Options-Style-Container div.zp-Errors').show();
+						}
+					},
+					error: function(errorThrown)
+					{
+						console.log(errorThrown);
+					}
+				});
+			}
+			else // Show errors
+			{
+				jQuery('#zp-Zotpress-Options-Style-Container div.zp-Errors').html("No style was entered.\n");
+				jQuery('#zp-Zotpress-Options-Style-Container div.zp-Errors').show();			
+			}
+			
+			// Cancel default behaviours
+			return false;
+			
+		});
+	}
+	
+	
+	
+	
+
+
+
+
+    /*
+        
+        SET REFERENCE WIDGET FOR CPT'S
+        
+    */
+	
+	jQuery("#zp-Zotpress-Options-CPT-Button").click(function()
+	{
+		var $this = jQuery(this);
+		
+		// Determine if using existing or adding new; if adding new, also update Zotpress_StyleList option
+		// Get all post types
+		var zpTempCPT = "";
+		jQuery("input[name='zp-CTP']:checked").each( function() {
+			zpTempCPT = zpTempCPT + "," + jQuery(this).val();
+		});
+		
+		if ( zpTempCPT != "" )
+		{
+			// Prep for data validation
+			jQuery(this).attr('disabled','true');
+			jQuery('#zp-Zotpress-Options-CPT .zp-Loading').show();
+			
+			// AJAX
+			jQuery.ajax(
+			{
+				url: zpAccountsAJAX.ajaxurl,
+				data: {
+					'action': 'zpAccountsViaAJAX',
+					'action_type': 'ref_widget_cpt',
+					'cpt': zpTempCPT,
+					'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				success: function(xml)
+				{
+					var $result = jQuery('result', xml).attr('success');
+					
+					jQuery('#zp-Zotpress-Options-CPT .zp-Loading').hide();
+					jQuery('input#zp-Zotpress-Options-CPT-Button').removeAttr('disabled');
+					
+					if ($result == "true")
+					{
+						jQuery('#zp-Zotpress-Options-CPT div.zp-Errors').hide();
+						jQuery('#zp-Zotpress-Options-CPT div.zp-Success').show();
+						
+						jQuery.doTimeout(1000,function() {
+							jQuery('#zp-Zotpress-Options-CPT div.zp-Success').hide();
+						});
+					}
+					else // Show errors
+					{
+						jQuery('#zp-Zotpress-Options-CPT div.zp-Errors').html("<p>"+jQuery('errors', xml).text()+"</p>\n");
+						jQuery('#zp-Zotpress-Options-CPT div.zp-Errors').show();
+					}
+				},
+				error: function(errorThrown)
+				{
+					console.log(errorThrown);
+				}
+			});
+		}
+		else // Show errors
+		{
+			jQuery('#zp-Zotpress-Options-CPT div.zp-Errors').html("No content type was selected.\n");
+			jQuery('#zp-Zotpress-Options-CPT div.zp-Errors').show();			
+		}
+		
+		// Cancel default behaviours
+		return false;
+		
+	});
+
+
+
+    /*
+        
+        RESET ZOTPRESS
+        
+    */
+	
+	jQuery("#zp-Zotpress-Options-Reset-Button").click(function()
+	{
+		var $this = jQuery(this);
+		
+		var confirmDelete = confirm("Are you sure you want to reset Zotpress? This cannot be undone.");
+		
+		if ( confirmDelete == true )
+		{
+			// Prep for data validation
+			jQuery(this).attr( 'disabled', 'true' );
+			jQuery('#zp-Zotpress-Options-Reset .zp-Loading').show();
+			
+			// Prep for data validation
+			jQuery(this).attr('disabled','true');
+			jQuery('#zp-Zotpress-Options-Reset .zp-Loading').show();
+			
+			// AJAX
+			jQuery.ajax(
+			{
+				url: zpAccountsAJAX.ajaxurl,
+				data: {
+					'action': 'zpAccountsViaAJAX',
+					'action_type': 'reset',
+					'reset': "true",
+					'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				success: function(xml)
+				{
+					var $result = jQuery('result', xml).attr('success');
+					
+					jQuery('#zp-Zotpress-Options-Reset .zp-Loading').hide();
+					jQuery('input#zp-Zotpress-Options-Reset-Button').removeAttr('disabled');
+					
+					if ($result == "true")
+					{
+						jQuery('#zp-Zotpress-Options-Reset div.zp-Errors').hide();
+						jQuery('#zp-Zotpress-Options-Reset div.zp-Success').show();
+						
+						jQuery.doTimeout(1000,function() {
+							jQuery('#zp-Zotpress-Options-Reset div.zp-Success').hide();
+							window.parent.location = "admin.php?page=Zotpress";
+						});
+					}
+					else // Show errors
+					{
+						jQuery('#zp-Zotpress-Options-Reset div.zp-Errors').html("<p>"+jQuery('errors', xml).text()+"</p>\n");
+						jQuery('#zp-Zotpress-Options-Reset div.zp-Errors').show();
+					}
+				},
+				error: function(errorThrown)
+				{
+					console.log(errorThrown);
+				}
+			});
+		}
+		
+		// Cancel default behaviours
+		return false;
+		
+	});
+	
+	
+	
+	/*
         
         ADD/UPDATE ITEM IMAGE
         

@@ -81,17 +81,30 @@ jQuery(document).ready(function()
 				if ( jQuery(this).val() != "toplevel" )
 				{
 					if ( zp_extra_params.length > 0 ) zp_extra_params = "&"+zp_extra_params;
-					
+					var api_user_id = ""; if ( jQuery("#zp-FilterByAccount").length > 0 )
+						api_user_id = "&api_user_id="+jQuery("option:selected", jQuery("#zp-FilterByAccount")).val();
 					var temp = jQuery("option:selected", this).text().split(" (");
-					window.location = zpHref[0] + "?collection_id=" + jQuery("option:selected", this).val()
-													+ "&collection_name=" + temp[0].replace( / /g, "+" )
-													+ zp_extra_params;
+					
+					var new_location =
+						zpHref[0]
+						+ "?collection_id=" + jQuery("option:selected", this).val()
+						+ "&collection_name=" + temp[0].replace( / /g, "+" )
+						+ zp_extra_params;
+					
+					if ( api_user_id.length > 0 ) new_location = new_location + api_user_id;
+					
+					window.location = new_location;
 				}
-				else
+				else // Toplevel
 				{
 					if ( zp_extra_params.length > 0 ) zp_extra_params = "?"+zp_extra_params;
+					var api_user_id = ""; if ( jQuery("#zp-FilterByAccount").length > 0 )
+						api_user_id = "&api_user_id="+jQuery("option:selected", jQuery("#zp-FilterByAccount")).val();
 					
-					window.location = zpHref[0]+zp_extra_params;
+					var new_location = zpHref[0] + zp_extra_params;
+					if ( api_user_id.length > 0 ) new_location = new_location + api_user_id;
+					
+					window.location = new_location;
 				}
 			}
 		});
@@ -106,18 +119,36 @@ jQuery(document).ready(function()
 			// Add extra params, if they exist
 			var zp_extra_params = ""; if  ( typeof zpHref[1] !== 'undefined' && zpHref[1].indexOf("page=Zotpress") != -1 ) zp_extra_params += "page=Zotpress";
 			
-			if ( jQuery(this).val() != "No tag selected" )
+			if ( jQuery(this).val() != "--No Tag Selected--" )
 			{
-				if ( zp_extra_params.length > 0 ) zp_extra_params = "&"+zp_extra_params;
+				var api_user_id = ""; if ( jQuery("#zp-FilterByAccount").length > 0 )
+					api_user_id = "&api_user_id="+jQuery("option:selected", jQuery("#zp-FilterByAccount")).val();
 				
-				window.location = zpHref[0] + "?tag_id="+jQuery("option:selected", this).val()+zp_extra_params;
-			}
-			else
-			{
-				if ( zp_extra_params.length > 0 ) zp_extra_params = "?"+zp_extra_params;
+				if ( jQuery(this).val() != "toplevel" )
+				{
+					if ( zp_extra_params.length > 0 ) zp_extra_params = "&"+zp_extra_params;
+					
+					var new_location =
+						zpHref[0]
+						+ "?tag_id="+jQuery("option:selected", this).val()
+						+ zp_extra_params;
+				}
+				else // Toplevel
+				{
+					if ( zp_extra_params.length > 0 ) zp_extra_params = "?"+zp_extra_params;
+					var new_location = zpHref[0] + zp_extra_params;
+				}
 				
-				window.location = zpHref[0]+zp_extra_params;
+				if ( api_user_id.length > 0 ) new_location = new_location + api_user_id;
+				
+				window.location = new_location;
 			}
+			//else
+			//{
+			//	if ( zp_extra_params.length > 0 ) zp_extra_params = "?"+zp_extra_params;
+			//	
+			//	window.location = zpHref[0]+zp_extra_params;
+			//}
 		});
 		
 	} // Zotpress Library

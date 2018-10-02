@@ -175,7 +175,7 @@
 	a#zp-Setup-Cancel,
     div#zp-Zotpress-Setup-Buttons a,
     div#zp-Zotpress-Setup-Buttons input {
-        margin: 20px 30px 12px;
+        margin: 1em 30px 0.5em;
         float: right;
     }
 	a#zp-Setup-Cancel {
@@ -404,8 +404,9 @@
         clear: both;
         width: 100%;
     }
-    #zp-Setup div.proceed input#zp-Connect {
-        margin: 1em 2em 0.5em;
+	#zp-Setup div.proceed input#zp-Connect,
+    #zp-Setup div.proceed input#zp-Connect-Next {
+        margin: 1em 30px 0.5em;
         float: right;
     }
     /* Thanks to http://nicolasgallagher.com/micro-clearfix-hack/ */
@@ -655,25 +656,6 @@
 		top: 35px;
 		right: 30px;
 	}
-	.zp-Browse-Account-Import {
-		padding-left: 3px !important;
-		margin-right: 5px !important;
-		transition: none !important;
-	}
-	.zp-Browse-Account-Import:before {
-		background-image: url("../images/sprite.png") !important;
-		background-repeat: no-repeat !important;
-		background-position: -252px -420px !important;
-		content: "";
-		display: block;
-		float: left;
-		width: 25px;
-		height: 25px;
-	}
-	.zp-Browse-Account-Import.loading:before {
-		background-image: url("../images/loading_default.gif") !important;
-		background-position: 2px center !important;
-	}
 	.zp-Browse-Account-Default {
 		padding-left: 3px !important;
 		transition: none !important;
@@ -720,15 +702,25 @@
     
 	#zpSearchResultsContainer {
 		border-top: 1px solid #eee;
-		padding: 20px 0;
+		/*padding: 20px 0;*/
 	}
 	div#zp-Zotpress div.zp-List.loading #zpSearchResultsContainer {
-		background: transparent url('../images/loading_default.gif') no-repeat center 2em;
+		background: transparent url('../images/loading_default.gif') no-repeat center 14px;
 		min-height: 2em;
 	}
 	.wp-admin #zpSearchResultsContainer {
 		padding-bottom: 0;
 	}
+	.wp-admin div#zp-Zotpress div.zp-List.loading {
+		background: transparent url('../images/loading_default.gif') no-repeat center top;
+	}
+	.wp-admin div#zp-Zotpress div.zp-List.loading #zpSearchResultsContainer {
+		background: none;
+	}
+	/*.wp-admin .loading #zpSearchResultsContainer {*/
+	/*	border-bottom: 1px solid #eee;*/
+	/*	padding-bottom: 20px;*/
+	/*}*/
     
     div#zp-Zotpress div.zp-List {
     }
@@ -779,6 +771,10 @@
 	div#zp-Zotpress div.zp-List div.zp-Entry:after {
 		clear: both;
 	}
+	.wp-admin div#zp-Zotpress div.zp-List div.zp-Entry {
+		border-bottom: 1px solid #eee;
+		padding-top: 20px;
+	}
 	
 	div#zp-Zotpress div.zp-List div.zp-Entry span.item_key:before {
 		content: "Item Key: ";
@@ -801,7 +797,9 @@
     }
     div#zp-Zotpress div.zp-List div.zp-Entry-Image.hasImage {
         width: 100px;
-        height: 100px;
+        /*height: 100px;*/
+        min-height: 100px;
+        height: auto;
 	}
     
     div#zp-Zotpress div.zp-List div.zp-Entry-Image a.upload,
@@ -875,12 +873,13 @@
     }
     
     div#zp-Zotpress div.zp-List div.zp-Entry-Image img {
-        z-index: 1;
-        position: absolute;
-        top: 0;
-        left: 0;
+        /*z-index: 1;*/
+        /*position: absolute;*/
+        /*top: 0;*/
+        /*left: 0;*/
         width: 100px;
-        height: 100px;
+        /*height: 100px;*/
+        height: auto;
     }
     
     div#zp-Zotpress div.zp-Entry div.zp-Entry-ID {
@@ -914,7 +913,7 @@
 	
 	#zpSearchResultsPaging {
 		padding: 10px 30px;
-		border-top: 1px solid #eee;
+		/*border-top: 1px solid #eee;*/
 	}
 	#zpSearchResultsPaging:after {
 		clear: both;
@@ -1489,6 +1488,14 @@
     div.zp-Zotpress-Options div.zp-CPT-Checkbox label.dis {
         color: #ccc;
     }
+	div.zp-CPT-Checkbox-Container:before,
+	div.zp-CPT-Checkbox-Container:after {
+		content: " "; /* 1 */
+		display: table; /* 2 */
+	}
+	div.zp-CPT-Checkbox-Container:after {
+		clear: both;
+	}
     
     /* END OF OPTIONS PAGE CSS */
     

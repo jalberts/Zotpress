@@ -21,6 +21,8 @@ class zotpressLib
 	private $downloadable = false;
 	private $showimage = false;
 	private $is_admin = false;
+	private $urlwrap = false;
+	private $target = false;
 	
 	public function __construct()
 	{
@@ -115,6 +117,16 @@ class zotpressLib
 		$this->is_admin = $setAdmin;
 	}
 	
+	public function setURLWrap($urlwrap)
+	{
+		$this->urlwrap = $urlwrap;
+	}
+	
+	public function setTarget($target)
+	{
+		$this->target = $target;
+	}
+	
 	
 	
 	public function getLib()
@@ -193,6 +205,8 @@ class zotpressLib
 				<span id="ZP_CITEABLE" style="display: none;"><?php echo $this->citeable; ?></span>
 				<span id="ZP_DOWNLOADABLE" style="display: none;"><?php echo $this->downloadable; ?></span>
 				<span id="ZP_SHOWIMAGE" style="display: none;"><?php echo $this->showimage; ?></span>
+				<span id="ZP_TARGET" style="display: none;"><?php echo $this->target; ?></span>
+				<span id="ZP_URLWRAP" style="display: none;"><?php echo $this->urlwrap; ?></span>
 				<?php if ( $this->is_admin ):?><span id="ZP_ISADMIN" style="display: none;"><?php echo $this->is_admin; ?></span><?php endif; ?>
                 
                 <div id="zp-Browse-Bar">
@@ -207,8 +221,8 @@ class zotpressLib
 						
 						// Set default option
 						echo "<option class='loading' value='loading'>Loading ...</option>";
-						if ( $tag_id ) echo "<option value='blank'>--Nothing Selected--</option>";
-						if ( ! $collection_id ) echo "<option value='toplevel'>Top level</option>";
+						if ( $tag_id ) echo "<option value='blank'>--No Collection Selected--</option>";
+						if ( ! $tag_id && ! $collection_id ) echo "<option value='toplevel'>Top level</option>";
 						
 						echo "</select>\n";
 						echo "</div>\n\n";

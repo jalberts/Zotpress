@@ -45,7 +45,7 @@
 		$zp_import_url .= $zp_item_key."/file/view?key=".$zp_account[0]->public_key;
 		
 		// Read the external data
-        $zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, false );
+        $zp_xml = $zp_import_contents->get_request_contents( $zp_import_url, true ); // Unsure about "true"
 		// header("Location: ".$zp_download_url[0]->citation."/file?key=".$zp_download_url[0]->public_key);
 		
 		// Determine filename based on content type

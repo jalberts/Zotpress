@@ -137,7 +137,7 @@
 			<div id="zp-Browse-Account-Options">
 				
 				<?php $is_default = false; if ( get_option("Zotpress_DefaultAccount") && get_option("Zotpress_DefaultAccount") == $api_user_id ) { $is_default = true; } ?>
-				<a href="javascript:void(0);" rel="<?php echo $api_user_id; ?>" class="zp-Browse-Account-Default button button-secondary<?php if ( $is_default ) { echo " selected disabled"; } ?>"><?php if ( $is_default ) { echo "Default"; } else { echo "Set as Default"; } ?></a>
+				<a href="javascript:void(0);" rel="<?php echo $api_user_id; ?>" class="zp-Browse-Account-Default zp-Accounts-Default button button-secondary<?php if ( $is_default ) { echo " selected disabled"; } ?>"><?php if ( $is_default ) { echo "Default"; } else { echo "Set as Default"; } ?></a>
 				
 			</div>
             
@@ -206,7 +206,7 @@
                     
                     jQuery(document).ready(function() {
                         
-                        jQuery("#zp-Connect").removeAttr("disabled").click(function()
+                        jQuery("#zp-Connect-Next").removeAttr("disabled").click(function()
                         {
                             window.parent.location = "admin.php?page=Zotpress&setup=true";
                             return false;
@@ -254,7 +254,7 @@
                 </div>
                 
                 <div class="proceed">
-                    <input id="zp-Connect" name="zp-Connect" class="button-primary" type="submit" value="Next" tabindex="5" disabled="disabled" />
+                    <input id="zp-Connect-Next" name="zp-Connect" class="button-primary" type="submit" value="Next" tabindex="5" disabled="disabled" />
                 </div>
                 
             </div>
