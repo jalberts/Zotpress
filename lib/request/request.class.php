@@ -91,7 +91,7 @@ if ( ! class_exists('ZotpressRequest') )
                 
                 if ( count($zp_results) != 0 )
                 {
-                    $data = $zp_results[0]->json;
+                    $data = gzdecode($zp_results[0]->json);
                     $headers = $zp_results[0]->headers;
                 }
                 
@@ -213,7 +213,7 @@ if ( ! class_exists('ZotpressRequest') )
                         (
                             md5( $url ),
                             $this->api_user_id,
-                            $data,
+                            gzencode($data),
                             $headers,
                             $response["headers"]["last-modified-version"],
                             date('m/d/Y h:i:s a')
@@ -225,7 +225,7 @@ if ( ! class_exists('ZotpressRequest') )
             // Retrieve cached version
             else
             {
-                $data = $zp_results[0]->json;
+                $data = gzdecode($zp_results[0]->json);
                 $headers = $zp_results[0]->headers;
             }
             

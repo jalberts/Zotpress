@@ -30,19 +30,19 @@
             <ol class="zp-WaysToUseZotpress">
                 <li>
                     <p><strong><span class="number">1</span> The Zotpress Shortcode</strong></p>
-                    <p class="indent">Generate a bibliography wherever you can call shortcodes. <a title="Learn more" href="#zotpress">Learn more &raquo;</a></p>
+                    <p class="indent">Generate a bibliography wherever you can call shortcodes. <a title="Learn more" href="#zp-Tab-Bib" class="zp-Tab-Link">Learn more &raquo;</a></p>
                 </li>
                 <li>
                     <p><strong><span class="number">2</span>The Zotpress In-Text Shortcodes</strong></p>
-                    <p class="indent">Create in-text citations and an auto-generated bibliography. <a title="Learn more" href="#intext">Learn more &raquo;</a></p>
+                    <p class="indent">Create in-text citations and an auto-generated bibliography. <a title="Learn more" class="zp-Tab-Link" href="#zp-Tab-InText">Learn more &raquo;</a></p>
+                </li>
+                <li>
+                    <p><strong><span class="number">4</span>The Zotpress Library Shortcode</strong></p>
+                    <p class="indent">Display your Zotero library on the front-end of your website. <a title="Learn more" class="zp-Tab-Link" href="#zp-Tab-Library">Learn more &raquo;</a></p>
                 </li>
                 <li>
                     <p><strong><span class="number">3</span>The Zotpress Sidebar Widget</strong></p>
                     <p class="indent">Drag-and-drop this widget into a sidebar on the <a title="Widgets" href="widgets.php">Widgets</a> page.</p>
-                </li>
-                <li>
-                    <p><strong><span class="number">4</span>The Zotpress Library Shortcode</strong></p>
-                    <p class="indent">Display your Zotero library on the front-end of your website. <a title="Learn more" href="#lib">Learn more &raquo;</a></p>
                 </li>
             </ol>
             
@@ -52,11 +52,14 @@
             </p>
             
             <p>
-                Have questions? First, check the FAQ. Then search the
+                Have questions? First, check the 
+                <a title="FAQ" class="zp-Tab-Link" href="#zp-Tab-FAQ">FAQ</a>.
+                Then search the
                 <a title="Zotpress Forums" href="http://wordpress.org/support/plugin/zotpress">Zotpress Support Forums</a>. If you can't find an answer,
                 feel free to post your question there.
             </p>
             
+            <a id="zp-Zotero-API-Hash"></a>
             
 			<div id="zp-Zotero-API">
 				
@@ -260,11 +263,10 @@
 						<h4>Display > <strong>format</strong></h4>
 						<div class="description">
 							<p>How the in-text citation should be presented. Use these placeholders: %a% for author, %d% for date, %p% for page, %num% for list number.</p>
-							<p class="break"><strong>Hint:</strong> In WordPress shortcodes, the bracket characters <strong>[</strong> and <strong>]</strong> are special characters. To use in-text brackets, see the <code>brackets</code> attribute below or the example on the right.</p>
+							<p class="break"><strong>Hint:</strong> In WordPress shortcodes, the bracket characters <strong>[</strong> and <strong>]</strong> are special characters. To use in-text brackets, see the <code>brackets</code> attribute below.</p>
 						</div>
 						<div class="example">
-							<p><code>[zotpressInText item="NCXAA92F" format="%a% (%d%, %p%)"]</code>, which will display as: <span style="padding-left: 0.5em; font-family: monospace;">author (date, pages)</span></p>
-							<p class="break"><code>[zotpressInText item="{NCXAA92F,DTA2KZXU}" format="&amp;#91;%num%&amp;#93;"]</code>, which will display as: <span style="padding-left: 0.5em; font-family: monospace;">[1];[2]</span></p>
+							<p><code>[zotpressInText item="NCXAA92F" format="%a% (%d%, %p%)"]</code> will display as: <span style="padding-left: 0.5em; font-family: monospace;">author (date, pages)</span></p>
 						</div>
 					</div>
 					<div class="zp-Zotero-API-Attribute">

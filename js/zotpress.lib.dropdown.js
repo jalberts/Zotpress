@@ -7,6 +7,7 @@ jQuery(document).ready(function()
      *
      ****************************************************************************************/
 	
+    
 	// TO-DO: notes, abstract, target, showtags
 	
 	var zpCollectionId = false; if ( jQuery("#ZP_COLLECTION_ID").length > 0 ) zpCollectionId = jQuery("#ZP_COLLECTION_ID").text();
@@ -161,8 +162,7 @@ jQuery(document).ready(function()
 					if ( update === true && ! jQuery("select#zp-List-Tags").hasClass("updating") )
 						jQuery("select#zp-List-Tags").empty().addClass("updating");
 					
-					
-					if ( zp_tags.data.length > 0 )
+					if ( zp_tags !== 0 && zp_tags.data.length > 0 )
 					{
 						jQuery.each(zp_tags.data, function( index, tag )
 						{
@@ -185,10 +185,19 @@ jQuery(document).ready(function()
 						else
 							if ( ! jQuery("select#zp-List-Tags").hasClass("updating") )
 								zp_get_tags ( 0, 0, true );
+
+						// Remove loading indicator
+						jQuery("select#zp-List-Tags").removeClass("loading").find(".loading").remove();
 					}
-					
-					// Remove loading indicator
-					jQuery("select#zp-List-Tags").removeClass("loading").find(".loading").remove();
+					else // Feedback
+					{
+						// Remove loading indicator
+						jQuery("select#zp-List-Tags").removeClass("loading").find(".loading").remove();
+
+						jQuery("select#zp-List-Tags").append(
+							"<option value='empty'>No tags to display</option>"
+							);
+					}
 				},
 				error: function(errorThrown)
 				{
@@ -216,8 +225,17 @@ jQuery(document).ready(function()
 			if ( typeof(request_last) === "undefined" || request_last == "false" || request_last == "" )
 				request_last = 0;
 			
+			// Feedback on where in item chunking we're at
+			if ( jQuery(".zp-List").hasClass("loading")
+				 && jQuery(".zp-List").find(".zp_display_progress").text() == "" )
+			{
+				jQuery(".zp-List").append(
+					"<div class='zp_display_progress'>Loading ...</div>");
+			}
+            
 			jQuery.ajax(
 			{
+                async: true,
 				url: zpShortcodeAJAX.ajaxurl,
 				ifModified: true,
 				data: {
@@ -253,25 +271,34 @@ jQuery(document).ready(function()
 					var zp_items = jQuery.parseJSON( data );
 					
 					// Remove cached bib before adding updates
-					if ( update === false ) jQuery(".zp-List").addClass("used_cache");
+					if ( update === false ) 
+						jQuery(".zp-List").addClass("used_cache");
 					else if ( update === true )
 						if ( ! jQuery(".zp-List").hasClass("updating") )
 							jQuery(".zp-List").addClass("updating");
 					
 					
 					// First, display the items from this request, if any
-					if ( typeof zp_items != 'undefined' && zp_items != null && zp_items != 0 && zp_items.data.length > 0 )
+					if ( typeof zp_items != 'undefined' 
+							&& zp_items != null 
+							&& zp_items != 0 
+							&& zp_items.data.length > 0 )
 					{
 						var tempItems = "";
-						
+
+						// Feedback on where in item chunking we're at
+						if ( ! jQuery(".zp-List").hasClass("updating")
+								&& ( zp_items.meta.request_last !== false && zp_items.meta.request_last != "false" ) 
+								&& zp_items.meta.request_last !== 0 )
+						{
+							jQuery(".zp-List").find(".zp_display_progress").html(
+								"Loading "
+								+ (zp_items.meta.request_next-50) + "-" + zp_items.meta.request_next
+								+ " out of " + zp_items.meta.request_last + "..." );
+						}
+
 						jQuery.each(zp_items.data, function( index, item )
 						{
-							//if ( jQuery("#zp-Entry-"+item.key).length > 0
-							//		&& update === true
-							//		&& jQuery(".zp-List").hasClass("used_cache") )
-							//{
-							//	jQuery("#zp-Entry-"+item.key).remove();
-							//}
 							var tempItem = "";
 							
 							// Determine item reference
@@ -309,7 +336,8 @@ jQuery(document).ready(function()
 							tempItem += item.bib;
 							
 							// Show item key if admin
-							if ( zpIsAdmin ) tempItem += "<span class='item_key'>"+item.key+"</span>\n";
+							if ( zpIsAdmin )
+                                tempItem += "<label for='item_key'>Item Key:</label><input type='text' name='item_key' class='item_key' value='"+item.key+"'>\n";
 							
 							tempItem += "</div><!-- .zp-Entry -->\n";
 							
@@ -343,8 +371,9 @@ jQuery(document).ready(function()
 							window.zpACPagination(zpItemsFlag); 
 							zpItemsFlag = false;
 							
-							// Remove loading
-							jQuery("div.zp-List").removeClass("loading");
+							// Remove loading and feedback
+							jQuery(".zp-List").removeClass("loading");
+							jQuery(".zp-List").find(".zp_display_progress").remove();
 							
 							// Check for updates
 							if ( ! jQuery("div.zp-List").hasClass("updating") )
@@ -370,10 +399,6 @@ jQuery(document).ready(function()
 											return 0;
 										
 									}).detach().appendTo("#"+zp_items.instance+" .zp-List");
-									
-									//jQuery('div.zp-List div.zp-Entry').sort(function(a,b) {
-									//	return jQuery(a).getAttribute("zp-author-year") > jQuery(b).getAttribute("zp-author-year");
-									//}).appendTo('div.zp-List');
 								}
 							}
 						}
@@ -385,13 +410,10 @@ jQuery(document).ready(function()
 						if ( update === true )
 						{
 							jQuery(".zp-List").removeClass("loading");
+							jQuery(".zp-List").find(".zp_display_progress").remove();
 							
 							jQuery("#zpSearchResultsContainer").append("<p>There are no citations to display.</p>\n");
 						}
-						//else if ( update === false )
-						//{
-						//	zp_get_items ( 0, 0, true );
-						//}
 					}
 				},
 				error: function(errorThrown)
@@ -401,7 +423,6 @@ jQuery(document).ready(function()
 			});
 		}
 		zp_get_items ( 0, 0, false );
-		//zp_get_items ( 0, 0, true );
 		
 		
 	} // Zotpress DropDown Library

@@ -18,7 +18,8 @@
                         <input id="api_user_id" name="api_user_id" type="text" tabindex="2" />
 						<aside>
 							<p>
-								For individual accounts, find the API User ID in your <a href="http://www.zotero.org/settings" target="_blank" rel="ext">Zotero Settings</a> at the <strong>Feeds/API tab</strong>. For group accounts, there are two ways to find the API Group ID. Older Zotero groups will have it listed in the group's Zotero URL: a number 1-6+ digits in length after "groups." The API Group ID of new Zotero groups can be found in the <strong>RSS Feed URL</strong>.
+                                The API User ID for <strong>User</strong> (individual, personal) accounts can be found on the <a href="https://www.zotero.org/settings/keys" target="_blank">Zotero Settings > Keys</a> page, right above where you create a new key.
+                                The API User ID for <strong>Group</strong> accounts can be found on the <a href="https://www.zotero.org/groups/" target="_blank">Zotero Group</a> page. Hover over the title of a group or click the title of the group to see the URL; the API User ID is the number in the URL.
 							</p>
 						</aside>
                     </div>
@@ -29,8 +30,8 @@
 						<aside>
 							<p>
 								A private key is required for Zotpress to make requests to Zotero from WordPress.
-								<?php if (isset($oauth_is_not_installed) && $oauth_is_not_installed === false) { ?><strong>You can create a key using OAuth <u>after</u> you've added your account.</strong><?php } else { ?>Go to the <a href="http://www.zotero.org/settings" target="_blank" rel="ext">Zotero Settings</a> at the <strong>Feeds/API</strong> tab and choose "Create new private key."</strong><?php } ?>
-								If you've already created a key, you can find it at <em>Settings > Feeds/API</em> on the <a title="Zotero" rel="nofollow" href="http://www.zotero.org/">Zotero</a> website. Make sure that <strong>"Allow read access"</strong> is checked. For groups, make sure the Default Group Permissions or Specific Group Permissions are set to "<strong>Read Only</strong>" or "Read/Write."
+								<?php if (isset($oauth_is_not_installed) && $oauth_is_not_installed === false) { ?><strong>You can create a key using OAuth <u>after</u> you've added your account.</strong><?php } else { ?>Go to the <a href="https://www.zotero.org/settings/keys" target="_blank">Zotero Settings > Keys</a> page and choose "Create new private key."</strong><?php } ?>
+								If you've already created a key, you can find it on the <a href="https://www.zotero.org/settings/keys" target="_blank">Zotero Settings > Keys</a> page. Make sure that <strong>"Allow library access"</strong> is checked. For groups, make sure the Default Group Permissions or Specific Group Permissions are set to "<strong>Read Only</strong>" or "Read/Write."
 							</p>
 						</aside>
                     </div>
@@ -40,7 +41,7 @@
                         <input id="nickname" name="nickname" type="text" tabindex="4" />
 						<aside>
 							<p>
-								Your API User/Group ID can be hard to remember. Make it easier for yourself by giving your account a nickname.
+								Your API User ID can be hard to remember. Make it easier for yourself by giving your account a nickname.
 							</p>
 						</aside>
                     </div>

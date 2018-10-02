@@ -6,14 +6,14 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bringing Zotero and scholarly blogging to your WordPress website.
     Author: Katie Seaborn
-    Version: 6.1.6
+    Version: 6.2
     Author URI: http://katieseaborn.com
     
 */
 
 /*
  
-    Copyright 2016 Katie Seaborn
+    Copyright 2017 Katie Seaborn
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
-    define('ZOTPRESS_VERSION', '6.1.6' );
+    define('ZOTPRESS_VERSION', '6.2' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
     
-    $GLOBALS['Zotpress_update_db_by_version'] = "6.0"; // Only change this if the db needs updating - 5.2.6
+    $GLOBALS['Zotpress_update_db_by_version'] = '6.2'; // Only change this if the db needs updating - 5.2.6
 
 // GLOBAL VARS ----------------------------------------------------------------------------------
     
@@ -111,10 +111,6 @@
 			}
 			
 			wp_enqueue_style( 'zotpress.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.css' );
-			
-			//$zp_http_s = ""; if ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ) $zp_http_s = "s";
-			//
-			//wp_enqueue_style( 'ZotpressGoogleFonts.css', 'http'.$zp_http_s.'://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600|Droid+Serif:400,400italic,700italic|Oswald:300,400' );
 		}
     }
     add_action( 'admin_enqueue_scripts', 'Zotpress_admin_scripts_css' );

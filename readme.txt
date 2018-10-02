@@ -3,25 +3,25 @@ Contributors: kseaborn
 Plugin Name: Zotpress
 Plugin URI: http://katieseaborn.com/plugins/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5HQ8FXAXS9MUQ
-Tags: zotero, zotpress, citation manager, citations, citation, cite, citing, bibliography, bibliographies, reference, referencing, references, reference list, reference manager, academic, academic blogging, academia, scholar, scholarly, scholarly blogging, cv, curriculum vitae, resume, publish, publications
+Tags: zotero, zotpress, citation manager, citations, citation, cite, citing, bibliography, bibliographies, reference, referencing, references, reference list, reference manager, academic, academic blogging, academia, scholar, scholarly, scholarly blogging, cv, curriculum vitae, resume, publish, publication, publications
 Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
-Tested up to: 4.6.1
-Stable tag: 6.1.6
+Tested up to: 4.8
+Stable tag: 6.2
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
 
 == Description ==
 
-[Zotpress](http://katieseaborn.com/plugins/ "Zotpress for WordPress") brings your Zotero library and scholarly blogging to WordPress. [Zotero](http://zotero.org/ "Zotero") is a free, cross-platform reference manager that integrates with your browser and word processor.
+[Zotpress](http://katieseaborn.com/plugins/ "Zotpress for WordPress") brings publication broadcasting and scholarly blogging to WordPress through [Zotero](http://zotero.org/ "Zotero"), a free, cross-platform reference manager.
 
 = Features =
-* Displays your up-to-date individual and group Zotero items through in-text citations, bibliographies, and searchable libraries
-* Supports thumbnail images through WordPress's Featured Image
+* Displays your personal and group Zotero items through in-text citations, bibliographies, and searchable libraries
+* Supports thumbnail images through WordPress's Media Library and Open Library
 * Supports selective CSS styling via IDs and classes
-* Provides a range of additional features, such as allowing visitors to cite and download citations
+* Provides a range of additional features, such as allowing visitors to download citations
 * And more!
 
 Compatible with Firefox, Safari, Chrome, and IE9. Made with jQuery, jQuery UI, jQuery doTimeout, Live Query, OAuth, and [Open Library](https://openlibrary.org/ "Open Library").
@@ -54,7 +54,7 @@ Check out the "Help" page on your installation of Zotpress for more information 
 
 == Frequently Asked Questions ==
 
-The F.A.Q. can be found on the "Help" page of every Zotpress installation. If you have a question that isn't answered there, feel free to post a message in the [forums](http://wordpress.org/tags/zotpress "Zotero forums on Wordpress.com").
+The F.A.Q. can be found on the "Help" page of every Zotpress installation. If you have a question that isn't answered there, feel free to post a message in the [forums](https://wordpress.org/support/plugin/zotpress "Zotpress forums on Wordpress.com").
 
 == Screenshots ==
 
@@ -63,6 +63,16 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.2 =
+
+* Added compression to bring down the size of the cache.
+* Fixed logic error around WordPress Media Library images vs. Open Library images.
+* Browse page Tags dropdown now accounts for no tags.
+* Browse page has clearer loading feedback.
+* Browse page collection and item keys are now text inputs to prevent styled text from being copied into the visual editor.
+* Now hyperlinking https-based DOI URLs.
+* Help page tab links have been fixed.
 
 = 6.1.6 =
 
@@ -853,3 +863,13 @@ Shortcode Creator. "Show Image" and "Sort" bugs fixed.
 = 6.1.6 =
 
 * Fixed wp_remote_retrieve_headers issue (WP core change) that limited total results.
+
+= 6.2 =
+
+* Added compression to bring down the size of the cache.
+* Fixed logic error around WordPress Media Library images vs. Open Library images.
+* Browse page Tags dropdown now accounts for no tags.
+* Browse page has clearer loading feedback.
+* Browse page collection and item keys are now text inputs to prevent styled text from being copied into the visual editor.
+* Now hyperlinking https-based DOI URLs.
+* Help page tab links have been fixed.
