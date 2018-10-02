@@ -101,7 +101,7 @@
         if ($collection_id) $collection_id = str_replace('"','',html_entity_decode($collection_id));
         else if ($collection) $collection_id = str_replace('"','',html_entity_decode($collection));
         else if ($collections) $collection_id = str_replace('"','',html_entity_decode($collections));
-        //else $collection_id = str_replace('"','',html_entity_decode($collection));
+		$collection_id = str_replace(" ", "", $collection_id );
         
         if (strpos($collection_id, ",") > 0) $collection_id = explode(",", $collection_id);
         if ($data_type == "collections" && isset($_GET['zpcollection']) ) $collection_id = htmlentities( urldecode( $_GET['zpcollection'] ) );
@@ -120,6 +120,7 @@
         if ($items) $item_key = str_replace('"','',html_entity_decode($items));
         if ($item) $item_key = str_replace('"','',html_entity_decode($item));
         if (strpos($item_key, ",") > 0) $item_key = explode(",", $item_key);
+		$item_key = str_replace(" ", "", $item_key );
         
 		// Inclusive (for multiple authors)
         if ($inclusive == "yes" || $inclusive == "true" || $inclusive === true ) $inclusive = true; else $inclusive = false;

@@ -8,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 4.3.1
-Stable tag: 6.0.3
+Stable tag: 6.0.5
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -63,6 +63,14 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.0.5 =
+
+* New way of selecting in-text citations without relying on post IDs as HTML IDs or classes.
+* The "items" and "collections" parameters in bib and in-text shortcodes are now flexible around extra spaces.
+* Fixed Zotpress In-Text Bibliography non-unique ID issue.
+* Fixed parenthesis formatting issue for number-based in-text citations.
+* Number-based in-text citations now have bibliographic details on mouse hover.
 
 = 6.0.4 =
 

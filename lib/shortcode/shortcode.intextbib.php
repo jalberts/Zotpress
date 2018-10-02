@@ -80,9 +80,6 @@
 		$item_key = "";
         
         
-        // Generate instance id for shortcode
-        $zp_instance_id = "zotpress-".md5($style.$sortby.$order.$showimage.$showtags.$title.$download.$notes.$abstracts.$cite.$target.$forcenumber);
-		
 		// Get in-text items
 		if ( isset( $GLOBALS['zp_shortcode_instances'][get_the_ID()] ) )
 		{
@@ -95,11 +92,14 @@
 			}
 		}
 		
+        // Generate instance id for shortcode
+        $zp_instance_id = "zotpress-".md5($item_key.$style.$sortby.$order.$showimage.$showtags.$title.$download.$notes.$abstracts.$cite.$target.$forcenumber);
+		
 		
         // GENERATE IN-TEXT BIB STRUCTURE
 		$zp_output = "\n<div id='zp-InTextBib-".$zp_instance_id."' class='zp-Zotpress zp-Zotpress-InTextBib";
 		if ( $forcenumber ) $zp_output .= " forcenumber";
-		$zp_output .= "'>";
+		$zp_output .= " zp-Post-".get_the_ID()."'>";
 		$zp_output .= '
 			<span class="ZP_API_USER_ID" style="display: none;">'.$api_user_id.'</span>
 			<span class="ZP_ITEM_KEY" style="display: none;">'.$item_key.'</span>

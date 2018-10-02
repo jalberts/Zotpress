@@ -32,8 +32,8 @@
         
         // PREPARE ATTRIBUTES
         
-        if ($items) $items = str_replace('"','',html_entity_decode($items));
-        else if ($item) $items = str_replace('"','',html_entity_decode($item));
+        if ($items) $items = str_replace(" ", "", str_replace('"','',html_entity_decode($items)));
+        else if ($item) $items = str_replace(" ", "", str_replace('"','',html_entity_decode($item)));
         
         $pages = str_replace('"','',html_entity_decode($pages));
         $format = str_replace('"','',html_entity_decode($format));
