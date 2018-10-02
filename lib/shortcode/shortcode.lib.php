@@ -155,7 +155,7 @@
 		// Show theme scripts
         $GLOBALS['zp_is_shortcode_displayed'] = true;
 		
-		$zpLib->getLib();
+		return $zpLib->getLib();
 	}
 
     

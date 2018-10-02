@@ -5,7 +5,6 @@
 	// Require admin functions
 	//require( dirname(__FILE__) . '/../admin/admin.functions.php' );
 	
-    //$zp_accounts = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress ORDER BY account_type DESC");
     $zp_accounts_total = zp_get_total_accounts( $wpdb );
 	
     
@@ -94,8 +93,6 @@
 		$zpLib->setType("dropdown");
 		$zpLib->setAdmin(true);
 		$zpLib->setShowImage(true);
-		
-		//add_thickbox();
 	?>
     
     <div id="zp-Zotpress" class="wrap">
@@ -135,7 +132,7 @@
             
             <span id="ZOTPRESS_PLUGIN_URL"><?php echo ZOTPRESS_PLUGIN_URL; ?></span>
             
-            <?php $zpLib->getLib(); ?>
+            <?php echo $zpLib->getLib(); ?>
 			
         </div><!-- #zp-Browse-Wrapper -->
         

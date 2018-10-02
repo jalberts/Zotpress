@@ -5,7 +5,7 @@
 	
     class ZotpressSidebarWidget extends WP_Widget
     {
-        function ZotpressSidebarWidget()
+        function __construct()
         {
             $widget_ops = array('description' => __('Display your citations on your sidebar', 'zp-ZotpressSidebarWidget'));
 			parent::__construct(false, __('Zotpress Widget'), $widget_ops);

@@ -7,8 +7,8 @@ Tags: zotero, zotpress, citation manager, citations, citation, cite, citing, bib
 Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
-Tested up to: 4.8.1
-Stable tag: 6.2.2
+Tested up to: 4.8.3
+Stable tag: 6.2.3
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -63,6 +63,13 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.2.3 =
+
+* Updated Sidebar Widget constructor.
+* Updated Library Shortcode to return rather than echo output.
+* Clarified how "showimage" works on the Help page.
+* Fixed Library Shortcode display bug for numbered bibliographies.
 
 = 6.2.2 =
 

@@ -150,7 +150,7 @@
 					</div>
 					<div class="zp-Zotero-API-Attribute">
 						<h4>Display > <strong>showimage</strong></h4>
-						<div class="description"><p>Whether or not to display the citation's image, if one exists. If using the "openlib" option, will use your image first and then, if none exists, will search the <a href="https://openlibrary.org/" target="_blank" title="Open Library">Open Library</a> to find book covers by ISBN. <strong>Options: yes, no, openlib [default]</strong></p></div>
+						<div class="description"><p>Whether or not to display the citation's image, if one has been set in WordPress (on the Zotpress <a href="?page=Zotpress" title="Zotpress Browse page">Browse</a> page). If using the "openlib" option, it will look for a WordPress-set image first and then, if none exists, it will search the <a href="https://openlibrary.org/" target="_blank" title="Open Library">Open Library</a> to find book covers by ISBN. <strong>Options: yes, no, openlib [default]</strong></p></div>
 						<div class="example"><p><code>[zotpress collection="GMGCJU34" showimage="yes"]</code></p></div>
 					</div>
 					<div class="zp-Zotero-API-Attribute">
