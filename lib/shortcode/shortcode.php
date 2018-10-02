@@ -198,8 +198,8 @@
         if ($target == "yes" || $target == "_blank" || $target == "new" || $target == "true" || $target === true)
         $target = true; else $target = false;
         
-        if ($urlwrap == "title" || $urlwrap == "image" )
-		$urlwrap = str_replace('"','',html_entity_decode($urlwrap)); else $urlwrap = false;
+        if ($urlwrap == "title" || $urlwrap == "image" ) $urlwrap = str_replace('"','',html_entity_decode($urlwrap));
+		else $urlwrap = false;
         
         if ($highlight ) $highlight = str_replace('"','',html_entity_decode($highlight)); else $highlight = false;
         

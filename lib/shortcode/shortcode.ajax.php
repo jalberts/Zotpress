@@ -532,45 +532,87 @@
 					{
 						if ( $zp_urlwrap && $zp_urlwrap == "title" && $item->data->title )
 						{
-							///* TESTING, REMOVE */ if ( $item->key != "PFIS2J5X" ) continue;
+							///* TESTING, REMOVE */ if ( $item->key != "V8NZD8EX" ) continue;
 							
-							// Get rid of default URL listing
+							
+							// First: Get rid of text URL if it appears as text in the citation:
 							// TO-DO: Does this account for all citation styles?
-							$item->bib = str_replace( htmlentities($item->data->url), "", $item->bib );
+							/* chicago-author-date */$item->bib = str_replace( htmlentities($item->data->url."."), "", $item->bib ); // Note the period
+							/* APA */ $item->bib = str_replace( htmlentities($item->data->url), "", $item->bib );
 							$item->bib = str_replace( " Retrieved from ", "", $item->bib );
 							$item->bib = str_replace( " Available from: ", "", $item->bib );
 							
-							// Get rid of double space characters
+							
+							// Next, get rid of double space characters (two space characters next to each other):
 							$item->bib = preg_replace( '/&#xA0;/', ' ', preg_replace( '/[[:blank:]]+/', ' ', $item->bib ) );
 							
-							// Prep bib
+							
+							// Next, prep bib by replacing entity quotes:
 							$item->bib = str_replace( "&ldquo;", "&quot;",
 													str_replace( "&rdquo;", "&quot;",
-														htmlentities(
-															html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ),
-														ENT_COMPAT,
-														"UTF-8"
+															htmlentities(
+																html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ),
+																ENT_QUOTES,
+																"UTF-8"
+															)
 														)
-													)
 												);
 							
-							// Prep title
+							
+							// Then replace non-entity quote characters with entities:
+							// Note: The below conflicts with foreign characters ...
+							//$item->bib = html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" );
+							//$item->bib = iconv( "UTF-8", "ASCII//TRANSLIT", $item->bib );
+							
+							// Instead, let's try replacing special Word characters:
+							// Thanks to Walter Tross @ Stack Overflow; CC BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
+							$chr_map = array(
+								"\xC2\x82" => "'",			// U+0082U+201A single low-9 quotation mark
+								"\xC2\x84" => '"',			// U+0084U+201E double low-9 quotation mark
+								"\xC2\x8B" => "'",			// U+008BU+2039 single left-pointing angle quotation mark
+								"\xC2\x91" => "'",			// U+0091U+2018 left single quotation mark
+								"\xC2\x92" => "'",			// U+0092U+2019 right single quotation mark
+								"\xC2\x93" => '"',			// U+0093U+201C left double quotation mark
+								"\xC2\x94" => '"',			// U+0094U+201D right double quotation mark
+								"\xC2\x9B" => "'",			// U+009BU+203A single right-pointing angle quotation mark
+								"\xC2\xAB" => '"',			// U+00AB left-pointing double angle quotation mark
+								"\xC2\xBB" => '"',			// U+00BB right-pointing double angle quotation mark
+								"\xE2\x80\x98" => "'",	// U+2018 left single quotation mark
+								"\xE2\x80\x99" => "'",	// U+2019 right single quotation mark
+								"\xE2\x80\x9A" => "'",	// U+201A single low-9 quotation mark
+								"\xE2\x80\x9B" => "'",	// U+201B single high-reversed-9 quotation mark
+								"\xE2\x80\x9C" => '"',	// U+201C left double quotation mark
+								"\xE2\x80\x9D" => '"',	// U+201D right double quotation mark
+								"\xE2\x80\x9E" => '"',	// U+201E double low-9 quotation mark
+								"\xE2\x80\x9F" => '"',	// U+201F double high-reversed-9 quotation mark
+								"\xE2\x80\xB9" => "'",	// U+2039 single left-pointing angle quotation mark
+								"\xE2\x80\xBA" => "'"	// U+203A single right-pointing angle quotation mark
+							);
+							$chr = array_keys( $chr_map ); 
+							$rpl = array_values( $chr_map ); 
+							$item->bib = str_replace( $chr, $rpl, html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ) );
+							
+							// Re-encode for foreign characters, but don't encode quotes:
+							$item->bib = htmlentities( $item->bib, ENT_NOQUOTES, "UTF-8" );
+							
+							
+							// Next, prep title:
 							$item->data->title = htmlentities( $item->data->title, ENT_COMPAT, "UTF-8" );
 							$item->data->title = str_replace("&nbsp;", " ", $item->data->title );
 							
-							// If wrapping title, wrap it
+							// If wrapping title, wrap it:
 							$item->bib = str_replace(
-									//htmlentities($item->data->title),
 									$item->data->title,
-									//"<a ".$zp_target_output."href='".$item->data->url."'>".htmlentities($item->data->title)."</a>",
 									"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->title."</a>",
 									$item->bib
 								);
 							
-							// Revert bib entities
+							// Finally, revert bib entities:
 							$item->bib = html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" );
 							
-							///* TESTING, REMOVE */ var_dump($item->data->title."<br /><br />".$item->data->url."<br /><br />"); var_dump($item->bib);continue;
+							///* TESTING, REMOVE */ var_dump("\n<br><br>TESTWRAP: <br><br>\n\n".$item->data->title."<br><br>\n\n".$item->data->url."<br /><br />\n\n"); var_dump($item->bib);continue;
+						
+						
 						}
 						else // Just hyperlink the URL text
 						{
