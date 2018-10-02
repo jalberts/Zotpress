@@ -22,8 +22,6 @@ jQuery(document).ready(function()
 			if ( typeof(request_last) === "undefined" || request_last == "false" || request_last == "" )
 				request_last = 0;
 			
-			//console.log("zp_get_items with get_cache="+update);
-			
 			jQuery.ajax(
 			{
 				url: zpShortcodeAJAX.ajaxurl,

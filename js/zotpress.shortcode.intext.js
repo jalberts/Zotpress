@@ -11,6 +11,7 @@ jQuery(document).ready(function()
 	{
 		// Create global array for citations per post
 		window.zpIntextCitations = {};
+		window.zpIntextCitationCount = 0;
 		
 		// Get list items
 		function zp_get_items ( request_start, request_last, $instance, params, update )
@@ -63,7 +64,7 @@ jQuery(document).ready(function()
 					var zp_items = jQuery.parseJSON( data );
 					
 					// First, display the items from this request, if any
-					if ( typeof zp_items != 'undefined' && zp_items != null && zp_items != 0 && zp_items.data.length > 0 )
+					if ( typeof zp_items != 'undefined' && zp_items != null && parseInt(zp_items) != 0 && zp_items.data.length > 0 )
 					{
 						var tempItems = "";
 						if ( params.zpShowNotes == true ) var tempNotes = "";
@@ -87,12 +88,8 @@ jQuery(document).ready(function()
 							if ( ! jQuery("#"+zp_items.instance+" .zp-List").hasClass("updating") )
 								jQuery("#"+zp_items.instance+" .zp-List").addClass("updating");
 							
-							params.zpForceNumsCount = 1;
+							//params.zpForceNumsCount = 1;
 						}
-						//if ( update === true && jQuery("#"+zp_items.instance+" .zp-List").hasClass("used_cache") )
-						//{
-						//	jQuery("#"+zp_items.instance+" .zp-List").empty();
-						//}
 						
 						
 						
@@ -104,14 +101,7 @@ jQuery(document).ready(function()
 						
 						
 						
-						//if ( update === true && jQuery("#"+zp_items.instance+" .zp-List h3").length > 0 )
-						//	jQuery("#"+zp_items.instance+" .zp-List h3").remove();
-						
-						//jQuery("#"+zp_items.instance+" .zp-List").removeClass("loading");
-						
-						// Append items to list
-						//jQuery("#"+zp_items.instance+" .zp-List").append( tempItems );
-						// Append cached/initial items to list
+						// Append cached OR initial request items (first 50) to list
 						if ( update === false ) jQuery("#"+zp_items.instance+" .zp-List").append( tempItems );
 						
 						
@@ -125,20 +115,20 @@ jQuery(document).ready(function()
 						}
 						
 						
-						// Fix incorrect numbering in existing numbered style
-						if ( jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").length > 0 ) 
-						{
-							params.zpForceNumsCount = 1;
-							
-							jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").each(function ( index, item )
-							{
-								var item_content = jQuery(item).text();
-								item_content = item_content.replace( item_content.match(/\d+/)[0], params.zpForceNumsCount );
-								jQuery(item).text( item_content );
-								
-								params.zpForceNumsCount++;
-							});
-						}
+						//// Fix incorrect numbering in existing numbered style
+						//if ( jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").length > 0 ) 
+						//{
+						//	params.zpForceNumsCount = 1;
+						//	
+						//	jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").each(function ( index, item )
+						//	{
+						//		var item_content = jQuery(item).text();
+						//		item_content = item_content.replace( item_content.match(/\d+/)[0], params.zpForceNumsCount );
+						//		jQuery(item).text( item_content );
+						//		
+						//		params.zpForceNumsCount++;
+						//	});
+						//}
 						
 						
 						// Then, continue with other requests, if they exist
@@ -172,11 +162,20 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						if ( update === true )
-						{
+						//if ( update === true )
+						//{
+							var tempPost = $instance.attr("class");
+							tempPost = tempPost.replace("zp-Zotpress zp-Zotpress-InTextBib zp-Post-", "");
+							
+							// Removes loading icon and in-text data; accounts for post-ID and non-standard themes
+							if ( jQuery("#post-"+tempPost).length > 0 )
+								jQuery("#post-"+tempPost+" .zp-InText-Citation").removeClass("loading").remove();
+							else
+								jQuery("#"+$instance.attr("id")).parent().find(".zp-InText-Citation").removeClass("loading").remove();
+							
 							jQuery("#"+$instance.attr("id")+" .zp-List").removeClass("loading");
 							jQuery("#"+$instance.attr("id")+" .zp-List").append("<p>There are no citations to display.</p>\n");
-						}
+						//}
 					}
 				},
 				error: function(errorThrown)
@@ -186,6 +185,9 @@ jQuery(document).ready(function()
 			});
 			
 		} // function zp_get_items
+		
+		
+		
 		
 		jQuery(".zp-Zotpress-InTextBib").each( function( index, instance )
 		{
@@ -208,11 +210,12 @@ jQuery(document).ready(function()
 			zp_params.zpURLWrap = false; if ( jQuery(".ZP_URLWRAP", $instance).text().trim().length > 0 ) zp_params.zpURLWrap = jQuery(".ZP_URLWRAP", $instance).text();
 			zp_params.zpHighlight = false; if ( jQuery(".ZP_HIGHLIGHT", $instance).text().trim().length > 0 ) zp_params.zpHighlight = jQuery(".ZP_HIGHLIGHT", $instance).text();
 			
-			zp_params.zpForceNumsCount = 1;
+			//zp_params.zpForceNumsCount = 1;
 			
 			zp_get_items ( 0, 0, $instance, zp_params, false ); // Get cached items first
-			//zp_get_items ( 0, 0, $instance, zp_params, true ); // Then, get new or update existing
 		});
+		
+		
 		
 		
 		function zp_format_intext_citations ( $instance, item_keys, item_data, params, update )
@@ -225,8 +228,19 @@ jQuery(document).ready(function()
 			var intext_citations = new Array();
 			
 			// Create array for multiple in-text citations -- semicolon
-			if ( item_keys.indexOf(";") != -1 )  intext_citations = item_keys.split( ";" );
+			if ( item_keys.indexOf(";") != -1 ) intext_citations = item_keys.split( ";" );
 			else intext_citations.push( item_keys );
+			
+			
+			// Re-structure item_data
+			var tempItem_data = {};
+			jQuery.each( item_data, function (index, value )
+			{
+				if ( ! tempItem_data.hasOwnProperty(value.key) )
+					tempItem_data[value.key] = value;
+			});
+			item_data = tempItem_data;
+			
 			
 			jQuery.each( intext_citations, function (index, intext_citation)
 			{
@@ -288,29 +302,43 @@ jQuery(document).ready(function()
 					var item_citation = "";
 					var item_authors = "";
 					var item_year ="";
-					var item_title_attr = "";
 					
 					// Add to global array, if not already there
 					if ( ! window.zpIntextCitations["post-"+item.post_id].hasOwnProperty(item.key) )
+					{
 						window.zpIntextCitations["post-"+item.post_id][item.key] = item;
-					else
-						window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"] += intext_citation_id + " ";
-					
+						
+						window.zpIntextCitationCount++;
+						window.zpIntextCitations["post-"+item.post_id][item.key]["num"] = window.zpIntextCitationCount;
+					}
+					//else // If already there, add to item keys -- does this make sense? Just repeats the html id ...
+					//{
+					//	window.zpIntextCitations["post-"+item.post_id][item.key]["citation_ids"] += intext_citation_id + " ";
+					//}
 					
 					// Deal with authors and etal
-					jQuery.each( item_data, function ( kindex, response_item )
+					////jQuery.each( item_data, function ( kindex, response_item )
+					////{
+					//	if ( response_item.data.key != item.key ) return true;
+					
+					if ( item_data.hasOwnProperty(item.key) )
 					{
-						if ( response_item.data.key != item.key ) return true;
-						
-						if ( response_item.data.hasOwnProperty("creators") )
+						if ( item_data[item.key].data.hasOwnProperty("creators") )
 						{
+							var tempAuthorCount = 0;
+							
 							// Deal with authors
-							jQuery.each ( response_item.data.creators, function ( ai, author )
+							jQuery.each ( item_data[item.key].data.creators, function ( ai, author )
 							{
-								if ( response_item.data.itemType == "bookSection" && author.creatorType == "editor" )
+								//var tempEditorContentTypes = [ "bookSection", "encyclopediaArticle" ];
+								
+								if ( [ "bookSection", "encyclopediaArticle" ].indexOf( item_data[item.key].data.itemType ) !== false
+										&& author.creatorType == "editor" )
 									return true;
 								
-								if ( ai != 0 ) item_authors += ", ";
+								tempAuthorCount++;
+								
+								if ( ai != 0 && tempAuthorCount > 1 ) item_authors += ", ";
 								if ( author.hasOwnProperty("name") ) item_authors += author.name;
 								else if ( author.hasOwnProperty("lastName") ) item_authors += author.lastName;
 							});
@@ -325,7 +353,8 @@ jQuery(document).ready(function()
 							item_authors = item_authors.split(", ");
 							
 							// Deal with et al for more than two authors
-							if ( item_authors.length > 2 )
+							//if ( item_authors.length > 2 )
+							if ( jQuery.isArray(item_authors) && item_authors.length > 2 )
 							{
 								if ( intext_citation_params.etal == ""
 										|| intext_citation_params.etal == "default" )
@@ -363,29 +392,31 @@ jQuery(document).ready(function()
 						}
 						else // Use title instead
 						{
-							item_authors += response_item.data.title;
+							item_authors += item_data[item.key].data.title;
 						}
 						
 						// Get year or n.d.
-						if ( response_item.meta.hasOwnProperty("parsedDate") ) 
-							item_year = response_item.meta.parsedDate.substring(0, 4);
+						if ( item_data[item.key].meta.hasOwnProperty("parsedDate") ) 
+							item_year = item_data[item.key].meta.parsedDate.substring(0, 4);
 						else
 							item_year = "n.d.";
 						
 						// Format anchor title attribute
-						item_title_attr = JSON.stringify(item_authors).replace( "<em>et al.</em>", "et al." ).replace( /\"/g, "" ).replace( "[", "" ).replace( "]", "" ) + " (" + item_year + "). " + response_item.data.title + ".";
+						window.zpIntextCitations["post-"+item.post_id][item.key]["intexttitle"] = "title='"+JSON.stringify(item_authors).replace( "<em>et al.</em>", "et al." ).replace( /\"/g, "" ).replace( "[", "" ).replace( "]", "" ) + " (" + item_year + "). " + item_data[item.key].data.title + ".' ";
+						//item_title_attr = JSON.stringify(item_authors).replace( "<em>et al.</em>", "et al." ).replace( /\"/g, "" ).replace( "[", "" ).replace( "]", "" ) + " (" + item_year + "). " + item_data[item.key].data.title + ".";
 						
-					}); // each request data item
+					} // if item_data.hasOwnProperty(item.key) 
+					//}); // each request data item
 					
 					// Display with numbers
 					if ( intext_citation_params.format.indexOf("%num%") != -1 )
 					{
-						item_citation = Object.keys(window.zpIntextCitations["post-"+item.post_id]).indexOf( item.key) + 1;
+						//item_citation = Object.keys(window.zpIntextCitations["post-"+item.post_id]).indexOf( item.key) + 1;
+						item_citation = window.zpIntextCitations["post-"+item.post_id][item.key]["num"];
 						
 						// If using parenthesis format:
 						if ( intext_citation_params.format == "(%num%)" )
 							item_citation = "("+item_citation+")";
-						
 					}
 					
 					// Display regularly, e.g. author and year and pages
@@ -425,16 +456,17 @@ jQuery(document).ready(function()
 						
 					} // non-numerical display
 					
+					// Add anchor title and anchors
+					if ( ! window.zpIntextCitations["post-"+item.post_id][item.key].hasOwnProperty("intexttitle"))
+						window.zpIntextCitations["post-"+item.post_id][item.key]["intexttitle"] = "";
 					
-					// Add anchors
-					if ( item_title_attr != "" ) item_title_attr = " title='"+item_title_attr+"'";
-					item_citation = "<a "+item_title_attr+"class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
+					item_citation = "<a "+window.zpIntextCitations["post-"+item.post_id][item.key]["intexttitle"]+"class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
 					
 					// Deal with <sup>
 					if ( intext_citation_params.format.indexOf("sup") != "-1" ) item_citation = "<sup>"+item_citation+"</sup>";
 					
 					// Add to intext_citation array
-					intext_citation[cindex]["bib"] = item_citation;
+					intext_citation[cindex]["intext"] = item_citation;
 					
 				}); // format each item
 				
@@ -456,24 +488,27 @@ jQuery(document).ready(function()
 						else
 							intext_citation_output += ", ";
 					}
-					intext_citation_output += item.bib;
+					intext_citation_output += item.intext;
 					
 				}); // display each item
 				
 				intext_citation_output += intext_citation_post;
 				
 				// Add to placeholder
-				jQuery("#"+intext_citation_id).removeClass("loading").html(intext_citation_output);
+				jQuery("#"+intext_citation_id).removeClass("loading").html( intext_citation_output );
 				
 			}); // each intext_citation
 			
 		} // zp_format_intext_citations
 		
 		
+		
+		
 		function zp_format_intextbib ( $instance, zp_items, zp_itemkeys, params, update )
 		{
 			var tempItemsArr = new Object; // Format: ["itemkey", "data"]
 			var tempHasNum = false;
+			var zpPostID = jQuery(".ZP_POSTID", $instance).text();
 			
 			jQuery.each( zp_items.data, function( index, item )
 			{
@@ -502,7 +537,7 @@ jQuery(document).ready(function()
 				}
 				
 				tempItem += "<div id='zp-ID-"+jQuery(".ZP_POSTID", $instance).text()+"-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+item.key+"'";
-				tempItem += " data-zp-author-year='"+tempAuthor+"-"+tempItemYear+"' class='zp-Entry zpSearchResultsItem";
+				tempItem += " data-zp-author-year='"+tempAuthor+"-"+tempItemYear+"' class='zp-Entry zpSearchResultsItem zp-Num-"+window.zpIntextCitations["post-"+zpPostID][item.key]["num"];
 				
 				// Add update class to item
 				if ( update === true ) tempItem += " zp_updated";
@@ -536,15 +571,26 @@ jQuery(document).ready(function()
 				{
 					if ( ! /csl-left-margin/i.test(item.bib) ) // if existing style numbering not found
 					{
-						item.bib = item.bib.replace( '<div class="csl-entry">', '<div class="csl-entry"><div class="csl-left-margin" style="display: inline;">'+params.zpForceNumsCount+'. </div>' );
-						params.zpForceNumsCount++;
+						//item.bib = item.bib.replace( '<div class="csl-entry">', '<div class="csl-entry"><div class="csl-left-margin" style="display: inline;">'+params.zpForceNumsCount+'. </div>' );
+						item.bib = item.bib.replace( '<div class="csl-entry">', '<div class="csl-entry"><div class="csl-left-margin" style="display: inline;">'+window.zpIntextCitations["post-"+zpPostID][item.key]["num"]+'. </div>' );
+						//params.zpForceNumsCount++;
 					}
 				}
 				
 				if ( /csl-left-margin/i.test(item.bib) ||
 						( jQuery("#"+zp_items.instance+" .ZP_FORCENUM").text().length > 0
 							&& jQuery("#"+zp_items.instance+" .ZP_FORCENUM").text() == "1" ) )
+				{
 					tempHasNum = true;
+					
+					var $item_content = jQuery.parseHTML(item.bib);
+					var item_num_content = jQuery(".csl-left-margin", $item_content).text();
+					item_num_content = item_num_content.replace( item_num_content.match(/\d+/)[0], window.zpIntextCitations["post-"+zpPostID][item.key]["num"] );
+					
+					jQuery(".csl-left-margin", $item_content).text(item_num_content);
+					
+					item.bib = jQuery('<div>').append( $item_content ).html(); 
+				}
 				
 				tempItem += item.bib;
 				
@@ -578,14 +624,9 @@ jQuery(document).ready(function()
 				// Add this item to the list
 				// Replace or skip duplicates
 				if ( $item_ref.length > 0 && update === true )
-				{
 					$item_ref.replaceWith( jQuery( tempItem ) );
-				}
 				else
-				{
 					tempItemsArr[item.key] = tempItem;
-					//tempItems += tempItem;
-				}
 				
 			}); // each item
 			
@@ -593,15 +634,31 @@ jQuery(document).ready(function()
 			var tempItemsOrdered = "";
 			
 			// If in-text formatted as number (i.e. %num%), re-order
-			if ( tempHasNum )
+			if ( tempHasNum && update === false )
 			{
-				jQuery.each( window.zpIntextCitations["post-"+jQuery(".ZP_POSTID", $instance).text()],
-					function ( index, value)
+				// If first request (first 50)
+				if ( jQuery("#"+zp_items.instance+" .zp-List").children().length == 0 )
+				{
+					jQuery.each( window.zpIntextCitations["post-"+zpPostID],
+						function ( index, value)
+						{
+							if ( typeof tempItemsArr[index] !== 'undefined' )
+								tempItemsOrdered += tempItemsArr[index];
+						}
+					);
+					
+				}
+				else // Subsequent requests for this bib
+				{
+					jQuery.each( tempItemsArr, function ( itemKey, itemBib)
 					{
-						if ( typeof tempItemsArr[index] !== 'undefined' )
-							tempItemsOrdered += tempItemsArr[index];
-					}
-				);
+						// Get position number
+						var tempNum = window.zpIntextCitations["post-"+zpPostID][itemKey]["num"];
+						
+						// Insert into proper place
+						jQuery("#"+zp_items.instance+" .zp-List .zp-Entry.zp-Num-"+(tempNum-1)).after(itemBib);
+					});
+				}
 			}
 			else
 			{
