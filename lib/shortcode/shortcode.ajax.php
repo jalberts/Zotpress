@@ -532,11 +532,16 @@
 					{
 						if ( $zp_urlwrap && $zp_urlwrap == "title" && $item->data->title )
 						{
+							///* TESTING, REMOVE */ if ( $item->key != "PFIS2J5X" ) continue;
+							
 							// Get rid of default URL listing
 							// TO-DO: Does this account for all citation styles?
 							$item->bib = str_replace( htmlentities($item->data->url), "", $item->bib );
 							$item->bib = str_replace( " Retrieved from ", "", $item->bib );
 							$item->bib = str_replace( " Available from: ", "", $item->bib );
+							
+							// Get rid of double space characters
+							$item->bib = preg_replace( '/&#xA0;/', ' ', preg_replace( '/[[:blank:]]+/', ' ', $item->bib ) );
 							
 							// Prep bib
 							$item->bib = str_replace( "&ldquo;", "&quot;",
@@ -551,6 +556,7 @@
 							
 							// Prep title
 							$item->data->title = htmlentities( $item->data->title, ENT_COMPAT, "UTF-8" );
+							$item->data->title = str_replace("&nbsp;", " ", $item->data->title );
 							
 							// If wrapping title, wrap it
 							$item->bib = str_replace(
@@ -563,6 +569,8 @@
 							
 							// Revert bib entities
 							$item->bib = html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" );
+							
+							///* TESTING, REMOVE */ var_dump($item->data->title."<br /><br />".$item->data->url."<br /><br />"); var_dump($item->bib);continue;
 						}
 						else // Just hyperlink the URL text
 						{

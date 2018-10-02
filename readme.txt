@@ -8,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 4.4.1
-Stable tag: 6.1.1
+Stable tag: 6.1.2
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -63,6 +63,13 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.1.2 =
+
+* Applied more cases for URL wrapping.
+* Applied encyclopedia author/editor cases for in-text citations.
+* Fixed in-text number-based sorting for 50+ items.
+* Better in-text error handling.
 
 = 6.1.1 =
 
