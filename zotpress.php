@@ -6,7 +6,7 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bringing Zotero and scholarly blogging to your WordPress website.
     Author: Katie Seaborn
-    Version: 6.2.1
+    Version: 6.2.2
     Author URI: http://katieseaborn.com
     
 */
@@ -37,7 +37,7 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
-    define('ZOTPRESS_VERSION', '6.2.1' );
+    define('ZOTPRESS_VERSION', '6.2.2' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
@@ -339,18 +339,6 @@
 
 // ZOTPRESS 6.2.1 NOTIFICATION 	------------------------------------------------------------------------
 
-	//$zp_file = basename( __FILE__ );
-	//$zp_folder = basename( dirname( __FILE__ ) );
-	//$hook = "in_plugin_update_message-{$zp_folder}/{$zp_file}";
-	//
-	//add_action( $hook, 'update_message_zotpress', 10, 2 ); 
-	//
-	//function update_message_zotpress( $plugin_data, $r )
-	//{
-	//	echo "Warning: Due to major updates in Zotpress 6.2, you may need to clear each synced Zotero account's cache.";
-	//}
-    
-    
     if ( in_array( ZOTPRESS_VERSION, array( "6.2.1", "6.2.2") ) )
     {
         if ( ! get_option( 'Zotpress_update_notice_dismissed' ) )

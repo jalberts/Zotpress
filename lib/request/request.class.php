@@ -155,8 +155,6 @@ if ( ! class_exists('ZotpressRequest') )
                 // Get response
                 $response = wp_remote_get( $url, array ( 'headers' => $headers_arr ) );
                 $headers = json_encode( wp_remote_retrieve_headers( $response )->getAll() );
-                
-                //var_dump($headers); exit;
             }
             
             // Proceed if no cached version or to check server for newer
@@ -171,7 +169,7 @@ if ( ! class_exists('ZotpressRequest') )
                     if ($response->get_error_code() == "http_request_failed")
                     {
                         // Try again with less restrictions
-                        add_filter('https_ssl_verify', '__return_false'); //add_filter('https_local_ssl_verify', '__return_false');
+                        add_filter('https_ssl_verify', '__return_false');
                         $response = wp_remote_get( $url, array( 'headers' => array("Zotero-API-Version" => "2") ) );
                         
                         if ( is_wp_error($response) || ! isset($response['body']) )
@@ -236,7 +234,6 @@ if ( ! class_exists('ZotpressRequest') )
             // Retrieve cached version
             else
             {
-                //$data = gzdecode($zp_results[0]->json);
                 $data = $this->zp_gzdecode($zp_results[0]->json);
                 $headers = $zp_results[0]->headers;
             }
