@@ -37,6 +37,7 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
+
     define('ZOTPRESS_VERSION', '6.0.5' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;

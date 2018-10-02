@@ -383,6 +383,7 @@ jQuery(document).ready(function()
 					{
 						item_citation = Object.keys(window.zpIntextCitations["post-"+item.post_id]).indexOf( item.key) + 1;
 						
+
 						// If using parenthesis format:
 						if ( intext_citation_params.format == "(%num%)" )
 							item_citation = "("+item_citation+")";
