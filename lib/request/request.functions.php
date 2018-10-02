@@ -49,21 +49,31 @@
     function zp_get_account ($wpdb, $api_user_id_incoming=false)
     {
         if ($api_user_id_incoming !== false)
-            $zp_account = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress WHERE api_user_id='".$api_user_id_incoming."'");
+		{
+            $zp_account = $wpdb->get_results(
+										$wpdb->prepare(
+										"SELECT * FROM ".$wpdb->prefix."zotpress WHERE api_user_id='%s'",
+										$api_user_id_incoming
+										)
+									);
+		}
         else
+		{
             $zp_account = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress ORDER BY id DESC LIMIT 1");
+		}
         
         return $zp_account;
     }
 
 
 
-    function zp_get_accounts ($wpdb)
-    {
-        $zp_accounts = $wpdb->get_results("SELECT api_user_id FROM ".$wpdb->prefix."zotpress");
-        
-        return $zp_accounts;
-    }
+	// Moved to admin.functions
+    //function zp_get_accounts ($wpdb)
+    //{
+    //    $zp_accounts = $wpdb->get_results("SELECT api_user_id FROM ".$wpdb->prefix."zotpress");
+    //    
+    //    return $zp_accounts;
+    //}
 	
     
 	

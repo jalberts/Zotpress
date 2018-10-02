@@ -2,8 +2,11 @@
 
     global $wpdb;
     
-    $zp_accounts = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress ORDER BY account_type DESC");
-    $zp_accounts_total = $wpdb->num_rows;
+	// Require admin functions
+	//require( dirname(__FILE__) . '/../admin/admin.functions.php' );
+	
+    //$zp_accounts = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."zotpress ORDER BY account_type DESC");
+    $zp_accounts_total = zp_get_total_accounts( $wpdb );
 	
     
 	
@@ -101,35 +104,24 @@
         
         <div id="zp-Browse-Wrapper">
             
-            <h3><?php if ( count($zp_accounts) == 1 ): echo "Your Library"; else: ?>
+            <h3><?php
+			
+			
+			if ( $zp_accounts_total === 1 ): echo "Your Library"; else: ?>
             
 				<div id="zp-Browse-Accounts">
-					<label for="zp-FilterByAccount">Account:</label>
-					<select id="zp-FilterByAccount">
-						<?php
-						
-						// DISPLAY ACCOUNTS
-						
-						foreach ($zp_accounts as $zp_account)
-						{
-							// DETERMINE CURRENTLY ACTIVE ACCOUNT
-							if ($api_user_id && $api_user_id == $zp_account->api_user_id)
-							{
-								$account_type = $zp_account->account_type;
-								$public_key = $zp_account->public_key;
-								$nickname = $zp_account->nickname;
-							}
-							
-							// DISPLAY ACCOUNTS IN DROPDOWN
-							echo "<option ";
-							if ($api_user_id && $api_user_id == $zp_account->api_user_id) echo "selected='selected' ";
-							echo "rel='".$zp_account->api_user_id."' value='".$zp_account->api_user_id."'>";
-							if ($zp_account->nickname) echo $zp_account->nickname; else echo $zp_account->api_user_id;
-							echo "'s Library</option>\n";
-						}
-						
-						?>
-					</select>
+					
+					<?php
+					//// DETERMINE CURRENTLY ACTIVE ACCOUNT
+					//if ($api_user_id && $api_user_id == $zp_account->api_user_id)
+					//{
+					//	$account_type = $zp_account->account_type;
+					//	$public_key = $zp_account->public_key;
+					//	$nickname = $zp_account->nickname;
+					//}
+					
+					echo zp_get_accounts( $wpdb, true, false, false, false, $api_user_id );
+					?>
 				</div>
 			
 			<?php endif; ?></h3>
