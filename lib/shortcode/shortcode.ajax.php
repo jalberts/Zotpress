@@ -628,12 +628,21 @@
 					// Hyperlink DOIs
 					if ( isset( $item->data->DOI ) && strlen($item->data->DOI) > 0 )
 					{
-						// Most styles
+						// HTTP format
 						if ( strpos( $item->bib, "http://doi.org/" ) !== false )
 						{
 							$item->bib = str_ireplace(
 									"http://doi.org/" . $item->data->DOI,
 									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
+									$item->bib
+								);
+						}
+						// HTTPS format
+						if ( strpos( $item->bib, "https://doi.org/" ) !== false )
+						{
+							$item->bib = str_ireplace(
+									"https://doi.org/" . $item->data->DOI,
+									"<a ".$zp_target_output."href='https://doi.org/".$item->data->DOI."'>https://doi.org/".$item->data->DOI."</a>",
 									$item->bib
 								);
 						}
@@ -736,7 +745,7 @@
 				// Show images
 				if ( $zp_showimage )
 				{
-					// Get images for all item keys
+					// Get images for all item keys from zpdb, if they exist
 					$zp_images = $wpdb->get_results( 
 						"
 						SELECT * FROM ".$wpdb->prefix."zotpress_zoteroItemImages 
@@ -768,10 +777,10 @@
 								}
 							}
 						}
-					}
+					} // If images found in zpdb
 					
 					// Check open lib next
-					if ( $zp_showimage == "openlib" )
+					if ( $zp_showimage === "openlib" )
 					{
 						$zp_showimage_keys = explode( ",", $zp_showimage_keys );
 						

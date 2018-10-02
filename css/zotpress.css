@@ -493,7 +493,7 @@
     }
     
     div#zp-Zotpress-Navigation h1 {
-        font: 600 18px/24px "Tahoma", sans-serif;
+        font: 600 18px/24px "Helvetica", Arial, sans-serif;
         float: left;
         margin: 0;
         padding: 0.45em 5em 1em 0;
@@ -690,10 +690,22 @@
     div.zp-Collection-Title {
 		margin-left: 30px;
     }
-    div.zp-Collection-Title .item_key {
+    div.zp-Collection-Title label {
         color: #ccc;
-		font-size: 0.75em;
-		padding-left: 1em;
+		display: inline-block;
+        font-family: "Georgia", serif;
+        font-size: 0.65em;
+        font-style: normal;
+		padding-left: 2em;
+        text-transform: uppercase;
+    }
+    div.zp-Collection-Title .item_key {
+        border: none;
+        box-shadow: none;
+        color: #ccc;
+        display: inline-block;
+		font-size: 0.8em;
+        font-style: italic;
     }
 	
     /* END BROWSE */
@@ -714,19 +726,27 @@
 		padding-bottom: 0;
 	}
 	.wp-admin div#zp-Zotpress div.zp-List.loading {
-		background: transparent url('../images/loading_default.gif') no-repeat center top;
+		/*background: transparent url('../images/loading_default.gif') no-repeat right top;*/
 	}
+    .wp-admin div#zp-Zotpress div.zp-List .zp_display_progress {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        background: transparent url('../images/loading_default.gif') no-repeat right top;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        margin-right: 30px;
+        padding-right: 30px;
+    }    
 	.wp-admin div#zp-Zotpress div.zp-List.loading #zpSearchResultsContainer {
 		background: none;
 	}
-	/*.wp-admin .loading #zpSearchResultsContainer {*/
-	/*	border-bottom: 1px solid #eee;*/
-	/*	padding-bottom: 20px;*/
-	/*}*/
     
     div#zp-Zotpress div.zp-List {
+        position: relative;
     }
-    
+
     div#zp-Zotpress div.zp-List h3 {
         display: block;
         color: #bbb;
@@ -778,13 +798,20 @@
 		padding-top: 20px;
 	}
 	
-	div#zp-Zotpress div.zp-List div.zp-Entry span.item_key:before {
-		content: "Item Key: ";
-		font-weight: bold;
+	div#zp-Zotpress div.zp-List div.zp-Entry label {
+        color: #ccc;
 		display: inline;
+        font-family: "Georgia", serif;
+        font-size: 0.85em;
+        text-transform: uppercase;
 	}
-	div#zp-Zotpress div.zp-List div.zp-Entry span.item_key {
-		display: block;
+	div#zp-Zotpress div.zp-List div.zp-Entry input.item_key {
+        border: none;
+        box-shadow: none;
+        color: #ccc;
+		display: inline-block;
+        font-family: "Georgia", serif;
+        font-style: italic;
 		margin-bottom: 2em;
 	}
     
@@ -1097,6 +1124,7 @@
     #zp-AccountsList .actions a {
         display: block;
         float: left;
+        line-height: 25px;
         outline: none;
         margin: 0 1.25em 0 0;
         height: 25px;
@@ -1125,10 +1153,10 @@
     #zp-AccountsList .actions a:before {
         background-image: url('../images/sprite.png');
         background-repeat: no-repeat;
-        padding: 0.15em 0 0.15em 2em;
-        vertical-align: middle;
-        
         content: "";
+        display: inline-block;
+        padding: 0;
+        vertical-align: middle;
         width: 25px;
         height: 25px;
     }
@@ -1155,10 +1183,10 @@
 		margin: 0 auto;
 	}
 	#zp-AccountsList .default.selected a.default:before {
-        background-position: -282px -423px !important;
+        background-position: -282px -421px !important;
 	}
 	#zp-AccountsList .default a.default:before {
-        background-position: -312px -423px !important;
+        background-position: -312px -421px !important;
 	}
 	#zp-AccountsList .default a.default.loading:before {
         background-position: 2px center !important;
@@ -1270,8 +1298,7 @@
     
     .zp-Documentation .category,
     .zp-Documentation .type {
-        /*font: 400 1.25em/1.25em "Tahoma", sans-serif;*/
-        font: 600 1em/1.25em "Tahoma", sans-serif;
+        font: 600 1em/1.25em "Helvetica", Arial, sans-serif;
         text-transform: uppercase;
     }
     
@@ -1361,7 +1388,7 @@
         color: #999;
     }
     div.zp-Message p.version strong {
-        font: 600 11px/1em "Tahoma","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        font: 600 11px/1em "Helvetica", Arial, sans-serif;
         text-transform: uppercase;
     }
     a.zp-FiveStar {

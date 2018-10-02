@@ -9,7 +9,7 @@
         $Zotpress_main_db_version = "5.2";
         $Zotpress_oauth_db_version = "5.0.5";
         $Zotpress_zoteroItemImages_db_version = "5.2.6";
-		$Zotpress_cache_version = "6.0";
+		$Zotpress_cache_version = "6.2";
         
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		
@@ -119,7 +119,7 @@
                 id INT(9) NOT NULL AUTO_INCREMENT,
 				request_id VARCHAR(200) NOT NULL,
                 api_user_id VARCHAR(50),
-                json MEDIUMTEXT,
+                json BLOB,
                 headers MEDIUMTEXT,
                 libver INT(9),
                 retrieved VARCHAR(100),

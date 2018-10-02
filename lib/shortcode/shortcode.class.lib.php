@@ -325,7 +325,8 @@ class zotpressLib
 							else
 								echo "Collection items:";
 							echo "</span>";
-							if ( is_admin() ) echo "<span class='item_key'>".$collection_id."</span>\n";
+							if ( is_admin() )
+                                echo "<label for='item_key'>Item Key:</label><input type='text' name='item_key' class='item_key' value='".$collection_id."'>\n";
 						echo "</div>\n";
 					}
 					else if ( $tag_id ) // Top Level

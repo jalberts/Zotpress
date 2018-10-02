@@ -729,7 +729,25 @@ jQuery(document).ready( function()
         
     */
 	
-	if ( jQuery("#zp-Zotero-API").length > 0 ) jQuery("#zp-Zotero-API").tabs();
+	if ( jQuery("#zp-Zotero-API").length > 0 )
+	{
+		jQuery("#zp-Zotero-API").tabs();
+
+		jQuery('.zp-Tab-Link').click( function(e)
+		{
+			e.preventDefault();
+
+			jQuery("#zp-Zotero-API").tabs( 
+				"option", 
+				"active", 
+				jQuery( jQuery(this).attr("href"), jQuery("#zp-Zotero-API")).index()-1
+			);
+
+	        jQuery("html,body").animate({ 
+	        	scrollTop: jQuery("#zp-Zotero-API-Hash").offset().top
+	        }, 500);
+	    });
+	}
 
 
 });
