@@ -27,10 +27,11 @@
     div#zp-Setup h3,
     div#zp-Zotpress h3 {
         clear: both;
-        font: 400 27px/32px "Oswald", "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        font: 400 27px/32px "Helvetica", "Helvetica Neue", "Arial", sans-serif;
         margin: 0;
+		font-weight: bold;
         padding: 9px 15px 4px 0;
-        text-transform: uppercase;
+        text-transform: none;
     }
     div#zp-Setup h3.pair {
         border-bottom: 0;
@@ -40,11 +41,11 @@
 	div.zp-Collection-Title,
     div#zp-Setup h4,
     div#zp-Zotpress h4 {
-        font: italic 400 17px/21px "Droid Serif", "Georgia", serif;
+        font: italic 400 17px/21px "Georgia", serif;
         margin: 1.5em 0 1em;
     }
     div#zp-Setup h4 {
-        font: italic 400 16px/21px "Droid Serif", "Georgia", serif;
+        font: italic 400 16px/21px "Georgia", serif;
     }
     div#zp-Setup h4.pair {
         border-bottom: 1px solid #eee;
@@ -53,7 +54,7 @@
     }
     
     div#zp-Zotpress h5 {
-        font: 300 11px/30px "Droid Serif", serif;
+        font: 300 11px/30px "Georgia", serif;
         margin-bottom: -15px;
         text-transform: uppercase;
     }
@@ -373,7 +374,7 @@
         min-width: 18em;
     }
     form#zp-Add label {
-        font: italic 400 1.1em/1.25em "Droid Serif", serif;
+        font: italic 400 1.1em/1.25em "Georgia", serif;
         width: 20%;
     }
     form#zp-Add label.required {
@@ -492,7 +493,7 @@
     }
     
     div#zp-Zotpress-Navigation h1 {
-        font: 600 18px/24px "Source Sans Pro", sans-serif;
+        font: 600 18px/24px "Tahoma", sans-serif;
         float: left;
         margin: 0;
         padding: 0.45em 5em 1em 0;
@@ -510,7 +511,8 @@
         color: #000;
         display: block;
         float: left;
-        font: 300 15px/24px "Source Sans Pro", sans-serif;
+        /*font: normal 15px/24px "Helvetica", "Helvetica Neue", "Arial", sans-serif;*/
+        font: normal 1em/2.15em "Helvetica", "Helvetica Neue", "Arial", sans-serif;
         padding: 0.75em 1.5em;
         outline: none;
         text-transform: uppercase;
@@ -632,7 +634,7 @@
     div#zp-Browse-Accounts label {
         color: #ccc;
         display: none;
-        font: normal 400 1em/1.75em "Droid Serif", serif;
+        font: normal 400 1em/1.75em "Georgia", serif;
         margin-right: 5px;
         padding: 0;
     }
@@ -729,7 +731,7 @@
         display: block;
         color: #bbb;
         background: #333;
-        font: 400 19px/24px "Oswald","Times New Roman","Bitstream Charter",Times,serif;
+        font: 400 19px/24px "Helvetica", "Helvetica Neue", "Arial", sans-serif;
         margin: -3px 0 0;
         padding: 10px 15px;
     }
@@ -922,7 +924,7 @@
 	}
 	
 	#zpSearchResultsPaging .title {
-		font: italic 400 17px/21px "Droid Serif","Georgia",serif;
+		font: italic 400 17px/21px "Georgia", serif;
 		float: left;
 		padding: 7px 15px 0 0;
 	}
@@ -1063,7 +1065,7 @@
     }
     
     #zp-Accounts th {
-        font: 300 1.1em/1.1em "Droid Serif", sans-serif;
+        font: 300 1.1em/1.1em "Georgia", sans-serif;
     }
     
     #zp-Accounts .account_type {
@@ -1203,7 +1205,7 @@
         -webkit-box-shadow: 0 0 1px#aaa;
         box-shadow: 0 0 1px #aaa;
         float: right;
-        font: normal 400 12px/18px "Droid Serif","Georgia",serif;
+        font: normal 400 12px/18px "Georgia", serif;
         margin: 1em 0 0 2em;
         padding: 2em;
         width: 24%;
@@ -1262,14 +1264,14 @@
         background-color: #333;
         border-bottom: none;
         color: #fff;
-        font: 400 1.5em/1.5em "Oswald", sans-serif;
+        font: 400 1.5em/1.5em "Helvetica", "Helvetica Neue", "Arial", sans-serif;
         text-transform: uppercase;
     }
     
     .zp-Documentation .category,
     .zp-Documentation .type {
-        /*font: 400 1.25em/1.25em "Source Sans Pro", sans-serif;*/
-        font: 600 1em/1.25em "Source Sans Pro", sans-serif;
+        /*font: 400 1.25em/1.25em "Tahoma", sans-serif;*/
+        font: 600 1em/1.25em "Tahoma", sans-serif;
         text-transform: uppercase;
     }
     
@@ -1336,7 +1338,7 @@
         padding-bottom: 0;
     }
     div.zp-Message p {
-        font: italic 400 14px/21px "Droid Serif", "Georgia", serif;
+        font: italic 400 14px/21px "Georgia", serif;
         margin: 0;
         padding: 2em;
     }
@@ -1359,7 +1361,7 @@
         color: #999;
     }
     div.zp-Message p.version strong {
-        font: 600 11px/1em "Source Sans Pro","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        font: 600 11px/1em "Tahoma","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
         text-transform: uppercase;
     }
     a.zp-FiveStar {
@@ -1386,7 +1388,9 @@
         margin-right: 14px;
     }
     ol.zp-WaysToUseZotpress li strong {
-        font: 600 1em/1em "Source Sans Pro","HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+        /*font: bold 1em/1em "Helvetica", "Helvetica Neue", "Arial", sans-serif;*/
+        font: bold 0.85em/1.25em "Helvetica","Helvetica Neue","Arial",sans-serif;
+		letter-spacing: 0.05rem;
         text-transform: uppercase;
     }
     ol.zp-WaysToUseZotpress li p.indent {
@@ -1427,9 +1431,10 @@
     }
     
     div.zp-Zotpress-Options label {
-        font: 300 0.9em/1em "Droid Serif", sans-serif;
+        font: normal 0.9em/1em "Georgia", sans-serif;
         margin: 0 0 0.5em 0;
         text-transform: uppercase;
+		letter-spacing: 0.075rem;
     }
     
     div.zp-Zotpress-Options label,
