@@ -19,6 +19,16 @@ if ( ! class_exists('ZotpressRequest') )
         var $update = false, $request_error = false, $timelimit = 3600, $timeout = 300, $api_user_id;
         
         
+        function zp_gzdecode($data)
+        {
+            // Thanks to Waynn Lue (StackOverflow)
+            if ( function_exists("gzdecode") )
+                return gzdecode($data);
+            else
+                return gzinflate(substr($data,10,-8));
+        }
+        
+        
         function get_request_contents( $url, $update )
         {
             $this->update = $update;
@@ -91,7 +101,8 @@ if ( ! class_exists('ZotpressRequest') )
                 
                 if ( count($zp_results) != 0 )
                 {
-                    $data = gzdecode($zp_results[0]->json);
+                    //$data = gzdecode($zp_results[0]->json);
+                    $data = $this->zp_gzdecode($zp_results[0]->json);
                     $headers = $zp_results[0]->headers;
                 }
                 
@@ -225,7 +236,8 @@ if ( ! class_exists('ZotpressRequest') )
             // Retrieve cached version
             else
             {
-                $data = gzdecode($zp_results[0]->json);
+                //$data = gzdecode($zp_results[0]->json);
+                $data = $this->zp_gzdecode($zp_results[0]->json);
                 $headers = $zp_results[0]->headers;
             }
             

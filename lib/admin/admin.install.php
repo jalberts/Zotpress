@@ -171,6 +171,7 @@
         delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
 		delete_option( 'Zotpress_zoteroItemImages_db_version' );
 		delete_option( 'Zotpress_cache_version' );
+		delete_option( 'Zotpress_update_notice_dismissed' );
         
         // Delete user meta
         delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );

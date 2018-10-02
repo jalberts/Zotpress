@@ -6,7 +6,7 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bringing Zotero and scholarly blogging to your WordPress website.
     Author: Katie Seaborn
-    Version: 6.2
+    Version: 6.2.1
     Author URI: http://katieseaborn.com
     
 */
@@ -37,7 +37,7 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
-    define('ZOTPRESS_VERSION', '6.2' );
+    define('ZOTPRESS_VERSION', '6.2.1' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
@@ -128,6 +128,16 @@
 					'ajaxurl' => admin_url( 'admin-ajax.php' ),
 					'zpAccountsAJAX_nonce' => wp_create_nonce( 'zpAccountsAJAX_nonce_val' ),
 					'action' => 'zpAccountsViaAJAX'
+				)
+			);
+			wp_enqueue_script( 'zotpress.admin.notices.js', plugin_dir_url( __FILE__ ) . 'js/zotpress.admin.notices.js', array( 'jquery' ) );
+			wp_localize_script( 
+				'zotpress.admin.notices.js',
+				'zpNoticesAJAX', 
+				array( 
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					'zpNoticesAJAX_nonce' => wp_create_nonce( 'zpNoticesAJAX_nonce_val' ),
+					'action' => 'zpNoticesViaAJAX'
 				)
 			);
 		}
@@ -327,20 +337,44 @@
 // SECURITY 	----------------------------------------------------------------------------------------------
 
 
-// ZOTPRESS 6.0 NOTIFICATION 	------------------------------------------------------------------------
+// ZOTPRESS 6.2.1 NOTIFICATION 	------------------------------------------------------------------------
 
-	$zp_file = basename( __FILE__ );
-	$zp_folder = basename( dirname( __FILE__ ) );
-	$hook = "in_plugin_update_message-{$zp_folder}/{$zp_file}";
-	
-	add_action( $hook, 'update_message_zotpress', 10, 2 ); 
-	
-	function update_message_zotpress( $plugin_data, $r )
-	{
-		echo "Warning: Zotpress 6.0 features major updates to the code and database. Testing on a development server before updating is highly recommended.";
-	}
+	//$zp_file = basename( __FILE__ );
+	//$zp_folder = basename( dirname( __FILE__ ) );
+	//$hook = "in_plugin_update_message-{$zp_folder}/{$zp_file}";
+	//
+	//add_action( $hook, 'update_message_zotpress', 10, 2 ); 
+	//
+	//function update_message_zotpress( $plugin_data, $r )
+	//{
+	//	echo "Warning: Due to major updates in Zotpress 6.2, you may need to clear each synced Zotero account's cache.";
+	//}
+    
+    
+    if ( in_array( ZOTPRESS_VERSION, array( "6.2.1", "6.2.2") ) )
+    {
+        if ( ! get_option( 'Zotpress_update_notice_dismissed' ) )
+            add_action( 'admin_notices', 'Zotpress_update_notice' );
+        
+        function Zotpress_update_notice()
+        {
+        ?>
+            <div class="notice update-nag Zotpress_update_notice is-dismissible" >
+                <p>Warning: Due to major updates in Zotpress 6.2, you may need to clear the cache of each synced Zotero account.</p>
+            </div>
+        <?php
+        }
+        
+        function Zotpress_dismiss_update_notice()
+        {
+            if ( ! get_option( 'Zotpress_update_notice_dismissed' ) 
+                    || get_option( 'Zotpress_update_notice_dismissed' ) == 0 )
+                update_option( 'Zotpress_update_notice_dismissed', 1 );
+        }
+        add_action( 'wp_ajax_zpNoticesViaAJAX', 'Zotpress_dismiss_update_notice' );
+    }
 
-// ZOTPRESS 6.0 NOTIFICATION 	------------------------------------------------------------------------
+// ZOTPRESS 6.2.1 NOTIFICATION 	------------------------------------------------------------------------
 
 
 ?>

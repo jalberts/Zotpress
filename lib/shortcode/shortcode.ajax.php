@@ -629,7 +629,18 @@
 					if ( isset( $item->data->DOI ) && strlen($item->data->DOI) > 0 )
 					{
 						// HTTP format
-						if ( strpos( $item->bib, "http://doi.org/" ) !== false )
+						if ( strpos( $item->bib, "doi:" ) !== false
+                                && strpos( $item->bib, "doi.org" ) == false )
+                        // Styles without the http://
+						{
+							$item->bib = str_ireplace(
+									"doi:" . $item->data->DOI,
+									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
+									$item->bib
+								);
+						}
+						else if ( strpos( $item->bib, "http://doi.org/" ) !== false
+                                && strpos( $item->bib, "</a>" ) == false )
 						{
 							$item->bib = str_ireplace(
 									"http://doi.org/" . $item->data->DOI,
@@ -638,19 +649,12 @@
 								);
 						}
 						// HTTPS format
-						if ( strpos( $item->bib, "https://doi.org/" ) !== false )
+						else if ( strpos( $item->bib, "https://doi.org/" ) !== false
+                                && strpos( $item->bib, "</a>" ) == false)
 						{
 							$item->bib = str_ireplace(
 									"https://doi.org/" . $item->data->DOI,
 									"<a ".$zp_target_output."href='https://doi.org/".$item->data->DOI."'>https://doi.org/".$item->data->DOI."</a>",
-									$item->bib
-								);
-						}
-						else // Styles without the http://
-						{
-							$item->bib = str_ireplace(
-									"doi:" . $item->data->DOI,
-									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
 									$item->bib
 								);
 						}
