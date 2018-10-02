@@ -64,6 +64,16 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 
 == Changelog ==
 
+= 6.0.4 =
+
+* Re-added item keys on Browse page.
+* Set withCredentials attribute to true for AJAX requests.
+* Fixed Zotpress Bibliography unique identifier bug.
+* Fixed default sorting for in-text citations.
+* Fixed in-text format <sup> (superscript).
+* Re-added bib info as title for non-number-based in-text citation anchors.
+* New! Can now use &, + and / with in-text page numbers.
+
 = 6.0.3 =
 
 * Fixed inclusive="no" bug for tags.

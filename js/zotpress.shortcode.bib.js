@@ -55,6 +55,9 @@ jQuery(document).ready(function()
 					'request_last': request_last,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(data)
 				{
 					var zp_items = jQuery.parseJSON( data );
@@ -177,8 +180,8 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						jQuery("#"+zp_items.instance+" .zp-List").removeClass("loading");
-						jQuery("#"+zp_items.instance+" .zp-List").append("<p>There are no citations to display.</p>\n");
+						jQuery("#"+$instance.attr("id")+" .zp-List").removeClass("loading");
+						jQuery("#"+$instance.attr("id")+" .zp-List").append("<p>There are no citations to display.</p>\n");
 					}
 				},
 				error: function(errorThrown)

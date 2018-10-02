@@ -62,6 +62,9 @@ if ( current_user_can('edit_others_posts') )
 											'api_user_id': jQuery('select#zp-Zotpress-Options-Account').val(),
 											'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
 										},
+										xhrFields: {
+											withCredentials: true
+										},
 										success: function(xml)
 										{
 											var $result = jQuery('result', xml).attr('success');

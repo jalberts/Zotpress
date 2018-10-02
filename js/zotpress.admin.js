@@ -47,6 +47,9 @@ jQuery(document).ready( function()
 				'nickname': escape(jQuery('input[name=nickname]').val()),
 				'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
 			},
+			xhrFields: {
+				withCredentials: true
+			},
 			success: function(xml)
 			{
 				var $result = jQuery('result', xml).attr('success');
@@ -137,6 +140,9 @@ jQuery(document).ready( function()
 					'api_user_id': $this.attr("href").replace("#", ""),
 					'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(xml)
 				{
 					if ( jQuery('result', xml).attr('success') == "true" )
@@ -187,6 +193,9 @@ jQuery(document).ready( function()
 					'api_user_id': $this.attr("href").replace("#", ""),
 					'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
 				},
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(xml)
 				{
 					if ( jQuery('result', xml).attr('success') == "true" )
@@ -232,6 +241,9 @@ jQuery(document).ready( function()
 				'action_type': 'default_account',
 				'api_user_id': $this.attr("rel"),
 				'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
+			},
+			xhrFields: {
+				withCredentials: true
 			},
 			success: function(xml)
 			{
@@ -365,6 +377,9 @@ jQuery(document).ready( function()
 				'api_user_id': jQuery("#ZP_API_USER_ID").text(),
 				'item_key': $this.attr('rel'),
 				'zpAccountsAJAX_nonce': zpAccountsAJAX.zpAccountsAJAX_nonce
+			},
+			xhrFields: {
+				withCredentials: true
 			},
 			success: function(xml)
 			{

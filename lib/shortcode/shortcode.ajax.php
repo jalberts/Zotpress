@@ -20,6 +20,7 @@
 		$zp_overwrite_last_request = false;
 		
 		// Deal with incoming variables
+		$zp_type = "basic"; if ( isset($_GET['type']) && $_GET['type'] != "" ) $zp_type = $_GET['type'];
 		$zp_api_user_id = $_GET['api_user_id'];
 		$zp_item_type = "items"; if ( isset($_GET['item_type']) && $_GET['item_type'] != "" ) $zp_item_type = $_GET['item_type'];
 		$zp_get_top = false; if ( isset($_GET['get_top']) ) $zp_get_top = true;
@@ -70,7 +71,9 @@
 			if ( $_GET['sort_by'] == "author" ) $zp_sortby = "creator";
 			else if ( $_GET['sort_by'] == "default" ) $zp_sortby = "dateModified";
 			else if ( $_GET['sort_by'] == "year" ) $zp_sortby = "date";
+			else if ( $zp_type == "intext" && $_GET['sort_by'] == "default" ) $zp_sortby = "default";
 			else $zp_sortby = $_GET['sort_by'];
+			
 		}
 		
 		$zp_order = false;
@@ -249,7 +252,7 @@
 		$zp_import_url .= "&format=json&include=data,bib&limit=".$zp_limit;
 		
 		// Sort and order
-		if ( $zp_sortby )
+		if ( $zp_sortby && $zp_sortby != "default" )
 		{
 			$zp_import_url .= "&sort=".$zp_sortby;
 			if ( $zp_order ) $zp_import_url .= "&direction=".$zp_order;
@@ -346,7 +349,7 @@
 		
 		
 		
-		//print_r($_GET); var_dump("url: ".$zp_import_url); exit;
+		//print_r($_GET); var_dump("<br /><br />url: ".$zp_import_url); exit;
 		
 		
 		
@@ -607,6 +610,22 @@
 								$zp_all_the_data[$id]->image = $zp_thumbnail;
 					}
 				}
+			}
+			
+			// Re-sort data if in-text and default sort
+			if ( $zp_type == "intext" && $zp_sortby = "default" )
+			{
+				$temp_arr = array();
+				
+				foreach ( array_unique( explode( ",", $zp_item_key ) ) as $temp_key )
+				{
+					foreach ( $zp_all_the_data as $temp_data )
+					{
+						if ( $temp_data->key == $temp_key ) array_push( $temp_arr, $temp_data );
+					}
+				}
+				
+				$zp_all_the_data = $temp_arr;
 			}
 			
 		}

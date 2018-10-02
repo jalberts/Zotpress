@@ -239,7 +239,8 @@
         }
         
         // Generate instance id for shortcode
-        $zp_instance_id = "zotpress-".md5($api_user_id.$nickname.$author.$year.$data_type.$collection_id.$item_key.$tag_name.$style.$sortby.$order.$limit.$showimage.$download.$note.$cite.$inclusive);
+		if ( is_array( $item_key ) ) $temp_item_key = implode( "-", $item_key); else $temp_item_key = $item_key;
+        $zp_instance_id = "zotpress-".md5($api_user_id.$nickname.$author.$year.$data_type.$collection_id.$temp_item_key.$tag_name.$style.$sortby.$order.$limit.$showimage.$download.$note.$cite.$inclusive);
         
 		// Prepare item key
 		if ( $item_key ) if ( gettype( $item_key ) != "string" ) $item_key = implode( ",", $item_key );

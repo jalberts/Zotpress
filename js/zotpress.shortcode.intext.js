@@ -29,6 +29,7 @@ jQuery(document).ready(function()
 					'action': 'zpRetrieveViaShortcode',
 					'instance_id': $instance.attr("id"),
 					'api_user_id': jQuery(".ZP_API_USER_ID", $instance).text(),
+					'type': "intext",
 					
 					'item_key': params.zpItemkey,
 					
@@ -50,6 +51,9 @@ jQuery(document).ready(function()
 					'request_start': request_start,
 					'request_last': request_last,
 					'zpShortcode_nonce': zpShortcodeAJAX.zpShortcode_nonce
+				},
+				xhrFields: {
+					withCredentials: true
 				},
 				success: function(data)
 				{
@@ -89,6 +93,7 @@ jQuery(document).ready(function()
 							
 							tempItems += "<div id='zp-ID-"+jQuery(".ZP_POSTID", $instance).text()+"-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+item.key+"' class='zp-Entry zpSearchResultsItem";
 							
+							// Image
 							if ( jQuery("#"+zp_items.instance+" .ZP_SHOWIMAGE").text().trim().length > 0
 									&& item.hasOwnProperty('image') )
 							{
@@ -179,8 +184,8 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						jQuery("#"+zp_items.instance+" .zp-List").removeClass("loading");
-						jQuery("#"+zp_items.instance+" .zp-List").append("<p>There are no citations to display.</p>\n");
+						jQuery("#"+$instance.attr("id")+" .zp-List").removeClass("loading");
+						jQuery("#"+$instance.attr("id")+" .zp-List").append("<p>There are no citations to display.</p>\n");
 					}
 				},
 				error: function(errorThrown)
@@ -217,7 +222,11 @@ jQuery(document).ready(function()
 		
 		function zp_format_intext_citations ( $instance, item_keys, item_data, params )
 		{
-			// Possible format: NUM,{NUM,3-9};{NUM,8}, including repeats
+			// Tested formats:
+			// KEY
+			// {KEY}
+			// {KEY,3-9}
+			// KEY,{KEY,8}
 			var intext_citations = new Array();
 			
 			// Create array for multiple in-text citations -- semicolon
@@ -232,7 +241,7 @@ jQuery(document).ready(function()
 				else // assume class
 					postRef = ".post-"+jQuery(".ZP_POSTID", $instance).text();
 				
-				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" );
+				var tempId = intext_citation.replace( /{/g, "-" ).replace( /}/g, "-" ).replace( /,/g, "_" ).replace( /\//g, "_" ).replace( /\+/g, "_" ).replace( /&/g, "_" ).replace( / /g, "_" );
 				var intext_citation_id = "zp-InText-zp-ID-"+jQuery(".ZP_API_USER_ID", $instance).text()+"-"+tempId+"-"+jQuery(".ZP_POSTID", $instance).text()+"-"+(index+1);
 				var intext_citation_params = JSON.parse( jQuery("#"+intext_citation_id, postRef ).attr("rel").replace( /'/g, '"') );
 				var intext_citation_output = "";
@@ -276,7 +285,7 @@ jQuery(document).ready(function()
 				{
 					intext_citation = [{ "key": intext_citation, "api_user_id": jQuery(".ZP_API_USER_ID", $instance).text(), "post_id": jQuery(".ZP_POSTID", $instance).text(), "pages": false, "bib": "", "citation_ids": "" }];
 				}
-				// Now we have an array
+				// Now we have an array in intext_citation
 				// e.g.  [{ key="3NNACKP2",  pages=false,  citation=""}, { key="S74KCIJR",  pages=false,  citation=""}]
 				
 				
@@ -288,6 +297,7 @@ jQuery(document).ready(function()
 					var item_citation = "";
 					var item_authors = "";
 					var item_year ="";
+					var item_title_attr = "";
 					
 					// Add to global array, if not already there
 					if ( ! window.zpIntextCitations["post-"+item.post_id].hasOwnProperty(item.key) )
@@ -375,8 +385,10 @@ jQuery(document).ready(function()
 							else
 								item_year = "n.d.";
 							
+							// Format anchor title attribute
+							item_title_attr = JSON.stringify(item_authors).replace( "<em>et al.</em>", "et al." ).replace( /\"/g, "" ).replace( "[", "" ).replace( "]", "" ) + " (" + item_year + "). " + response_item.data.title + ".";
+							
 						}); // each request data item
-						
 						
 						
 						var default_format = intext_citation_params.format;
@@ -410,10 +422,16 @@ jQuery(document).ready(function()
 								else
 									item_citation = item_citation.replace( "(", "" );
 						}
-					}
+						
+					} // non-numerical display
+					
 					
 					// Add anchors
-					item_citation = "<a class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
+					if ( item_title_attr != "" ) item_title_attr = " title='"+item_title_attr+"'";
+					item_citation = "<a "+item_title_attr+"class='zp-ZotpressInText' href='#zp-ID-"+item.post_id+"-"+item.api_user_id+"-"+item.key+"'>" + item_citation + "</a>";
+					
+					// Deal with <sup>
+					if ( intext_citation_params.format.indexOf("sup") != "-1" ) item_citation = "<sup>"+item_citation+"</sup>";
 					
 					// Add to intext_citation array
 					intext_citation[cindex]["bib"] = item_citation;
