@@ -8,7 +8,7 @@ Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
 Tested up to: 4.8.1
-Stable tag: 6.2.1
+Stable tag: 6.2.2
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -63,6 +63,10 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.2.2 =
+
+* Fixed notification error for older versions of PHP.
 
 = 6.2.1 =
 
@@ -686,12 +690,6 @@ Lots of little issues fixed. Plus, you can now use a Zotpress widget instead of 
 = 1.3 =
 Implemented cURL, which should help those having read/write issues on their server.
 
-= 1.4 =
-Speed increase with newly added caching feature.
-
-= 1.5 =
-Important: Groups citation style issue fixed.
-
 = 1.6 =
 Critical request method issue fixed.
 
@@ -719,14 +717,8 @@ Fixed single citation display bug.
 = 2.6 =
 Important: JavaScript reductions; download option added to Widget; proper PDF download links.
 
-= 2.6.1 =
-Downloads can now be accessed by anyone.
-
 = 3.0 =
 Major release! OAuth, convenient "Zotpress Reference" meta box, friendly lag handling, numerous bug fixes, and more!
-
-= 3.1 =
-Speed increase and a new way of caching. No more multiple accounts per shortcode. No more auto-display of collection title.
 
 = 4.0 =
 Requests now processed by PHP instead of jQuery. Shortcode parameters re-envisioned (but backwards-compatible). Can now sort by author and date.
@@ -742,12 +734,6 @@ Zotpress InText and various fixes.
 
 = 4.4 =
 Security measures added. Fixed "Help" page info. Zotpress shortcode now accepts lists for these parameters: collection, item. Notes can now be shown. Zotpress Reference on custom post type writing/editing pages and working with the latest versions of Chrome and Safari.
-
-= 4.5 =
-Shortcode Creator. "Show Image" and "Sort" bugs fixed.
-
-= 4.6 =
-* New! Context menu (aka right-click menu) insert citation function for CKEditor-enabled blogs.
 
 = 5.0 =
 * Fixed for Wordpress 3.5! Many new and improved features.
@@ -796,15 +782,6 @@ Shortcode Creator. "Show Image" and "Sort" bugs fixed.
 * Fixed search when no default account set.
 * New! In-text citations are now hyperlinked to the generated bibliography.
 
-= 5.0.7 =
-
-* New! Import script now uses WordPress functionality for improved compatibility.
-* New! "Link" attribute for tag and collection lists.
-* Updated help page to include how to use in-text brackets.
-* In-text format updates, including new "etal" attribute.
-* URLs are now converted two-ways to account for prior encoding.
-* Updated styles for a more consistent look.
-
 = 5.0.8 =
 
 * New! Import functionality check added.
@@ -830,16 +807,6 @@ Shortcode Creator. "Show Image" and "Sort" bugs fixed.
 * Restructured request class and enforced Zotoro API Version 1.
 * Fixed style update errors related to undefined variables.
 * Added "citeable" as an alternate for the "cite" attribute.
-
-= 5.3 =
-
-* New "brackets" in-text citation shortcode attribute.
-* Re-structured import and admin scripts.
-* Expanded in-text formatting.
-* Added submenu to admin sidebar.
-* Added ability to set default accounts on Browse and Accounts and selectively import on Browse.
-* Applied fix for array_multisort warning.
-* Minor style updates throughout.
 
 = 5.4 =
 
@@ -879,3 +846,7 @@ Shortcode Creator. "Show Image" and "Sort" bugs fixed.
 * Browse page collection and item keys are now text inputs to prevent styled text from being copied into the visual editor.
 * Now hyperlinking https-based DOI URLs.
 * Help page tab links have been fixed.
+
+= 6.2.2 =
+
+* Fixed notification error for older versions of PHP.
