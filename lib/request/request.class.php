@@ -96,8 +96,6 @@ if ( ! class_exists('ZotpressRequest') )
                                 
                                 else // No cached
                                 {
-                                        //$data = "0";
-                                        //$headers = "0";
                                         $regular = $this->getRegular( $wpdb, $url );
                                         
                                         $data = $regular['data'];

@@ -115,22 +115,6 @@ jQuery(document).ready(function()
 						}
 						
 						
-						//// Fix incorrect numbering in existing numbered style
-						//if ( jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").length > 0 ) 
-						//{
-						//	params.zpForceNumsCount = 1;
-						//	
-						//	jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").each(function ( index, item )
-						//	{
-						//		var item_content = jQuery(item).text();
-						//		item_content = item_content.replace( item_content.match(/\d+/)[0], params.zpForceNumsCount );
-						//		jQuery(item).text( item_content );
-						//		
-						//		params.zpForceNumsCount++;
-						//	});
-						//}
-						
-						
 						// Then, continue with other requests, if they exist
 						if ( zp_items.meta.request_next != false && zp_items.meta.request_next != "false" )
 						{
@@ -151,9 +135,24 @@ jQuery(document).ready(function()
 								if ( jQuery(".ZP_SORTBY", $instance).text() == "author"
 										&& jQuery("#"+zp_items.instance+" .zp-List .csl-left-margin").length == 0 )
 								{
-									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b){
-										return jQuery(a).data('zp-author-year') > jQuery(b).data('zp-author-year');
-									}).appendTo("#"+zp_items.instance+" .zp-List");
+									jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b)
+									{
+										// Sort based on Trent's: http://trentrichardson.com/2013/12/16/sort-dom-elements-jquery/
+										var an = a.getAttribute("data-zp-author-year").toLowerCase(),
+											  bn = b.getAttribute("data-zp-author-year").toLowerCase();
+										
+										if (an > bn)
+											return 1;
+										else if (an < bn)
+											return -1;
+										else
+											return 0;
+										
+									}).detach().appendTo("#"+zp_items.instance+" .zp-List");
+									
+									//jQuery("#"+zp_items.instance+" .zp-List div.zp-Entry").sort(function(a,b) {
+									//	return jQuery(a).getAttribute("zp-author-year") > jQuery(b).getAttribute("zp-author-year");
+									//}).appendTo("#"+zp_items.instance+" .zp-List");
 								}
 							}
 						}
@@ -162,8 +161,6 @@ jQuery(document).ready(function()
 					// Message that there's no items
 					else
 					{
-						//if ( update === true )
-						//{
 							var tempPost = $instance.attr("class");
 							tempPost = tempPost.replace("zp-Zotpress zp-Zotpress-InTextBib zp-Post-", "");
 							
@@ -175,7 +172,6 @@ jQuery(document).ready(function()
 							
 							jQuery("#"+$instance.attr("id")+" .zp-List").removeClass("loading");
 							jQuery("#"+$instance.attr("id")+" .zp-List").append("<p>There are no citations to display.</p>\n");
-						//}
 					}
 				},
 				error: function(errorThrown)
