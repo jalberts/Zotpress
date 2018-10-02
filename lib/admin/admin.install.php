@@ -89,7 +89,7 @@
         
         // ZOTERO ITEM IMAGES TABLE
         
-        if ( !get_option("Zotpress_zoteroItemImages_db_version")
+        if ( ! get_option("Zotpress_zoteroItemImages_db_version")
                 || get_option("Zotpress_zoteroItemImages_db_version") != $Zotpress_zoteroItemImages_db_version
            )
         {
@@ -159,10 +159,8 @@
         // Delete options
         delete_option( 'Zotpress_DefaultCPT' );
         delete_option( 'Zotpress_DefaultAccount' );
-        delete_option( 'Zotpress_LastAutoUpdate' );
         delete_option( 'Zotpress_DefaultStyle' );
         delete_option( 'Zotpress_StyleList' );
-        delete_option( 'Zotpress_DefaultAutoUpdate' );
         delete_option( 'Zotpress_update_version' );
         delete_option( 'Zotpress_main_db_version' );
         delete_option( 'Zotpress_oauth_db_version' );

@@ -32,13 +32,6 @@
     
     
     
-    function zp_set_update_time ($time)
-    {
-        update_option("Zotpress_LastAutoUpdate", $time);
-    }
-    
-    
-    
     function zp_get_api_user_id ($api_user_id_incoming=false)
     {
         if (isset($_GET['api_user_id']) && preg_match("/^[0-9]+$/", $_GET['api_user_id']) == 1)

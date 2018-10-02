@@ -19,7 +19,8 @@ if ( ! class_exists('ZotpressRequest') )
                 var $update = false, $request_error = false, $timelimit = 3600, $timeout = 300, $api_user_id;
                 
                 
-                function get_request_contents( $url, $update ) {
+                function get_request_contents( $url, $update )
+                {
                         $this->update = $update;
                         return $this->doRequest( $url );
                 }
@@ -74,6 +75,52 @@ if ( ! class_exists('ZotpressRequest') )
                         global $wpdb;
                         
                         
+                        // Just want to check for cached version
+                        if ( $this->update === false )
+                        {
+                                // First, check db to see if cached version exists
+                                $zp_query =
+                                        "
+                                        SELECT DISTINCT ".$wpdb->prefix."zotpress_cache.*
+                                        FROM ".$wpdb->prefix."zotpress_cache
+                                        WHERE ".$wpdb->prefix."zotpress_cache.request_id = '".md5( $url )."'
+                                        AND ".$wpdb->prefix."zotpress_cache.api_user_id = '".$this->api_user_id."'
+                                        ";
+                                $zp_results = $wpdb->get_results($zp_query, OBJECT); unset($zp_query);
+                                
+                                if ( count($zp_results) != 0 )
+                                {
+                                        $data = $zp_results[0]->json;
+                                        $headers = $zp_results[0]->headers;
+                                }
+                                
+                                else // No cached
+                                {
+                                        //$data = "0";
+                                        //$headers = "0";
+                                        $regular = $this->getRegular( $wpdb, $url );
+                                        
+                                        $data = $regular['data'];
+                                        $headers = $regular['headers'];
+                                }
+                                
+                                $wpdb->flush();
+                        }
+                        
+                        else // Normal
+                        {
+                                $regular = $this->getRegular( $wpdb, $url );
+                                
+                                $data = $regular['data'];
+                                $headers = $regular['headers'];
+                        }
+                        
+                        return array( "json" => $data, "headers" => $headers );
+                }
+                
+                
+                function getRegular( $wpdb, $url )
+                {
                         // First, check db to see if cached version exists
                         $zp_query =
                                 "
@@ -183,7 +230,7 @@ if ( ! class_exists('ZotpressRequest') )
                         
                         $wpdb->flush();
                         
-                        return array( "json" => $data, "headers" => $headers );
+                        return array( "data" => $data, "headers" => $headers );
                 }
         }
 }

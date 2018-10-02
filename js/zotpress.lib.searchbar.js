@@ -8,6 +8,7 @@ jQuery(document).ready(function()
      ****************************************************************************************/
 	
 	// TO-DO: notes, abstract, target, showtags
+	// TO-DO: Always updates rather than checking the cache ... don't see an easy way around this ...
 	
 	if ( jQuery("#zp-Zotpress-SearchBox").length > 0 )
 	{
@@ -47,6 +48,10 @@ jQuery(document).ready(function()
 			// Deal with next and last
 			if ( start ) zpSearchBarParams += "&request_start="+start;
 			if ( last ) zpSearchBarParams += "&request_last="+last;
+			
+			// Deal with update:
+			// Always checks for new rather than cached ... is there an uncomplicated way around this?
+			zpSearchBarParams += "&update=true";
 			
 			// Deal with possible filters
 			if ( filter )

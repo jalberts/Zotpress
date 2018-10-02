@@ -34,7 +34,9 @@
 			'abstract' => false, // not implemented
 			'notes' => false, // not implemented
 			'forcenumber' => false, // not implemented
-			'target' => false // not implemented
+			
+			'target' => false, 
+			'urlwrap' => false 
             
         ), $atts, "zotpress"));
         
@@ -86,6 +88,10 @@
 		// Show image
 		if ( $showimages ) $showimage = str_replace('"','',html_entity_decode($showimages));
 		if ( $showimage ) $showimage = str_replace('"','',html_entity_decode($showimage));
+		
+		if ( $urlwrap ) $urlwrap = str_replace('"','',html_entity_decode($urlwrap));
+		
+		if ( $target ) $target = true;
 		
 		
 		// Get API User ID
@@ -139,6 +145,8 @@
 		$zpLib->setCiteable($cite);
 		$zpLib->setDownloadable($download);
 		$zpLib->setShowImage($showimage);
+		$zpLib->setURLWrap($urlwrap);
+		$zpLib->setTarget($target);
 		
 		// Show theme scripts
         $GLOBALS['zp_is_shortcode_displayed'] = true;

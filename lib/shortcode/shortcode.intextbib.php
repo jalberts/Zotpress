@@ -31,7 +31,12 @@
             'citeable' => false,
 			
             'target' => false,
-            'forcenumber' => false
+			'urlwrap' => false,
+			
+			'highlight' => false,
+            'forcenumber' => false,
+            'forcenumbers' => false
+			
         ), $atts));
         
         
@@ -49,7 +54,8 @@
         if ($image) $showimage = str_replace('"','',html_entity_decode($image));
         if ($images) $showimage = str_replace('"','',html_entity_decode($images));
         
-        if ($showimage == "yes" || $showimage == "true" || $showimage === true) $showimage = true;
+        if ($showimage == "yes" || $showimage == "true" || $showimage === true ) $showimage = true;
+		else if ( $showimage === "openlib") $showimage = "openlib";
         else $showimage = false;
         
         // Show tags
@@ -73,7 +79,14 @@
         if ($target == "new" || $target == "yes" || $target == "_blank" || $target == "true" || $target === true) $target = true;
         else $target = false;
         
+        if ($urlwrap == "title" || $urlwrap == "image" )
+		$urlwrap = str_replace('"','',html_entity_decode($urlwrap)); else $urlwrap = false;
+		
+        if ($highlight ) $highlight = str_replace('"','',html_entity_decode($highlight)); else $highlight = false;
+        
         if ($forcenumber == "yes" || $forcenumber == "true" || $forcenumber === true)
+        $forcenumber = true; else $forcenumber = false;
+        if ($forcenumbers == "yes" || $forcenumbers == "true" || $forcenumbers === true)
         $forcenumber = true; else $forcenumber = false;
 		
 		$api_user_id = false;
@@ -114,7 +127,9 @@
 			<span class="ZP_ABSTRACT" style="display: none;">'.$abstracts.'</span>
 			<span class="ZP_CITEABLE" style="display: none;">'.$cite.'</span>
 			<span class="ZP_TARGET" style="display: none;">'.$target.'</span>
+			<span class="ZP_URLWRAP" style="display: none;">'.$urlwrap.'</span>
 			<span class="ZP_FORCENUM" style="display: none;">'.$forcenumber.'</span>
+			<span class="ZP_HIGHLIGHT" style="display: none;">'.$highlight.'</span>
 			<span class="ZP_POSTID" style="display: none;">'.get_the_ID().'</span>
 			<span class="ZOTPRESS_PLUGIN_URL" style="display:none;">'.ZOTPRESS_PLUGIN_URL.'</span>';
 		

@@ -7,8 +7,8 @@ Tags: zotero, zotpress, citation manager, citations, citation, cite, citing, bib
 Author URI: http://katieseaborn.com/
 Author: Katie Seaborn
 Requires at least: 3.5
-Tested up to: 4.3.1
-Stable tag: 6.0.5
+Tested up to: 4.4.1
+Stable tag: 6.1.1
 License: Apache2.0
 
 Zotpress displays your Zotero citations on WordPress.
@@ -24,7 +24,7 @@ Zotpress displays your Zotero citations on WordPress.
 * Provides a range of additional features, such as allowing visitors to cite and download citations
 * And more!
 
-Compatible with Firefox, Safari, Chrome, IE7, IE8, and IE9. Made with jQuery, jQuery UI, jQuery doTimeout, and Live Query.
+Compatible with Firefox, Safari, Chrome, IE7, IE8, and IE9. Made with jQuery, jQuery UI, jQuery doTimeout, Live Query, OAuth, and [Open Library](https://openlibrary.org/ "Open Library").
 
 Special thanks to Joe Alberts for substantial contributions to the code, comprehensive testing, and design ideation. Thanks also to contributors Christopher Cheung and Jason S. for their development support and advice. Finally, my sincere gratitude goes out to all who have donated in support of this plugin.
 
@@ -63,6 +63,32 @@ The F.A.Q. can be found on the "Help" page of every Zotpress installation. If yo
 3. Display your Zotero items on your blog. Write scholarly posts with in-text citations and auto-generated bibliographies.
 
 == Changelog ==
+
+= 6.1.1 =
+
+* Applied secondary year sorting for author sort. 
+* Fixed default ordering for number-based in-text citations.
+* Fixed erroneous fix for in-text editors of books.
+* Fixed dropdown update bug for collections.
+* Migrated Options AJAX to WP AJAX; fixed Default Style option.
+* Updated cURL request approach.
+* Fixed title wrap issues related to mdashes and quotes in titles.
+* Fixed chicago style DOI linking issue.
+* Minor style updates.
+
+= 6.1 =
+
+* Quicker load times through more effective use of cache.
+* New! "urlwrap" attribute for wrapping titles and images with the citation URL.
+* New! "highlight" attribute for highlighting text in a citation.
+* New! Can now use showimage="openlib" to display book covers from the Open Library.
+* In-text citations will no longer erroneously display editors.
+* Order for In-Text Bib sort fixed.
+* Browse navigation for multiple accounts fixed.
+* Fixed "target" attribute for in-text bibliography DOI links.
+* Now auto-detects https for Google Fonts links.
+* Fixed multiple tags unique ID issue.
+* Minor style updates.
 
 = 6.0.5 =
 

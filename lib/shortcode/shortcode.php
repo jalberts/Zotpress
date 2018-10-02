@@ -67,8 +67,11 @@
             'metadata' => false,
             
             'target' => false,
+			'urlwrap' => false,
 			
-			'forcenumber' => false
+			'highlight' => false,
+			'forcenumber' => false,
+			'forcenumbers' => false
             
         ), $atts, "zotpress"));
         
@@ -155,7 +158,8 @@
         if ($image) $showimage = str_replace('"','',html_entity_decode($image));
         if ($images) $showimage = str_replace('"','',html_entity_decode($images));
         
-        if ($showimage == "yes" || $showimage == "true" || $showimage === true) $showimage = true;
+        if ($showimage == "yes" || $showimage == "true" || $showimage === true ) $showimage = true;
+		else if ( $showimage === "openlib") $showimage = "openlib";
         else $showimage = false;
         
         // Show tags
@@ -190,10 +194,18 @@
         
         if ( !preg_match("/^[0-9a-zA-Z]+$/", $metadata) ) $metadata = false;
         
+		// URL attributes
         if ($target == "yes" || $target == "_blank" || $target == "new" || $target == "true" || $target === true)
         $target = true; else $target = false;
         
+        if ($urlwrap == "title" || $urlwrap == "image" )
+		$urlwrap = str_replace('"','',html_entity_decode($urlwrap)); else $urlwrap = false;
+        
+        if ($highlight ) $highlight = str_replace('"','',html_entity_decode($highlight)); else $highlight = false;
+        
         if ($forcenumber == "yes" || $forcenumber == "true" || $forcenumber === true)
+        $forcenumber = true; else $forcenumber = false;
+        if ($forcenumbers == "yes" || $forcenumbers == "true" || $forcenumbers === true)
         $forcenumber = true; else $forcenumber = false;
         
         
@@ -241,7 +253,12 @@
         
         // Generate instance id for shortcode
 		if ( is_array( $item_key ) ) $temp_item_key = implode( "-", $item_key); else $temp_item_key = $item_key;
-        $zp_instance_id = "zotpress-".md5($api_user_id.$nickname.$author.$year.$data_type.$collection_id.$temp_item_key.$tag_name.$style.$sortby.$order.$limit.$showimage.$download.$note.$cite.$inclusive);
+		if ( is_array( $collection_id ) ) $temp_collection_id = implode( "-", $collection_id); else $temp_collection_id = $collection_id;
+		if ( is_array( $tag_name ) ) $temp_tag_name = implode( "-", $tag_name); else $temp_tag_name = $tag_name;
+		if ( is_array( $author ) ) $temp_author = implode( "-", $author); else $temp_author = $author;
+		if ( is_array( $year ) ) $temp_year = implode( "-", $year); else $temp_year = $year;
+		if ( is_array( $sortby ) ) $temp_sortby = implode( "-", $sortby); else $temp_sortby = $sortby;
+        $zp_instance_id = "zotpress-".md5($api_user_id.$nickname.$temp_author.$temp_year.$data_type.$temp_collection_id.$temp_item_key.$temp_tag_name.$style.$temp_sortby.$order.$limit.$showimage.$download.$note.$cite.$inclusive);
         
 		// Prepare item key
 		if ( $item_key ) if ( gettype( $item_key ) != "string" ) $item_key = implode( ",", $item_key );
@@ -276,7 +293,9 @@
 			<span class="ZP_ABSTRACT" style="display: none;">'.$abstracts.'</span>
 			<span class="ZP_CITEABLE" style="display: none;">'.$cite.'</span>
 			<span class="ZP_TARGET" style="display: none;">'.$target.'</span>
+			<span class="ZP_URLWRAP" style="display: none;">'.$urlwrap.'</span>
 			<span class="ZP_FORCENUM" style="display: none;">'.$forcenumber.'</span>
+			<span class="ZP_HIGHLIGHT" style="display: none;">'.$highlight.'</span>
 			<span class="ZOTPRESS_PLUGIN_URL" style="display:none;">'.ZOTPRESS_PLUGIN_URL.'</span>
 			
 			<div class="zp-List loading">';

@@ -26,6 +26,7 @@
 		$zp_get_top = false; if ( isset($_GET['get_top']) ) $zp_get_top = true;
 		$zp_sub = false;
 		$zp_is_dropdown = false; if ( isset($_GET['is_dropdown']) ) $zp_is_dropdown = true;
+		$zp_update = false; if ( isset($_GET['update']) && $_GET['update'] == "true" ) $zp_update = true;
 		
 		// instance id, item key, collection id, tag id
 		$zp_instance_id = false; if ( isset($_GET['instance_id']) ) $zp_instance_id = $_GET['instance_id'];
@@ -66,30 +67,51 @@
 		
 		// Sorty by, order
 		$zp_sortby = false;
+		$zp_order = false;
+		
 		if ( isset($_GET['sort_by']) )
 		{
-			if ( $_GET['sort_by'] == "author" ) $zp_sortby = "creator";
-			else if ( $_GET['sort_by'] == "default" ) $zp_sortby = "dateModified";
-			else if ( $_GET['sort_by'] == "year" ) $zp_sortby = "date";
-			else if ( $zp_type == "intext" && $_GET['sort_by'] == "default" ) $zp_sortby = "default";
-			else $zp_sortby = $_GET['sort_by'];
-			
+			if ( $_GET['sort_by'] == "author" )
+			{
+				$zp_sortby = "creator";
+				$zp_order = "asc";
+			}
+			else if ( $_GET['sort_by'] == "default" )
+			{
+				$zp_sortby = "dateModified";
+			}
+			else if ( $_GET['sort_by'] == "year" )
+			{
+				$zp_sortby = "date";
+				$zp_order = "desc";
+			}
+			else if ( $zp_type == "intext" && $_GET['sort_by'] == "default" )
+			{
+				$zp_sortby = "default";
+			}
+			else
+			{
+				$zp_sortby = $_GET['sort_by'];
+			}
 		}
 		
-		$zp_order = false;
 		if ( isset($_GET['order'])
-				&& ( $_GET['order'] == "asc" || $_GET['order'] == "desc" ) )
-			$zp_order = $_GET['order'];
+				&& ( strtolower($_GET['order']) == "asc" || strtolower($_GET['order']) == "desc" ) )
+			$zp_order = strtolower($_GET['order']);
 		
 		// Show images, show tags, downloadable, inclusive, notes, abstracts, citeable
 		$zp_showimage = false;
-		if ( isset($_GET['showimage'])
-				&& ( $_GET['showimage'] == "yes" || $_GET['showimage'] == "true" || $_GET['showimage'] === true || $_GET['showimage'] == 1 ) )
-			$zp_showimage = true;
+		if ( isset($_GET['showimage']) )
+			if ( $_GET['showimage'] == "yes" || $_GET['showimage'] == "true"
+					|| $_GET['showimage'] === true || $_GET['showimage'] == 1 )
+				$zp_showimage = true;
+			elseif ( $_GET['showimage'] == "openlib" )
+				$zp_showimage = "openlib";
 		
 		$zp_showtags = false;
 		if ( isset($_GET['showtags'])
-				&& ( $_GET['showtags'] == "yes" || $_GET['showtags'] == "true" || $_GET['showtags'] === true || $_GET['showtags'] == 1 ) )
+				&& ( $_GET['showtags'] == "yes" || $_GET['showtags'] == "true"
+						|| $_GET['showtags'] === true || $_GET['showtags'] == 1 ) )
 			$zp_showtags = true;
 		
 		$zp_downloadable = false;
@@ -117,11 +139,18 @@
 				&& ( $_GET['citeable'] == "yes" || $_GET['citeable'] == "true" || $_GET['citeable'] === true || $_GET['citeable'] == 1 ) )
 			$zp_citeable = true;
 		
-		// Target, forcenum
+		// Target, urlwrap, forcenum
 		$zp_target = false;
 		if ( isset($_GET['target'])
 				&& ( $_GET['target'] == "yes" || $_GET['target'] == "true" || $_GET['target'] === true || $_GET['target'] == 1 ) )
 			$zp_target = true;
+		
+		$zp_urlwrap = false;
+		if ( isset($_GET['urlwrap']) && ( $_GET['urlwrap'] == "title" || $_GET['urlwrap'] == "image" ) )
+			$zp_urlwrap = $_GET['urlwrap'];
+		
+		$zp_highlight = false;
+		if ( isset($_GET['highlight']) ) $zp_highlight = trim( htmlentities( $_GET['highlight'] ) );
 		
 		$zp_forcenum = false;
 		if ( isset($_GET['forcenum'])
@@ -204,30 +233,37 @@
 		}
 		
 		// Deal with in-text citations
-		if ( $zp_item_key && strpos( $zp_item_key, "{" ) !== false )
+		if ( $zp_item_key )
 		{
-			// Possible format: NUM,{NUM,3-9};{NUM,8}
-			$zp_item_groups = explode( ";", $zp_item_key );
-			
-			$zp_item_key = "";
-			
-			foreach ( $zp_item_groups as $item_group )
+			if ( strpos( $zp_item_key, "{" ) !== false )
 			{
-				$zp_item_keys = explode( "},{", $item_group );
+				// Possible format: NUM,{NUM,3-9};{NUM,8}
+				$zp_item_groups = explode( ";", $zp_item_key );
 				
-				foreach ( $zp_item_keys as $key )
+				$zp_item_key = "";
+				
+				foreach ( $zp_item_groups as $item_group )
 				{
-					// Skip duplicates
-					if ( substr_count( $zp_item_key, $key ) != 0 ) continue;
+					$zp_item_keys = explode( "},{", $item_group );
 					
-					if ( strpos( $key, "," ) !== false )
+					foreach ( $zp_item_keys as $key )
 					{
-						$key = explode( ",", $key );
-						$key = $key[0];
+						// Skip duplicates
+						if ( substr_count( $zp_item_key, $key ) != 0 ) continue;
+						
+						if ( strpos( $key, "," ) !== false )
+						{
+							$key = explode( ",", $key );
+							$key = $key[0];
+						}
+						if ( $zp_item_key != "" ) $zp_item_key .= ",";
+						$zp_item_key .= str_replace( "{", "", str_replace( "}", "" , $key ) );
 					}
-					if ( $zp_item_key != "" ) $zp_item_key .= ",";
-					$zp_item_key .= str_replace( "{", "", str_replace( "}", "" , $key ) );
 				}
+			}
+			else if ( strpos( $zp_item_key, ";" ) !== false )  // old style
+			{
+				$zp_item_key = str_replace(";", ",", $zp_item_key);
 			}
 		}
 		
@@ -361,275 +397,383 @@
 		*
 		*/
 		
-		$zp_request = $zp_import_contents->get_request_contents( $zp_import_url, false );
+		$zp_request = $zp_import_contents->get_request_contents( $zp_import_url, $zp_update );
 		
-		$temp_headers = json_decode( $zp_request["headers"] );
-		$temp_data = json_decode( $zp_request["json"] );
-		
-		// Figure out if there's multiple requests and how many
-		if ( $zp_request_start == 0
-				&& isset($temp_headers->link) && strpos( $temp_headers->link, 'rel="last"' ) !== false )
+		if ( $zp_request["json"] != "0" )
 		{
-			$temp_link = explode( ";", $temp_headers->link );
-			$temp_link = explode( "start=", $temp_link[1] );
-			$temp_link = explode( "&", $temp_link[1] );
+			$temp_headers = json_decode( $zp_request["headers"] );
+			$temp_data = json_decode( $zp_request["json"] );
 			
-			$zp_request_meta["request_last"] = $temp_link[0];
-		}
-		
-		// Figure out the next starting position for the next request, if any
-		if ( $zp_request_meta["request_last"] >= ($zp_request_start + $zp_limit) )
-			$zp_request_meta["request_next"] = $zp_request_start + $zp_limit ;
-		
-		// Overwrite request if tag limit
-		if ( $zp_overwrite_request === true )
-		{
-			$zp_request_meta["request_next"] = 0;
-			$zp_request_meta["request_last"] = 0;
-		}
-		
-		// Overwrite last_request
-		if ( $zp_overwrite_last_request )
-		{
-			// Make sure it's less than the total available items
-			if ( isset( $temp_headers->{"total-results"} ) 
-					&& $temp_headers->{"total-results"} < $zp_overwrite_last_request )
-				$zp_overwrite_last_request = intval( ceil( intval($temp_headers->{"total-results"}) / $zp_limit ) - 1 ) * $zp_limit;
-			else
-				$zp_overwrite_last_request = intval( ceil( $zp_overwrite_last_request / $zp_limit ) ) * $zp_limit;
-			
-			$zp_request_meta["request_last"] = $zp_overwrite_last_request;
-		}
-		//var_dump($temp_headers->{"total-results"});var_dump($zp_request_meta);exit;
-		
-		
-		
-		/**
-		*
-		*	 Format the data:
-		*
-		*/
-		
-		if ( count($temp_data) > 0 )
-		{
-			// If single, place the object into an array
-			if ( gettype($temp_data) == "object" )
+			// Figure out if there's multiple requests and how many
+			if ( $zp_request_start == 0
+					&& isset($temp_headers->link) && strpos( $temp_headers->link, 'rel="last"' ) !== false )
 			{
-				$temp = $temp_data;
-				$temp_data = array();
-				$temp_data[0] = $temp;
+				$temp_link = explode( ";", $temp_headers->link );
+				$temp_link = explode( "start=", $temp_link[1] );
+				$temp_link = explode( "&", $temp_link[1] );
+				
+				$zp_request_meta["request_last"] = $temp_link[0];
 			}
 			
-			// Set up conditional vars
-			if ( $zp_shownotes ) $zp_notes_num = 1;
-			if ( $zp_showimage ) $zp_showimage_keys = "";
+			// Figure out the next starting position for the next request, if any
+			if ( $zp_request_meta["request_last"] >= ($zp_request_start + $zp_limit) )
+				$zp_request_meta["request_next"] = $zp_request_start + $zp_limit ;
 			
-			// Get individual items
-			foreach ( $temp_data as $item )
+			// Overwrite request if tag limit
+			if ( $zp_overwrite_request === true )
 			{
-				// Set target for links
-				$zp_target_output = ""; if ( $zp_target ) $zp_target_output = "target='_blank' ";
+				$zp_request_meta["request_next"] = 0;
+				$zp_request_meta["request_last"] = 0;
+			}
+			
+			// Overwrite last_request
+			if ( $zp_overwrite_last_request )
+			{
+				// Make sure it's less than the total available items
+				if ( isset( $temp_headers->{"total-results"} ) 
+						&& $temp_headers->{"total-results"} < $zp_overwrite_last_request )
+					$zp_overwrite_last_request = intval( ceil( intval($temp_headers->{"total-results"}) / $zp_limit ) - 1 ) * $zp_limit;
+				else
+					$zp_overwrite_last_request = intval( ceil( $zp_overwrite_last_request / $zp_limit ) ) * $zp_limit;
 				
-				// Author filtering: skip non-matching authors
-				// EVENTUAL TO-DO: Zotero API 3 searches title and author, so wrong authors appear
-				if ( $zp_author && count($item->data->creators) > 0 )
+				$zp_request_meta["request_last"] = $zp_overwrite_last_request;
+			}
+			
+			
+			
+			/**
+			*
+			*	 Format the data:
+			*
+			*/
+			
+			if ( count($temp_data) > 0 )
+			{
+				// If single, place the object into an array
+				if ( gettype($temp_data) == "object" )
 				{
-					$zp_authors_check = false;
-					
-					if ( gettype($zp_author) != "array" && strpos($zp_author, ",") !== false ) // multiple
-					{
-						// Deal with multiple authors
-						$zp_authors = explode( ",", $zp_author );
-						
-						foreach ( $zp_authors as $author )
-							if ( zp_check_author_continue( $item, $author ) === true ) $zp_authors_check = true;
-					}
-					else // single or inclusive
-					{
-						if ( $zp_inclusive === false )
-						{
-							$author_exists_count = 1;
-							
-							foreach ( $zp_author as $author )
-								if ( zp_check_author_continue( $item, $author ) === true ) $author_exists_count++;
-							
-							if ( $author_exists_count == count($zp_author)+1 ) $zp_authors_check = true;
-						}
-						else // inclusive and single
-						{
-							if ( zp_check_author_continue( $item, $zp_author ) === true ) $zp_authors_check = true;
-						}
-					}
-					
-					if ( $zp_authors_check === false ) continue;
+					$temp = $temp_data;
+					$temp_data = array();
+					$temp_data[0] = $temp;
 				}
 				
-				// Year filtering: skip non-matching years
-				if ( $zp_year && isset($item->meta->parsedDate) )
+				// Set up conditional vars
+				if ( $zp_shownotes ) $zp_notes_num = 1;
+				if ( $zp_showimage ) $zp_showimage_keys = "";
+				
+				// Get individual items
+				foreach ( $temp_data as $item )
 				{
-					if ( strpos($zp_year, ",") !== false ) // multiple
+					// Set target for links
+					$zp_target_output = ""; if ( $zp_target ) $zp_target_output = "target='_blank' ";
+					
+					// Author filtering: skip non-matching authors
+					// EVENTUAL TO-DO: Zotero API 3 searches title and author, so wrong authors appear
+					if ( $zp_author && count($item->data->creators) > 0 )
 					{
-						$zp_years_check = false;
-						$zp_years = explode( ",", $zp_year );
+						$zp_authors_check = false;
 						
-						foreach ( $zp_years as $year )
-							if ( zp_get_year( $item->meta->parsedDate ) == $year ) $zp_years_check = true;
-						
-						if ( ! $zp_years_check ) continue;
-					}
-					else // single
-					{
-						if ( zp_get_year( $item->meta->parsedDate ) != $zp_year ) continue;
-					}
-				}
-				
-				// Skip non-matching years for author-year pairs
-				if ( $zp_year && $zp_author && isset($item->meta->parsedDate) )
-					if ( zp_get_year( $item->meta->parsedDate ) != $zp_year ) continue;
-				
-				// Add item key for show image
-				if ( $zp_showimage ) $zp_showimage_keys .= " ".$item->key;
-				
-				// Hyperlink urls
-				if ( isset( $item->data->url ) )
-					$item->bib = str_replace(
-							htmlentities($item->data->url),
-							"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->url."</a>",
-							$item->bib
-						);
-				
-				// Hyperlink DOIs
-				if ( isset( $item->data->DOI ) )
-					$item->bib = str_replace(
-							"http://doi.org/" . $item->data->DOI,
-							"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
-							$item->bib
-						);
-				
-				// Cite link (RIS)
-				if ( $zp_citeable )
-					$item->bib = preg_replace( '~(.*)' . preg_quote('</div>', '~') . '(.*?)~', '$1' . " <a title='Cite in RIS Format' class='zp-CiteRIS' href='".ZOTPRESS_PLUGIN_URL."lib/request/request.cite.php?api_user_id=".$zp_api_user_id."&amp;item_key=".$item->key."'>Cite</a> </div>" . '$2', $item->bib, 1 );
-				
-				// Downloads, notes
-				if ( $zp_downloadable || $zp_shownotes )
-				{
-					// Check if item has children that could be downloads
-					if ( $item->meta->numChildren > 0 )
-					{
-						$zp_child_url = "https://api.zotero.org/".$zp_account[0]->account_type."/".$zp_api_user_id."/items";
-						$zp_child_url .= "/".$item->key."/children?";
-						if (is_null($zp_account[0]->public_key) === false && trim($zp_account[0]->public_key) != "")
-							$zp_child_url .= "key=".$zp_account[0]->public_key."&";
-						$zp_child_url .= "&format=json&include=data";
-						
-						// Get data
-						$zp_import_child = new ZotpressRequest();
-						$zp_child_request = $zp_import_child->get_request_contents( $zp_child_url, false );
-						$zp_children = json_decode( $zp_child_request["json"] );
-						
-						$zp_download_meta = false;
-						$zp_notes_meta = array();
-						
-						foreach ( $zp_children as $zp_child )
+						if ( gettype($zp_author) != "array" && strpos($zp_author, ",") !== false ) // multiple
 						{
-							// Check for downloads
-							if ( $zp_downloadable )
+							// Deal with multiple authors
+							$zp_authors = explode( ",", $zp_author );
+							
+							foreach ( $zp_authors as $author )
+								if ( zp_check_author_continue( $item, $author ) === true ) $zp_authors_check = true;
+						}
+						else // single or inclusive
+						{
+							if ( $zp_inclusive === false )
 							{
-								if ( isset($zp_child->data->linkMode) && $zp_child->data->linkMode == "imported_file" )
+								$author_exists_count = 1;
+								
+								foreach ( $zp_author as $author )
+									if ( zp_check_author_continue( $item, $author ) === true ) $author_exists_count++;
+								
+								if ( $author_exists_count == count($zp_author)+1 ) $zp_authors_check = true;
+							}
+							else // inclusive and single
+							{
+								if ( zp_check_author_continue( $item, $zp_author ) === true ) $zp_authors_check = true;
+							}
+						}
+						
+						if ( $zp_authors_check === false ) continue;
+					}
+					
+					// Year filtering: skip non-matching years
+					if ( $zp_year && isset($item->meta->parsedDate) )
+					{
+						if ( strpos($zp_year, ",") !== false ) // multiple
+						{
+							$zp_years_check = false;
+							$zp_years = explode( ",", $zp_year );
+							
+							foreach ( $zp_years as $year )
+								if ( zp_get_year( $item->meta->parsedDate ) == $year ) $zp_years_check = true;
+							
+							if ( ! $zp_years_check ) continue;
+						}
+						else // single
+						{
+							if ( zp_get_year( $item->meta->parsedDate ) != $zp_year ) continue;
+						}
+					}
+					
+					// Skip non-matching years for author-year pairs
+					if ( $zp_year && $zp_author && isset($item->meta->parsedDate) )
+						if ( zp_get_year( $item->meta->parsedDate ) != $zp_year ) continue;
+					
+					// Add item key for show image
+					if ( $zp_showimage ) $zp_showimage_keys .= " ".$item->key;
+					
+					// Hyperlink or URL Wrap
+					if ( isset( $item->data->url ) && strlen($item->data->url) > 0 )
+					{
+						if ( $zp_urlwrap && $zp_urlwrap == "title" && $item->data->title )
+						{
+							// Get rid of default URL listing
+							// TO-DO: Does this account for all citation styles?
+							$item->bib = str_replace( htmlentities($item->data->url), "", $item->bib );
+							$item->bib = str_replace( " Retrieved from ", "", $item->bib );
+							$item->bib = str_replace( " Available from: ", "", $item->bib );
+							
+							// Prep bib
+							$item->bib = str_replace( "&ldquo;", "&quot;",
+													str_replace( "&rdquo;", "&quot;",
+														htmlentities(
+															html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" ),
+														ENT_COMPAT,
+														"UTF-8"
+														)
+													)
+												);
+							
+							// Prep title
+							$item->data->title = htmlentities( $item->data->title, ENT_COMPAT, "UTF-8" );
+							
+							// If wrapping title, wrap it
+							$item->bib = str_replace(
+									//htmlentities($item->data->title),
+									$item->data->title,
+									//"<a ".$zp_target_output."href='".$item->data->url."'>".htmlentities($item->data->title)."</a>",
+									"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->title."</a>",
+									$item->bib
+								);
+							
+							// Revert bib entities
+							$item->bib = html_entity_decode( $item->bib, ENT_QUOTES, "UTF-8" );
+						}
+						else // Just hyperlink the URL text
+						{
+							$item->bib = str_replace(
+									htmlentities($item->data->url),
+									"<a ".$zp_target_output."href='".$item->data->url."'>".$item->data->url."</a>",
+									$item->bib
+								);
+						}
+					}
+					
+					// Hyperlink DOIs
+					if ( isset( $item->data->DOI ) && strlen($item->data->DOI) > 0 )
+					{
+						// Most styles
+						if ( strpos( $item->bib, "http://doi.org/" ) !== false )
+						{
+							$item->bib = str_replace(
+									"http://doi.org/" . $item->data->DOI,
+									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
+									$item->bib
+								);
+						}
+						else // Styles without the http://
+						{
+							$item->bib = str_replace(
+									"doi:" . $item->data->DOI,
+									"<a ".$zp_target_output."href='http://doi.org/".$item->data->DOI."'>http://doi.org/".$item->data->DOI."</a>",
+									$item->bib
+								);
+						}
+					}
+					
+					// Cite link (RIS)
+					if ( $zp_citeable )
+						$item->bib = preg_replace( '~(.*)' . preg_quote('</div>', '~') . '(.*?)~', '$1' . " <a title='Cite in RIS Format' class='zp-CiteRIS' href='".ZOTPRESS_PLUGIN_URL."lib/request/request.cite.php?api_user_id=".$zp_api_user_id."&amp;item_key=".$item->key."'>Cite</a> </div>" . '$2', $item->bib, 1 );
+					
+					// Highlight text
+					if ( $zp_highlight )
+						$item->bib = str_replace( $zp_highlight, "<strong>".$zp_highlight."</strong>", $item->bib );
+					
+					// Downloads, notes
+					if ( $zp_downloadable || $zp_shownotes )
+					{
+						// Check if item has children that could be downloads
+						if ( $item->meta->numChildren > 0 )
+						{
+							$zp_child_url = "https://api.zotero.org/".$zp_account[0]->account_type."/".$zp_api_user_id."/items";
+							$zp_child_url .= "/".$item->key."/children?";
+							if (is_null($zp_account[0]->public_key) === false && trim($zp_account[0]->public_key) != "")
+								$zp_child_url .= "key=".$zp_account[0]->public_key."&";
+							$zp_child_url .= "&format=json&include=data";
+							
+							// Get data
+							$zp_import_child = new ZotpressRequest();
+							$zp_child_request = $zp_import_child->get_request_contents( $zp_child_url, $zp_update );
+							$zp_children = json_decode( $zp_child_request["json"] );
+							
+							$zp_download_meta = false;
+							$zp_notes_meta = array();
+							
+							foreach ( $zp_children as $zp_child )
+							{
+								// Check for downloads
+								if ( $zp_downloadable )
 								{
-									$zp_download_meta = array (
-											"key" => $zp_child->data->key,
-											"contentType" => $zp_child->data->contentType
-										);
+									if ( isset($zp_child->data->linkMode) && $zp_child->data->linkMode == "imported_file" )
+									{
+										$zp_download_meta = array (
+												"key" => $zp_child->data->key,
+												"contentType" => $zp_child->data->contentType
+											);
+									}
+								}
+								
+								// Check for notes
+								if ( $zp_shownotes )
+								{
+									if ( isset($zp_child->data->itemType) && $zp_child->data->itemType == "note" )
+										$zp_notes_meta[count($zp_notes_meta)] = $zp_child->data->note;
 								}
 							}
 							
-							// Check for notes
-							if ( $zp_shownotes )
+							// Display download link if file exists
+							if ( $zp_download_meta )
+								$item->bib = preg_replace('~(.*)' . preg_quote( '</div>', '~') . '(.*?)~', '$1' . " <a title='Download' class='zp-DownloadURL' href='".ZOTPRESS_PLUGIN_URL."lib/request/request.dl.php?api_user_id=".$zp_api_user_id."&amp;key=".$zp_download_meta["key"]."&amp;content_type=".$zp_download_meta["contentType"]."'>Download</a></div>" . '$2', $item->bib, 1 );
+							
+							// Display notes, if any
+							if ( count($zp_notes_meta) > 0 )
 							{
-								if ( isset($zp_child->data->itemType) && $zp_child->data->itemType == "note" )
-									$zp_notes_meta[count($zp_notes_meta)] = $zp_child->data->note;
+								$temp_notes = "<li id=\"zp-Note-".$item->key."\">\n";
+								
+								if ( count($zp_notes_meta) == 1 )
+								{
+									$temp_notes .= $zp_notes_meta[0]."\n";
+								}
+								else // multiple
+								{
+									$temp_notes .= "<ul class='zp-Citation-Item-Notes'>\n";
+									
+									foreach ($zp_notes_meta as $zp_note_meta)
+										$temp_notes .= "<li class='zp-Citation-note'>" . $zp_note_meta . "\n</li>\n";
+									
+									$temp_notes .= "\n</ul><!-- .zp-Citation-Item-Notes -->\n\n";
+								}
+								
+								// Add to item
+								$item->notes = $temp_notes . "</li>\n";
+								
+								// Add note reference to citation
+								$item->bib = preg_replace('~(.*)' . preg_quote('</div>', '~') . '(.*?)~', '$1' . " <sup class=\"zp-Notes-Reference\"><a href=\"#zp-Note-".$item->key."\">".$zp_notes_num."</a></sup> </div>" . '$2', $item->bib, 1);
+								$zp_notes_num++;
 							}
 						}
-						
-						// Display download link if file exists
-						if ( $zp_download_meta )
-							$item->bib = preg_replace('~(.*)' . preg_quote( '</div>', '~') . '(.*?)~', '$1' . " <a title='Download' class='zp-DownloadURL' href='".ZOTPRESS_PLUGIN_URL."lib/request/request.dl.php?api_user_id=".$zp_api_user_id."&amp;key=".$zp_download_meta["key"]."&amp;content_type=".$zp_download_meta["contentType"]."'>Download</a></div>" . '$2', $item->bib, 1 );
-						
-						// Display notes, if any
-						if ( count($zp_notes_meta) > 0 )
+					} // $zp_downloadable
+					
+					array_push( $zp_all_the_data,  $item);
+				} // foreach item
+				
+				// Show images
+				if ( $zp_showimage )
+				{
+					// Get images for all item keys
+					$zp_images = $wpdb->get_results( 
+						"
+						SELECT * FROM ".$wpdb->prefix."zotpress_zoteroItemImages 
+						WHERE ".$wpdb->prefix."zotpress_zoteroItemImages.item_key IN ('".str_replace( " ", "', '", trim($zp_showimage_keys) )."')
+						"
+					);
+					
+					if ( count($zp_images) > 0 )
+					{
+						foreach ( $zp_images as $image )
 						{
-							$temp_notes = "<li id=\"zp-Note-".$item->key."\">\n";
+							$zp_thumbnail = wp_get_attachment_image_src($image->image);
 							
-							if ( count($zp_notes_meta) == 1 )
+							foreach ( $zp_all_the_data as $id => $data )
 							{
-								$temp_notes .= $zp_notes_meta[0]."\n";
+								if ( $data->key == $image->item_key)
+								{
+									$zp_all_the_data[$id]->image = $zp_thumbnail;
+									
+									// URL Wrap for images
+									if ( $zp_urlwrap && $zp_urlwrap == "image" && $zp_all_the_data[$id]->data->url != "" )
+									{
+										// Get rid of default URL listing
+										// TO-DO: Does this account for all citation styles?
+										$zp_all_the_data[$id]->bib = str_replace( htmlentities($zp_all_the_data[$id]->data->url), "", $zp_all_the_data[$id]->bib );
+										$zp_all_the_data[$id]->bib = str_replace( " Retrieved from ", "", $zp_all_the_data[$id]->bib );
+										$zp_all_the_data[$id]->bib = str_replace( " Available from: ", "", $zp_all_the_data[$id]->bib );
+									}
+								}
 							}
-							else // multiple
-							{
-								$temp_notes .= "<ul class='zp-Citation-Item-Notes'>\n";
-								
-								foreach ($zp_notes_meta as $zp_note_meta)
-									$temp_notes .= "<li class='zp-Citation-note'>" . $zp_note_meta . "\n</li>\n";
-								
-								$temp_notes .= "\n</ul><!-- .zp-Citation-Item-Notes -->\n\n";
-							}
-							
-							// Add to item
-							$item->notes = $temp_notes . "</li>\n";
-							
-							// Add note reference to citation
-							$item->bib = preg_replace('~(.*)' . preg_quote('</div>', '~') . '(.*?)~', '$1' . " <sup class=\"zp-Notes-Reference\"><a href=\"#zp-Note-".$item->key."\">".$zp_notes_num."</a></sup> </div>" . '$2', $item->bib, 1);
-							$zp_notes_num++;
 						}
 					}
-				} // $zp_downloadable
-				
-				array_push( $zp_all_the_data,  $item);
-			} // foreach item
-			
-			// Show images
-			if ( $zp_showimage )
-			{
-				// Get images for item keys
-				$zp_images = $wpdb->get_results( 
-					"
-					SELECT * FROM ".$wpdb->prefix."zotpress_zoteroItemImages 
-					WHERE ".$wpdb->prefix."zotpress_zoteroItemImages.item_key IN ('".str_replace( " ", "', '", trim($zp_showimage_keys) )."')
-					"
-				);
-				
-				if ( count($zp_images) > 0 )
-				{
-					foreach ( $zp_images as $image )
+					
+					// Check open lib next
+					if ( $zp_showimage == "openlib" )
 					{
-						$zp_thumbnail = wp_get_attachment_image_src($image->image);
+						$zp_showimage_keys = explode( ",", $zp_showimage_keys );
 						
 						foreach ( $zp_all_the_data as $id => $data )
-							if ( $data->key == $image->item_key)
-								$zp_all_the_data[$id]->image = $zp_thumbnail;
+						{
+							if ( ! in_array( $data->key,  $zp_showimage_keys )
+									&& ( isset($data->data->ISBN) && $data->data->ISBN != "" ) )
+							{
+								$openlib_url = "http://covers.openlibrary.org/b/isbn/".$data->data->ISBN."-M.jpg";
+								$openlib_headers = @get_headers( $openlib_url );
+								
+								if ( $openlib_headers[0] != "HTTP/1.1 404 Not Found" )
+								{
+									$zp_all_the_data[$id]->image = array( $openlib_url );
+									
+									// URL Wrap for images
+									if ( $zp_urlwrap && $zp_urlwrap == "image" && $zp_all_the_data[$id]->data->url != "" )
+									{
+										// Get rid of default URL listing
+										// TO-DO: Does this account for all citation styles?
+										$zp_all_the_data[$id]->bib = str_replace( htmlentities($zp_all_the_data[$id]->data->url), "", $zp_all_the_data[$id]->bib );
+										$zp_all_the_data[$id]->bib = str_replace( " Retrieved from ", "", $zp_all_the_data[$id]->bib );
+										$zp_all_the_data[$id]->bib = str_replace( " Available from: ", "", $zp_all_the_data[$id]->bib );
+									}
+								}
+							}
+						}
 					}
 				}
-			}
-			
-			// Re-sort data if in-text and default sort
-			if ( $zp_type == "intext" && $zp_sortby = "default" )
-			{
-				$temp_arr = array();
 				
-				foreach ( array_unique( explode( ",", $zp_item_key ) ) as $temp_key )
+				// Re-sort data if in-text and default sort
+				if ( $zp_type == "intext" && $zp_sortby == "default" )
 				{
-					foreach ( $zp_all_the_data as $temp_data )
+					$temp_arr = array();
+					
+					foreach ( array_unique( explode( ",", $zp_item_key ) ) as $temp_key )
 					{
-						if ( $temp_data->key == $temp_key ) array_push( $temp_arr, $temp_data );
+						foreach ( $zp_all_the_data as $temp_data )
+						{
+							if ( $temp_data->key == $temp_key ) array_push( $temp_arr, $temp_data );
+						}
 					}
+					
+					$zp_all_the_data = $temp_arr;
 				}
 				
-				$zp_all_the_data = $temp_arr;
 			}
-			
 		}
 		
+		else // No results
+		{
+			$zp_all_the_data = ""; // Necessary?
+		}
 		
 		
 		/**

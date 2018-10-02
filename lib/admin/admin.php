@@ -230,7 +230,7 @@
 		
 		/*
 			
-		   REMOVE ACCOUNT
+		   CLEAR CACHE FOR ACCOUNT
 		   
 	   */
 		
@@ -294,6 +294,188 @@
             {
                 update_option( "Zotpress_DefaultAccount", $account );
                 $xml .= "<result success='true' account='".$account."' />\n";
+            }
+		}
+		
+		
+		
+		/*
+			
+		   SET STYLE DEFAULT
+		   
+		*/
+		
+		else if ( isset($_GET['action_type']) && $_GET['action_type'] == "default_style" )
+		{
+			$errors = array("style_empty"=>array(0,"<strong>Style</strong> was left blank."),
+							"style_format"=>array(0,"<strong>Style</strong> was incorrectly formatted."));
+			
+            // Check the post variables and record errors
+            if (trim($_GET['style']) != '')
+                if (preg_match('/^[\'0-9a-zA-Z -_]+$/', stripslashes($_GET['style'])) == 1)
+                    $style = str_replace("'","",str_replace(" ","",trim(urldecode($_GET['style']))));
+                else
+                    $errors['style_format'][0] = 1;
+            else
+                $errors['style_empty'][0] = 1;
+            
+            
+            // CHECK ERRORS
+            $errorCheck = false;
+            foreach ($errors as $field => $error) {
+                if ($error[0] == 1) {
+                    $errorCheck = true;
+                    break;
+                }
+            }
+            
+            
+            // SET DEFAULT ACCOUNT
+            if ( $errorCheck === false )
+            {
+                // Update style list
+                if (strpos(get_option("Zotpress_StyleList"), $style) === false)
+                    update_option( "Zotpress_StyleList", get_option("Zotpress_StyleList") . ", " . $style);
+                
+                // Update default style
+				update_option("Zotpress_DefaultStyle", $style);
+				$xml .= "<result success='true' style='".$style."' />\n";
+            }
+		}
+		
+		
+		
+		/*
+			
+		   SET REFERENCE WIDGET FOR CPT
+		   
+		*/
+		
+		else if ( isset($_GET['action_type']) && $_GET['action_type'] == "ref_widget_cpt" )
+		{
+			$errors = array("cpt_empty"=>array(0,"<strong>Content Type</strong> was left blank."),
+							"cpt_format"=>array(0,"<strong>Content Type</strong> was incorrectly formatted."));
+			
+            // Check the post variables and record errors
+            if (trim($_GET['cpt']) != '')
+                if (preg_match('/^[\'0-9a-zA-Z -_,]+$/', stripslashes($_GET['cpt'])) == 1)
+                    $cpt = trim($_GET['cpt']);
+                else
+                    $errors['cpt_format'][0] = 1;
+            else
+                $errors['cpt_empty'][0] = 1;
+            
+            
+            // CHECK ERRORS
+            $errorCheck = false;
+            foreach ($errors as $field => $error) {
+                if ($error[0] == 1) {
+                    $errorCheck = true;
+                    break;
+                }
+            }
+            
+            
+            // SET DEFAULT ACCOUNT
+            if ( $errorCheck === false )
+            {
+                update_option("Zotpress_DefaultCPT", $cpt);
+                $xml .= "<result success='true' cpt='".$cpt."' />\n";
+            }
+		}
+		
+		
+		
+		/*
+			
+		   RESET ZOTPRESS
+		   
+		*/
+		
+		else if ( isset($_GET['action_type']) && $_GET['action_type'] == "reset" )
+		{
+			$errors = array("reset_empty"=>array(0,"<strong>Reset</strong> was left blank."));
+			
+            // Check the post variables and record errors
+            if (trim($_GET['reset']) == 'true')
+                $reset = $_GET['reset'];
+            else
+                $errors['reset_empty'][0] = 1;
+            
+            
+            // CHECK ERRORS
+            $errorCheck = false;
+            foreach ($errors as $field => $error) {
+                if ($error[0] == 1) {
+                    $errorCheck = true;
+                    break;
+                }
+            }
+            
+            
+            if ( $errorCheck === false )
+            {
+                global $wpdb;
+                global $current_user;
+                
+                // Drop all tables except accounts/main
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_oauth;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroItems;");
+		        //$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroItemImages;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroCollections;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroTags;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroRelItemColl;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_zoteroRelItemTags;");
+                $wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."zotpress_cache ;");
+                
+                /*// Delete entries/items
+                $zp_entry_array = get_posts(
+					array(
+						'posts_per_page'   => -1,
+						'post_type' => 'zp_entry'
+					)
+				);
+				foreach ($zp_entry_array as $zp_entry) wp_delete_post( $zp_entry->ID, true );
+                
+                // Delete collections
+                $zp_collections_array = get_terms(
+					'zp_collections',
+					array(
+						'hide_empty' => false
+					)
+				);
+				foreach ($zp_collections_array as $zp_collection_term) zp_delete_collection ($zp_collection_term->term_id);
+                
+                // Delete tags
+				$zp_tags_array = get_terms(
+					'zp_tags',
+					array(
+						'hide_empty' => false
+					)
+				);
+				foreach ($zp_tags_array as $zp_tag_term) zp_delete_tag ($zp_tag_term->term_id);*/
+                
+		        delete_option( 'Zotpress_cache_version' );
+		        delete_option( 'Zotpress_DefaultCPT' );
+                delete_option( 'Zotpress_DefaultAccount' );
+                delete_option( 'Zotpress_DefaultEditor' );
+                delete_option( 'Zotpress_DefaultStyle' );
+                delete_option( 'Zotpress_StyleList' );
+                delete_option( 'Zotpress_update_version' );
+                delete_option( 'Zotpress_main_db_version' );
+                delete_option( 'Zotpress_oauth_db_version' );
+                delete_option( 'Zotpress_zoteroItems_db_version' );
+                delete_option( 'Zotpress_zoteroCollections_db_version' );
+                delete_option( 'Zotpress_zoteroTags_db_version' );
+                delete_option( 'Zotpress_zoteroRelItemColl_db_version' );
+                delete_option( 'Zotpress_zoteroRelItemTags_db_version' );
+				delete_option( 'Zotpress_zoteroItemImages_db_version' );
+                
+                delete_user_meta( $current_user->ID, 'zotpress_5_2_ignore_notice' );
+                delete_user_meta( $current_user->ID, 'zotpress_survey_notice_ignore' );
+                
+                $xml .= "<result success='true' reset='complete' />\n";
             }
 		}
 		

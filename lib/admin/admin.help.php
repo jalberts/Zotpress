@@ -147,7 +147,7 @@
 					</div>
 					<div class="zp-Zotero-API-Attribute">
 						<h4>Display > <strong>showimage</strong></h4>
-						<div class="description"><p>Whether or not to display the citation's image, if one exists. <strong>Options: yes, no [default]</strong></p></div>
+						<div class="description"><p>Whether or not to display the citation's image, if one exists. If using the "openlib" option, will use your image first and then, if none exists, will search the <a href="https://openlibrary.org/" target="_blank" title="Open Library">Open Library</a> to find book covers by ISBN. <strong>Options: yes, no, openlib [default]</strong></p></div>
 						<div class="example"><p><code>[zotpress collection="GMGCJU34" showimage="yes"]</code></p></div>
 					</div>
 					<div class="zp-Zotero-API-Attribute">
@@ -184,6 +184,16 @@
 						<h4>Display > <strong>target</strong></h4>
 						<div class="description"><p>Links open up in a new window or tab. Applies to citation links, e.g. "retrieved from." Compliant with HTML5 but not XHTML Strict. <strong>Options: new, no [default].</strong></p></div>
 						<div class="example"><p><code>[zotpress collection="GMGCJU34" target="new"]</code></p></div>
+					</div>
+					<div class="zp-Zotero-API-Attribute">
+						<h4>Display > <strong>urlwrap</strong></h4>
+						<div class="description"><p>Wrap the title or image with the citation URL. <strong>Options: title, image, no [default].</strong></p></div>
+						<div class="example"><p><code>[zotpress collection="GMGCJU34" urlwrap="title"]</code></p></div>
+					</div>
+					<div class="zp-Zotero-API-Attribute">
+						<h4>Display > <strong>highlight</strong></h4>
+						<div class="description"><p>Highlight a piece of text, such as an author name, in the bibliography. <strong>Options: any text, [empty by default].</strong></p></div>
+						<div class="example"><p><code>[zotpress collection="GMGCJU34" highlight="Sagan, C."]</code></p></div>
 					</div>
 					
 				</div><!-- #zp-Tab-Bib -->

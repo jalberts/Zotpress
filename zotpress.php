@@ -6,7 +6,7 @@
     Plugin URI: http://katieseaborn.com/plugins
     Description: Bringing Zotero and scholarly blogging to your WordPress website.
     Author: Katie Seaborn
-    Version: 6.0.5
+    Version: 6.1.1
     Author URI: http://katieseaborn.com
     
 */
@@ -37,8 +37,7 @@
     define('ZOTPRESS_PLUGIN_URL', plugin_dir_url( ZOTPRESS_PLUGIN_FILE ));
     define('ZOTPRESS_PLUGIN_DIR', dirname( __FILE__ ));
     define('ZOTPRESS_EXPERIMENTAL_EDITOR', FALSE); // Whether experimental editor feature is active or not
-
-    define('ZOTPRESS_VERSION', '6.0.5' );
+    define('ZOTPRESS_VERSION', '6.1.1' );
     
     $GLOBALS['zp_is_shortcode_displayed'] = false;
     $GLOBALS['zp_shortcode_instances'] = array();
@@ -112,7 +111,10 @@
 			}
 			
 			wp_enqueue_style( 'zotpress.css', ZOTPRESS_PLUGIN_URL . 'css/zotpress.css' );
-			wp_enqueue_style( 'ZotpressGoogleFonts.css', 'http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600|Droid+Serif:400,400italic,700italic|Oswald:300,400' );
+			
+			$zp_http_s = ""; if ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ) $zp_http_s = "s";
+			
+			wp_enqueue_style( 'ZotpressGoogleFonts.css', 'http'.$zp_http_s.'://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600|Droid+Serif:400,400italic,700italic|Oswald:300,400' );
 		}
     }
     add_action( 'admin_enqueue_scripts', 'Zotpress_admin_scripts_css' );
@@ -143,7 +145,7 @@
     function Zotpress_admin_menu()
     {
         add_menu_page( "Zotpress", "Zotpress", "edit_posts", "Zotpress", "Zotpress_options", ZOTPRESS_PLUGIN_URL."images/icon.png" );
-		add_submenu_page( "Zotpress", "Browse", "Browse", "edit_posts", "Zotpress" );
+		add_submenu_page( "Zotpress", "Zotpress", "Browse", "edit_posts", "Zotpress" );
 		add_submenu_page( "Zotpress", "Accounts", "Accounts", "edit_posts", "admin.php?page=Zotpress&accounts=true" );
 		add_submenu_page( "Zotpress", "Options", "Options", "edit_posts", "admin.php?page=Zotpress&options=true" );
 		add_submenu_page( "Zotpress", "Help", "Help", "edit_posts", "admin.php?page=Zotpress&help=true" );
